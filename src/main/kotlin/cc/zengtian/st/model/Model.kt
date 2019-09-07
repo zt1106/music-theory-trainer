@@ -1,7 +1,5 @@
 package cc.zengtian.st.model
 
-import kotlin.math.absoluteValue
-
 /**
  * Created by ZengTian on 2019/9/5.
  */
@@ -24,6 +22,7 @@ fun main() {
     Key.values().forEach {
         println(it.getMajorScaleNotes())
     }
+
 }
 
 class Note(
@@ -120,7 +119,11 @@ enum class IntrinsicNote(val needResolve: Boolean) {
      */
     fun getByOffset(offset: Int): IntrinsicNote {
         val result = (ordinal + offset) % 12
-        return ofIdx(result.absoluteValue)
+        return if (result >= 0) {
+             ofIdx(result)
+        } else {
+            ofIdx(result + 12)
+        }
     }
 
     fun getOffset(another: IntrinsicNote) : Int {
