@@ -28,10 +28,12 @@ fun main() {
     }
 }
 
-class Note(
-    val nativeNote: NativeNote,
-    val accidental: Accidental?
-) {
+class Note(val nativeNote: NativeNote, val accidental: Accidental?) {
+
+    init {
+        require(!(nativeNote.needResolve && accidental == null)) { "invalid note $nativeNote" }
+    }
+
     fun getUnresolvedNativeNote(): NativeNote {
         return nativeNote.getByOffset(-accidental.getOffset())
     }
@@ -74,7 +76,7 @@ enum class Key(private val startingNote: Note) {
         return result
     }
 
-    fun getMajorScaleNotes(): List<Note> {
+    private fun getMajorScaleNotes(): List<Note> {
         val startUnresolved = startingNote.getUnresolvedNativeNote()
         val unresolveds = mutableListOf(startUnresolved)
         var next = startUnresolved.getNextNoNeedResolveNativeNote()
@@ -94,7 +96,7 @@ enum class Key(private val startingNote: Note) {
     }
 }
 
-enum class NativeNote(private val needResolve: Boolean) {
+enum class NativeNote( val needResolve: Boolean) {
     C(false),
     CD(true),
     D(false),
@@ -143,7 +145,7 @@ enum class NativeNote(private val needResolve: Boolean) {
         }
     }
 
-    fun ofIdx(idx: Int): NativeNote {
+    private fun ofIdx(idx: Int): NativeNote {
         return values()[idx]
     }
 
@@ -168,13 +170,13 @@ enum class NativeNote(private val needResolve: Boolean) {
     }
 }
 
-class ScaleSteps(val name: String, val steps: List<Int>) {
+class ScaleSteps(private val name: String, val steps: List<Int>) {
 
-    fun getRelativeStepsToRoot(): List<Int> {
+    private fun getRelativeStepsToRoot(): List<Int> {
         val inc = mutableListOf<Int>()
         inc.add(0)
         for (step in steps) {
-            inc.add(inc.get(inc.size - 1) + step)
+            inc.add(inc[inc.size - 1] + step)
         }
         return inc
     }
@@ -200,8 +202,10 @@ class ScaleSteps(val name: String, val steps: List<Int>) {
             val smallerInMajor = majorToRoot.find { unresolved - it == 1 }!!
             val biggerInMajor = majorToRoot.find { it - unresolved == 1 }!!
             if (thisToRoot.contains(smallerInMajor) && thisToRoot.contains(biggerInMajor)) {
+                // TODO better ways to determine sharp or flat？
                 result[idx] = Pair(majorToRoot.indexOf(biggerInMajor), Accidental.FLAT)
             } else if (!thisToRoot.contains(smallerInMajor) && !thisToRoot.contains(biggerInMajor)) {
+                // TODO better ways to determine sharp or flat？
                 result[idx] = Pair(majorToRoot.indexOf(biggerInMajor), Accidental.FLAT)
             } else if (thisToRoot.contains(smallerInMajor)) {
                 result[idx] = Pair(majorToRoot.indexOf(biggerInMajor), Accidental.FLAT)
@@ -220,6 +224,9 @@ class ScaleSteps(val name: String, val steps: List<Int>) {
 
 class Interval(val num: Int, val quality: IntervalQuality) {
 
+    override fun toString(): String {
+        return "${quality}_$num"
+    }
 }
 
 enum class IntervalQuality {
@@ -234,6 +241,7 @@ enum class AccidentalType {
     FLAT
 }
 
+@Suppress("unused")
 enum class Accidental(val offset: Int) {
     SHARP(1),
     FLAT(-1),
