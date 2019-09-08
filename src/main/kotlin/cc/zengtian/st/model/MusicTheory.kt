@@ -1,6 +1,5 @@
 package cc.zengtian.st.model
 
-import cc.zengtian.st.value.BUILT_IN_SCALE
 import cc.zengtian.st.value.IONIAN
 import kotlin.math.absoluteValue
 
@@ -8,27 +7,23 @@ import kotlin.math.absoluteValue
  * Created by ZengTian on 2019/9/5.
  */
 fun main() {
-    Key.values().forEach { key ->
-        BUILT_IN_SCALE.forEach { scale ->
-            println("$key $scale ${key.getNotesOfScale(scale)} ${key.getAccidentalCountOfScale(scale)}")
-        }
-    }
+//    Key.values().forEach { key ->
+//        BUILT_IN_SCALE.forEach { scale ->
+//            println("$key $scale ${key.getNotesOfScale(scale)} ${key.getAccidentalCountOfScale(scale)}")
+//        }
+//    }
 }
 
 class Note(val wellTemperedNote: WellTemperedNote, val accidental: Accidental?) {
 
     init {
-        require(!(getBeforeAccidentalNote().needResolve && accidental != null)) { "invalid note ${getBeforeAccidentalNote()} $accidental" }
-        require(!(wellTemperedNote.needResolve && accidental == null)) { "invalid note ${getBeforeAccidentalNote()} $accidental" }
+        require(!(getBeforeAccidentalWellTemperedNote().needResolve && accidental != null)) { "invalid note ${getBeforeAccidentalWellTemperedNote()} $accidental" }
+        require(!(wellTemperedNote.needResolve && accidental == null)) { "invalid note ${getBeforeAccidentalWellTemperedNote()} $accidental" }
     }
 
-    fun getBeforeAccidentalNote(): WellTemperedNote {
-        return wellTemperedNote.getByOffset(-accidental.getOffset())
-    }
+    fun getBeforeAccidentalWellTemperedNote(): WellTemperedNote = wellTemperedNote.getByOffset(-accidental.getOffset())
 
-    override fun toString(): String {
-        return accidental.getPrefix() + getBeforeAccidentalNote()
-    }
+    override fun toString(): String = accidental.getPrefix() + getBeforeAccidentalWellTemperedNote()
 }
 
 enum class Key(private val startingNote: Note) {
@@ -69,8 +64,10 @@ enum class Key(private val startingNote: Note) {
         return notes.count { it.accidental != null }
     }
 
+    fun getAccidentalNotesOfScale(scale: Scale) : List<Note> = getNotesOfScale(scale).filter { it.accidental != null }
+
     private fun getMajorScaleNotes(): List<Note> {
-        val startUnresolved = startingNote.getBeforeAccidentalNote()
+        val startUnresolved = startingNote.getBeforeAccidentalWellTemperedNote()
         val unresolveds = mutableListOf(startUnresolved)
         var next = startUnresolved.getNextNoNeedResolveWellTemperedNote()
         while (!unresolveds.contains(next)) {
@@ -142,9 +139,7 @@ enum class WellTemperedNote(val needResolve: Boolean) {
         }
     }
 
-    private fun ofIdx(idx: Int): WellTemperedNote {
-        return values()[idx]
-    }
+    private fun ofIdx(idx: Int): WellTemperedNote = values()[idx]
 
     fun getWellTemperedNotesForScale(scale: Scale): List<WellTemperedNote> {
         val list = mutableListOf<WellTemperedNote>()
@@ -168,6 +163,12 @@ enum class WellTemperedNote(val needResolve: Boolean) {
 }
 
 class Scale(private val name: String, val steps: List<Int>) {
+
+    init {
+        check(steps.isNotEmpty()) {"steps can't be empty"}
+        check(steps.count { it <= 0 } == 0) {"step must > 0"}
+        check(steps.sum() < 12) {"steps sum must < 12"}
+    }
 
     private fun getRelativeStepsToRoot(): List<Int> {
         val inc = mutableListOf<Int>()
@@ -214,20 +215,33 @@ class Scale(private val name: String, val steps: List<Int>) {
         return result as List<Pair<Int, Accidental?>>
     }
 
-    fun getNoteCount(): Int {
-        return steps.size + 1
+    fun getNoteCount(): Int = steps.size + 1
+
+    override fun toString(): String = name
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is Scale) {
+            return false
+        }
+        if (steps.size != other.steps.size) {
+            return false
+        }
+        for (idx in steps.indices) {
+            if (steps[idx] != other.steps[idx]) {
+                return false
+            }
+        }
+        return true
     }
 
-    override fun toString(): String {
-        return name
+    override fun hashCode(): Int {
+        return steps.hashCode()
     }
 }
 
 class Interval(val num: Int, val quality: IntervalQuality) {
 
-    override fun toString(): String {
-        return "${quality}_$num"
-    }
+    override fun toString(): String = "${quality}_$num"
 }
 
 enum class IntervalQuality {
@@ -264,9 +278,7 @@ enum class Accidental(val offset: Int) {
         }
     }
 
-    fun getPrefix(): String {
-        return super.toString() + "_"
-    }
+    fun getPrefix(): String = super.toString() + "_"
 
     fun getType(): AccidentalType {
         return if (offset > 0) {
@@ -277,13 +289,6 @@ enum class Accidental(val offset: Int) {
     }
 }
 
-fun Accidental?.getOffset(): Int {
-    return this?.offset ?: 0
-}
+fun Accidental?.getOffset(): Int = this?.offset ?: 0
 
-fun Accidental?.getPrefix(): String {
-    if (this == null) {
-        return ""
-    }
-    return this.getPrefix()
-}
+fun Accidental?.getPrefix(): String = this?.getPrefix() ?: ""
