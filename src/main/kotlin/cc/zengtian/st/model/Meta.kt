@@ -13,8 +13,18 @@ fun main() {
 //            }
 //        }
 //    }
-    Key.values().forEach {
-        println(it.getMajorScaleNotes())
+//    Key.values().forEach {
+//        println(it.getMajorScaleNotes())
+//    }
+//    println(IONIAN.getRelativeStepsToRoot())
+//    println(HARMONIC_MINOR.getRelativeStepsToRoot())
+//    println(HARMONIC_MINOR.getRelativeStepsToMajor())
+//    println(Key.C.getNotes(HARMONIC_MINOR))
+
+    Key.values().forEach { key ->
+        BUILT_IN_SCALE_STEPS.forEach { scale ->
+            println("$key $scale ${key.getNotes(scale)}")
+        }
     }
 }
 
@@ -50,8 +60,18 @@ enum class Key(private val startingNote: Note) {
 
     fun getNotes(scaleSteps: ScaleSteps): List<Note> {
         val majorScale = getMajorScaleNotes()
-
-        TODO()
+        val relativeToMajor = scaleSteps.getRelativeStepsToMajor()
+        val result = mutableListOf<Note>()
+        for (pair in relativeToMajor) {
+            val noteInMajor = majorScale[pair.first]
+            val accidentalToBeAdded = pair.second
+            val noteInResult = Note(
+                noteInMajor.nativeNote.getByOffset(accidentalToBeAdded.getOffset()),
+                getAccidentalByOffset(noteInMajor.accidental.getOffset() + accidentalToBeAdded.getOffset())
+            )
+            result.add(noteInResult)
+        }
+        return result
     }
 
     fun getMajorScaleNotes(): List<Note> {
@@ -62,7 +82,7 @@ enum class Key(private val startingNote: Note) {
             unresolveds.add(next)
             next = next.getNextNoNeedResolveNativeNote()
         }
-        val nativeNotes = startingNote.nativeNote.getNativeNotesForScale(ScaleSteps.IONIAN)
+        val nativeNotes = startingNote.nativeNote.getNativeNotesForScale(IONIAN)
         val result = mutableListOf<Note>()
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
@@ -148,21 +168,53 @@ enum class NativeNote(private val needResolve: Boolean) {
     }
 }
 
-enum class ScaleSteps(val steps: List<Int>) {
-    IONIAN(listOf(2, 2, 1, 2, 2, 2)),
-    DORIAN(listOf(2, 1, 2, 2, 2, 1)),
-    PHRYGIAN(listOf(1, 2, 2, 2, 1, 2)),
-    LYDIAN(listOf(2, 2, 2, 1, 2, 2)),
-    MIXOLYDIAN(listOf(2, 2, 1, 2, 2, 1)),
-    AEOLIAN(listOf(2, 1, 2, 2, 1, 2)),
-    LOCRIAN(listOf(1, 2, 2, 1, 2, 2)),
-    HARMONIC_MINOR(listOf(2, 1, 2, 2, 1, 3)),
-    MELODIC_MINOR_UPPER(listOf(2, 1, 2, 2, 2, 2)),
-    PENTATONIC(listOf(2, 2, 3, 2)),
-    CHROMATIC(listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+class ScaleSteps(val name: String, val steps: List<Int>) {
+
+    fun getRelativeStepsToRoot(): List<Int> {
+        val inc = mutableListOf<Int>()
+        inc.add(0)
+        for (step in steps) {
+            inc.add(inc.get(inc.size - 1) + step)
+        }
+        return inc
+    }
 
     fun getRelativeStepsToMajor(): List<Pair<Int, Accidental?>> {
+        val majorToRoot = IONIAN.getRelativeStepsToRoot()
+        val thisToRoot = getRelativeStepsToRoot()
+        val result = ArrayList<Pair<Int, Accidental?>?>(thisToRoot.size)
+        for (idx in thisToRoot.indices) {
+            result.add(null)
+        }
+        for (idx in thisToRoot.indices) {
+            val distance = thisToRoot[idx]
+            if (majorToRoot.contains(distance)) {
+                result[idx] = Pair(majorToRoot.indexOf(distance), null)
+            }
+        }
+        for (idx in result.indices) {
+            if (result[idx] != null) {
+                continue
+            }
+            val unresolved = thisToRoot[idx]
+            val smallerInMajor = majorToRoot.find { unresolved - it == 1 }!!
+            val biggerInMajor = majorToRoot.find { it - unresolved == 1 }!!
+            if (thisToRoot.contains(smallerInMajor) && thisToRoot.contains(biggerInMajor)) {
+                result[idx] = Pair(majorToRoot.indexOf(biggerInMajor), Accidental.FLAT)
+            } else if (!thisToRoot.contains(smallerInMajor) && !thisToRoot.contains(biggerInMajor)) {
+                result[idx] = Pair(majorToRoot.indexOf(biggerInMajor), Accidental.FLAT)
+            } else if (thisToRoot.contains(smallerInMajor)) {
+                result[idx] = Pair(majorToRoot.indexOf(biggerInMajor), Accidental.FLAT)
+            } else {
+                result[idx] = Pair(majorToRoot.indexOf(smallerInMajor), Accidental.SHARP)
+            }
+        }
+        @Suppress("UNCHECKED_CAST")
+        return result as List<Pair<Int, Accidental?>>
+    }
 
+    override fun toString(): String {
+        return name
     }
 }
 
@@ -192,7 +244,7 @@ enum class Accidental(val offset: Int) {
         return super.toString() + "_"
     }
 
-    fun getType() : AccidentalType {
+    fun getType(): AccidentalType {
         return if (offset > 0) {
             AccidentalType.SHARP
         } else {
@@ -206,7 +258,7 @@ fun Accidental?.getOffset(): Int {
 }
 
 fun getAccidentalByOffset(offset: Int): Accidental? {
-    check(offset.absoluteValue > 2) {"wrong offset $offset"}
+    check(offset.absoluteValue <= 2) { "wrong offset $offset" }
     return Accidental.values().find { it.offset == offset }
 }
 
