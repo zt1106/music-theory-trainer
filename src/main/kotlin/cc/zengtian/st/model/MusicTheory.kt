@@ -10,45 +10,45 @@ import kotlin.math.absoluteValue
 fun main() {
     Key.values().forEach { key ->
         BUILT_IN_SCALE.forEach { scale ->
-            println("$key $scale ${key.getNotes(scale)}")
+            println("$key $scale ${key.getNotesOfScale(scale)} ${key.getAccidentalCountOfScale(scale)}")
         }
     }
 }
 
-class Note(val nativeNote: NativeNote, val accidental: Accidental?) {
+class Note(val wellTemperedNote: WellTemperedNote, val accidental: Accidental?) {
 
     init {
-        require(!(getUnresolvedNativeNote().needResolve && accidental != null)) { "invalid note ${getUnresolvedNativeNote()} $accidental" }
-        require(!(nativeNote.needResolve && accidental == null)) { "invalid note ${getUnresolvedNativeNote()} $accidental" }
+        require(!(getBeforeAccidentalNote().needResolve && accidental != null)) { "invalid note ${getBeforeAccidentalNote()} $accidental" }
+        require(!(wellTemperedNote.needResolve && accidental == null)) { "invalid note ${getBeforeAccidentalNote()} $accidental" }
     }
 
-    fun getUnresolvedNativeNote(): NativeNote {
-        return nativeNote.getByOffset(-accidental.getOffset())
+    fun getBeforeAccidentalNote(): WellTemperedNote {
+        return wellTemperedNote.getByOffset(-accidental.getOffset())
     }
 
     override fun toString(): String {
-        return accidental.getPrefix() + getUnresolvedNativeNote()
+        return accidental.getPrefix() + getBeforeAccidentalNote()
     }
 }
 
 enum class Key(private val startingNote: Note) {
-    C(Note(NativeNote.C, null)),
-    F(Note(NativeNote.F, null)),
-    B_FLAT(Note(NativeNote.AB, Accidental.FLAT)),
-    E_FLAT(Note(NativeNote.DE, Accidental.FLAT)),
-    A_FLAT(Note(NativeNote.GA, Accidental.FLAT)),
-    D_FLAT(Note(NativeNote.CD, Accidental.FLAT)),
-    C_SHARP(Note(NativeNote.CD, Accidental.SHARP)),
-    G_FLAT(Note(NativeNote.FG, Accidental.FLAT)),
-    F_SHARP(Note(NativeNote.FG, Accidental.SHARP)),
-    B(Note(NativeNote.B, null)),
-    C_FLAT(Note(NativeNote.B, Accidental.FLAT)),
-    E(Note(NativeNote.E, null)),
-    A(Note(NativeNote.A, null)),
-    D(Note(NativeNote.D, null)),
-    G(Note(NativeNote.G, null));
+    C(Note(WellTemperedNote.C, null)),
+    F(Note(WellTemperedNote.F, null)),
+    B_FLAT(Note(WellTemperedNote.AB, Accidental.FLAT)),
+    E_FLAT(Note(WellTemperedNote.DE, Accidental.FLAT)),
+    A_FLAT(Note(WellTemperedNote.GA, Accidental.FLAT)),
+    D_FLAT(Note(WellTemperedNote.CD, Accidental.FLAT)),
+    C_SHARP(Note(WellTemperedNote.CD, Accidental.SHARP)),
+    G_FLAT(Note(WellTemperedNote.FG, Accidental.FLAT)),
+    F_SHARP(Note(WellTemperedNote.FG, Accidental.SHARP)),
+    B(Note(WellTemperedNote.B, null)),
+    C_FLAT(Note(WellTemperedNote.B, Accidental.FLAT)),
+    E(Note(WellTemperedNote.E, null)),
+    A(Note(WellTemperedNote.A, null)),
+    D(Note(WellTemperedNote.D, null)),
+    G(Note(WellTemperedNote.G, null));
 
-    fun getNotes(scale: Scale): List<Note> {
+    fun getNotesOfScale(scale: Scale): List<Note> {
         val majorScale = getMajorScaleNotes()
         val relativeToMajor = scale.getRelativeStepsToMajor()
         val result = mutableListOf<Note>()
@@ -56,7 +56,7 @@ enum class Key(private val startingNote: Note) {
             val noteInMajor = majorScale[pair.first]
             val accidentalToBeAdded = pair.second
             val noteInResult = Note(
-                noteInMajor.nativeNote.getByOffset(accidentalToBeAdded.getOffset()),
+                noteInMajor.wellTemperedNote.getByOffset(accidentalToBeAdded.getOffset()),
                 Accidental.getByOffset(noteInMajor.accidental.getOffset() + accidentalToBeAdded.getOffset())
             )
             result.add(noteInResult)
@@ -64,27 +64,36 @@ enum class Key(private val startingNote: Note) {
         return result
     }
 
+    fun getAccidentalCountOfScale(scale: Scale): Int {
+        val notes = getNotesOfScale(scale)
+        return notes.count { it.accidental != null }
+    }
+
     private fun getMajorScaleNotes(): List<Note> {
-        val startUnresolved = startingNote.getUnresolvedNativeNote()
+        val startUnresolved = startingNote.getBeforeAccidentalNote()
         val unresolveds = mutableListOf(startUnresolved)
-        var next = startUnresolved.getNextNoNeedResolveNativeNote()
+        var next = startUnresolved.getNextNoNeedResolveWellTemperedNote()
         while (!unresolveds.contains(next)) {
             unresolveds.add(next)
-            next = next.getNextNoNeedResolveNativeNote()
+            next = next.getNextNoNeedResolveWellTemperedNote()
         }
-        val nativeNotes = startingNote.nativeNote.getNativeNotesForScale(IONIAN)
+        val wellTemperedNotes = startingNote.wellTemperedNote.getWellTemperedNotesForScale(IONIAN)
         val result = mutableListOf<Note>()
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
-            val native = nativeNotes[idx]
-            val accidental = Accidental.getByOffset(-native.getOffset(unresolve))
-            result.add(Note(native, accidental))
+            val wellTemperedNote = wellTemperedNotes[idx]
+            val accidental = Accidental.getByOffset(-wellTemperedNote.getOffset(unresolve))
+            result.add(Note(wellTemperedNote, accidental))
         }
         return result
     }
 }
 
-enum class NativeNote(val needResolve: Boolean) {
+/**
+ * @param needResolve whether need to be transformed to a sharp or flat note in music theory
+ * represent 12 well tempered notes
+ */
+enum class WellTemperedNote(val needResolve: Boolean) {
     C(false),
     CD(true),
     D(false),
@@ -103,7 +112,7 @@ enum class NativeNote(val needResolve: Boolean) {
      * high: > 0
      * low: < 0
      */
-    fun getByOffset(offset: Int): NativeNote {
+    fun getByOffset(offset: Int): WellTemperedNote {
         val result = (ordinal + offset) % 12
         return if (result >= 0) {
             ofIdx(result)
@@ -112,7 +121,7 @@ enum class NativeNote(val needResolve: Boolean) {
         }
     }
 
-    fun getOffset(another: NativeNote): Int {
+    fun getOffset(another: WellTemperedNote): Int {
         if (another == this) {
             return 0
         }
@@ -133,12 +142,12 @@ enum class NativeNote(val needResolve: Boolean) {
         }
     }
 
-    private fun ofIdx(idx: Int): NativeNote {
+    private fun ofIdx(idx: Int): WellTemperedNote {
         return values()[idx]
     }
 
-    fun getNativeNotesForScale(scale: Scale): List<NativeNote> {
-        val list = mutableListOf<NativeNote>()
+    fun getWellTemperedNotesForScale(scale: Scale): List<WellTemperedNote> {
+        val list = mutableListOf<WellTemperedNote>()
         list.add(this)
         for (step in scale.steps) {
             list.add(list[list.size - 1].getByOffset(step))
@@ -146,7 +155,7 @@ enum class NativeNote(val needResolve: Boolean) {
         return list
     }
 
-    fun getNextNoNeedResolveNativeNote(): NativeNote {
+    fun getNextNoNeedResolveWellTemperedNote(): WellTemperedNote {
         var cur = this.getByOffset(1)
         while (cur != this) {
             if (!cur.needResolve) {

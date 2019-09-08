@@ -58,7 +58,7 @@ data class ScaleNoteDetermineQuizModel(
         selectedKeys.random().let { key ->
             selectedScale.random().let { scale ->
                 val idx = Random.nextInt(scale.getNoteCount() - 1)
-                val note = key.getNotes(scale)[idx]
+                val note = key.getNotesOfScale(scale)[idx]
                 return ScaleNoteDetermineQuestionModel(key, scale, idx, note)
             }
         }

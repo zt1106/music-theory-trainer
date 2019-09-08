@@ -32,11 +32,11 @@ val BUILT_IN_SCALE = listOf(
     CHROMATIC
 )
 
-private val ALL_NOTES_INNER = mutableMapOf<Pair<NativeNote, Accidental?>, Note>().apply {
-    NativeNote.values().forEach { nativeNote ->
+private val ALL_NOTES_INNER = mutableMapOf<Pair<WellTemperedNote, Accidental?>, Note>().apply {
+    WellTemperedNote.values().forEach { wellTemperedNote ->
         Accidental.forEachIncludingNull { accidental ->
             try {
-                put(nativeNote to accidental, Note(nativeNote, accidental))
+                put(wellTemperedNote to accidental, Note(wellTemperedNote, accidental))
             } catch (e: Exception) {
             }
         }
