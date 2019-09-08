@@ -17,62 +17,62 @@ fun main() {
 }
 
 class Note(
-    val intrinsicNote: IntrinsicNote,
+    val nativeNote: NativeNote,
     val accidental: Accidental?
 ) {
-    fun getUnresolvedIntrinsicNote(): IntrinsicNote {
-        return intrinsicNote.getByOffset(-accidental.getOffset())
+    fun getUnresolvedNativeNote(): NativeNote {
+        return nativeNote.getByOffset(-accidental.getOffset())
     }
 
     override fun toString(): String {
-        return accidental.getPrefix() + getUnresolvedIntrinsicNote()
+        return accidental.getPrefix() + getUnresolvedNativeNote()
     }
 }
 
 enum class Key(private val startingNote: Note) {
-    C(Note(IntrinsicNote.C, null)),
-    F(Note(IntrinsicNote.F, null)),
-    B_FLAT(Note(IntrinsicNote.AB, Accidental.FLAT)),
-    E_FLAT(Note(IntrinsicNote.DE, Accidental.FLAT)),
-    A_FLAT(Note(IntrinsicNote.GA, Accidental.FLAT)),
-    D_FLAT(Note(IntrinsicNote.CD, Accidental.FLAT)),
-    C_SHARP(Note(IntrinsicNote.CD, Accidental.SHARP)),
-    G_FLAT(Note(IntrinsicNote.FG, Accidental.FLAT)),
-    F_SHARP(Note(IntrinsicNote.FG, Accidental.SHARP)),
-    B(Note(IntrinsicNote.B, null)),
-    C_FLAT(Note(IntrinsicNote.B, Accidental.FLAT)),
-    E(Note(IntrinsicNote.E, null)),
-    A(Note(IntrinsicNote.A, null)),
-    D(Note(IntrinsicNote.D, null)),
-    G(Note(IntrinsicNote.G, null));
+    C(Note(NativeNote.C, null)),
+    F(Note(NativeNote.F, null)),
+    B_FLAT(Note(NativeNote.AB, Accidental.FLAT)),
+    E_FLAT(Note(NativeNote.DE, Accidental.FLAT)),
+    A_FLAT(Note(NativeNote.GA, Accidental.FLAT)),
+    D_FLAT(Note(NativeNote.CD, Accidental.FLAT)),
+    C_SHARP(Note(NativeNote.CD, Accidental.SHARP)),
+    G_FLAT(Note(NativeNote.FG, Accidental.FLAT)),
+    F_SHARP(Note(NativeNote.FG, Accidental.SHARP)),
+    B(Note(NativeNote.B, null)),
+    C_FLAT(Note(NativeNote.B, Accidental.FLAT)),
+    E(Note(NativeNote.E, null)),
+    A(Note(NativeNote.A, null)),
+    D(Note(NativeNote.D, null)),
+    G(Note(NativeNote.G, null));
 
     fun getNotes(scaleSteps: ScaleSteps): List<Note> {
         val majorScale = getMajorScaleNotes()
-
+        
         TODO()
     }
 
     fun getMajorScaleNotes(): List<Note> {
-        val startUnresolved = startingNote.getUnresolvedIntrinsicNote()
+        val startUnresolved = startingNote.getUnresolvedNativeNote()
         val unresolveds = mutableListOf(startUnresolved)
         var next = startUnresolved.getNextNoNeedResolveIntrinsicNote()
         while (!unresolveds.contains(next)) {
             unresolveds.add(next)
             next = next.getNextNoNeedResolveIntrinsicNote()
         }
-        val intrinsicNotes = startingNote.intrinsicNote.getInrinsicNotesForScale(ScaleSteps.IONIAN)
+        val nativeNotes = startingNote.nativeNote.getInrinsicNotesForScale(ScaleSteps.IONIAN)
         val result = mutableListOf<Note>()
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
-            val intrinsic = intrinsicNotes[idx]
-            val accidental = getAccidentalByOffset(-intrinsic.getOffset(unresolve))
-            result.add(Note(intrinsic, accidental))
+            val native = nativeNotes[idx]
+            val accidental = getAccidentalByOffset(-native.getOffset(unresolve))
+            result.add(Note(native, accidental))
         }
         return result
     }
 }
 
-enum class IntrinsicNote(private val needResolve: Boolean) {
+enum class NativeNote(private val needResolve: Boolean) {
     C(false),
     CD(true),
     D(false),
@@ -91,7 +91,7 @@ enum class IntrinsicNote(private val needResolve: Boolean) {
      * high: > 0
      * low: < 0
      */
-    fun getByOffset(offset: Int): IntrinsicNote {
+    fun getByOffset(offset: Int): NativeNote {
         val result = (ordinal + offset) % 12
         return if (result >= 0) {
             ofIdx(result)
@@ -100,7 +100,7 @@ enum class IntrinsicNote(private val needResolve: Boolean) {
         }
     }
 
-    fun getOffset(another: IntrinsicNote): Int {
+    fun getOffset(another: NativeNote): Int {
         if (another == this) {
             return 0
         }
@@ -121,13 +121,13 @@ enum class IntrinsicNote(private val needResolve: Boolean) {
         }
     }
 
-    fun ofIdx(idx: Int): IntrinsicNote {
+    fun ofIdx(idx: Int): NativeNote {
         this.ordinal
         return values().find { it.ordinal == idx }!!
     }
 
-    fun getInrinsicNotesForScale(scaleSteps: ScaleSteps): List<IntrinsicNote> {
-        val list = mutableListOf<IntrinsicNote>()
+    fun getInrinsicNotesForScale(scaleSteps: ScaleSteps): List<NativeNote> {
+        val list = mutableListOf<NativeNote>()
         list.add(this)
         for (step in scaleSteps.steps) {
             list.add(list[list.size - 1].getByOffset(step))
@@ -135,7 +135,7 @@ enum class IntrinsicNote(private val needResolve: Boolean) {
         return list
     }
 
-    fun getNextNoNeedResolveIntrinsicNote(): IntrinsicNote {
+    fun getNextNoNeedResolveIntrinsicNote(): NativeNote {
         var cur = this.getByOffset(1)
         while (cur != this) {
             if (!cur.needResolve) {
