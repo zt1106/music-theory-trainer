@@ -1,5 +1,7 @@
 package cc.zengtian.st.model
 
+import kotlin.math.absoluteValue
+
 /**
  * Created by ZengTian on 2019/9/5.
  */
@@ -48,19 +50,19 @@ enum class Key(private val startingNote: Note) {
 
     fun getNotes(scaleSteps: ScaleSteps): List<Note> {
         val majorScale = getMajorScaleNotes()
-        
+
         TODO()
     }
 
     fun getMajorScaleNotes(): List<Note> {
         val startUnresolved = startingNote.getUnresolvedNativeNote()
         val unresolveds = mutableListOf(startUnresolved)
-        var next = startUnresolved.getNextNoNeedResolveIntrinsicNote()
+        var next = startUnresolved.getNextNoNeedResolveNativeNote()
         while (!unresolveds.contains(next)) {
             unresolveds.add(next)
-            next = next.getNextNoNeedResolveIntrinsicNote()
+            next = next.getNextNoNeedResolveNativeNote()
         }
-        val nativeNotes = startingNote.nativeNote.getInrinsicNotesForScale(ScaleSteps.IONIAN)
+        val nativeNotes = startingNote.nativeNote.getNativeNotesForScale(ScaleSteps.IONIAN)
         val result = mutableListOf<Note>()
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
@@ -122,11 +124,10 @@ enum class NativeNote(private val needResolve: Boolean) {
     }
 
     fun ofIdx(idx: Int): NativeNote {
-        this.ordinal
-        return values().find { it.ordinal == idx }!!
+        return values()[idx]
     }
 
-    fun getInrinsicNotesForScale(scaleSteps: ScaleSteps): List<NativeNote> {
+    fun getNativeNotesForScale(scaleSteps: ScaleSteps): List<NativeNote> {
         val list = mutableListOf<NativeNote>()
         list.add(this)
         for (step in scaleSteps.steps) {
@@ -135,7 +136,7 @@ enum class NativeNote(private val needResolve: Boolean) {
         return list
     }
 
-    fun getNextNoNeedResolveIntrinsicNote(): NativeNote {
+    fun getNextNoNeedResolveNativeNote(): NativeNote {
         var cur = this.getByOffset(1)
         while (cur != this) {
             if (!cur.needResolve) {
@@ -158,7 +159,11 @@ enum class ScaleSteps(val steps: List<Int>) {
     HARMONIC_MINOR(listOf(2, 1, 2, 2, 1, 3)),
     MELODIC_MINOR_UPPER(listOf(2, 1, 2, 2, 2, 2)),
     PENTATONIC(listOf(2, 2, 3, 2)),
-    CHROMATIC(listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+    CHROMATIC(listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+
+    fun getRelativeStepsToMajor(): List<Pair<Int, Accidental?>> {
+
+    }
 }
 
 class Interval(val num: Int, val quality: IntervalQuality) {
@@ -177,36 +182,32 @@ enum class AccidentalType {
     FLAT
 }
 
-enum class Accidental(val type: AccidentalType) {
-    SHARP(AccidentalType.SHARP),
-    FLAT(AccidentalType.FLAT),
-    DOUBLE_SHARP(AccidentalType.SHARP),
-    DOUBLE_FLAT(AccidentalType.FLAT);
+enum class Accidental(val offset: Int) {
+    SHARP(1),
+    FLAT(-1),
+    DOUBLE_SHARP(2),
+    DOUBLE_FLAT(-2);
 
     fun getPrefix(): String {
         return super.toString() + "_"
     }
+
+    fun getType() : AccidentalType {
+        return if (offset > 0) {
+            AccidentalType.SHARP
+        } else {
+            AccidentalType.FLAT
+        }
+    }
 }
 
 fun Accidental?.getOffset(): Int {
-    return when (this) {
-        Accidental.DOUBLE_FLAT -> -2
-        Accidental.SHARP -> 1
-        Accidental.FLAT -> -1
-        Accidental.DOUBLE_SHARP -> 2
-        null -> 0
-    }
+    return this?.offset ?: 0
 }
 
 fun getAccidentalByOffset(offset: Int): Accidental? {
-    return when (offset) {
-        -2 -> Accidental.DOUBLE_FLAT
-        1 -> Accidental.SHARP
-        -1 -> Accidental.FLAT
-        2 -> Accidental.DOUBLE_SHARP
-        0 -> null
-        else -> throw IllegalArgumentException(offset.toString())
-    }
+    check(offset.absoluteValue > 2) {"wrong offset $offset"}
+    return Accidental.values().find { it.offset == offset }
 }
 
 fun Accidental?.getPrefix(): String {
