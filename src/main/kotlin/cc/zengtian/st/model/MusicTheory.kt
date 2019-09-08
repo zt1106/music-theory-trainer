@@ -1,5 +1,6 @@
 package cc.zengtian.st.model
 
+import cc.zengtian.st.value.BUILT_IN_SCALE
 import cc.zengtian.st.value.IONIAN
 import kotlin.math.absoluteValue
 
@@ -7,11 +8,11 @@ import kotlin.math.absoluteValue
  * Created by ZengTian on 2019/9/5.
  */
 fun main() {
-//    Key.values().forEach { key ->
-//        BUILT_IN_SCALE.forEach { scale ->
-//            println("$key $scale ${key.getNotesOfScale(scale)} ${key.getAccidentalCountOfScale(scale)}")
-//        }
-//    }
+    Key.values().forEach { key ->
+        BUILT_IN_SCALE.forEach { scale ->
+            println("$key $scale ${key.getNotesOfScale(scale)} accidental count: ${key.getAccidentalCountOfScale(scale)}")
+        }
+    }
 }
 
 class Note(val wellTemperedNote: WellTemperedNote, val accidental: Accidental?) {
@@ -64,7 +65,7 @@ enum class Key(private val startingNote: Note) {
         return notes.count { it.accidental != null }
     }
 
-    fun getAccidentalNotesOfScale(scale: Scale) : List<Note> = getNotesOfScale(scale).filter { it.accidental != null }
+    fun getAccidentalNotesOfScale(scale: Scale): List<Note> = getNotesOfScale(scale).filter { it.accidental != null }
 
     private fun getMajorScaleNotes(): List<Note> {
         val startUnresolved = startingNote.getBeforeAccidentalWellTemperedNote()
@@ -165,9 +166,9 @@ enum class WellTemperedNote(val needResolve: Boolean) {
 class Scale(private val name: String, val steps: List<Int>) {
 
     init {
-        check(steps.isNotEmpty()) {"steps can't be empty"}
-        check(steps.count { it <= 0 } == 0) {"step must > 0"}
-        check(steps.sum() < 12) {"steps sum must < 12"}
+        check(steps.isNotEmpty()) { "steps can't be empty" }
+        check(steps.count { it <= 0 } == 0) { "step must > 0" }
+        check(steps.sum() < 12) { "steps sum must < 12" }
     }
 
     private fun getRelativeStepsToRoot(): List<Int> {

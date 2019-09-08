@@ -14,7 +14,7 @@ val MIXOLYDIAN = Scale("MIXOLYDIAN", listOf(2, 2, 1, 2, 2, 1))
 val AEOLIAN = Scale("AEOLIAN", listOf(2, 1, 2, 2, 1, 2))
 val LOCRIAN = Scale("LOCRIAN", listOf(1, 2, 2, 1, 2, 2))
 val HARMONIC_MINOR = Scale("HARMONIC_MINOR", listOf(2, 1, 2, 2, 1, 3))
-val MELODIC_MINOR_UPPER = Scale("MELODIC_MINOR_UPPER", listOf(2, 1, 2, 2, 2, 2))
+val MELODIC_MINOR_ASCEND = Scale("MELODIC_MINOR_UPPER", listOf(2, 1, 2, 2, 2, 2))
 val PENTATONIC = Scale("PENTATONIC", listOf(2, 2, 3, 2))
 val CHROMATIC = Scale("CHROMATIC", listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
 
@@ -27,7 +27,7 @@ val BUILT_IN_SCALE = listOf(
     AEOLIAN,
     LOCRIAN,
     HARMONIC_MINOR,
-    MELODIC_MINOR_UPPER,
+    MELODIC_MINOR_ASCEND,
     PENTATONIC,
     CHROMATIC
 )
