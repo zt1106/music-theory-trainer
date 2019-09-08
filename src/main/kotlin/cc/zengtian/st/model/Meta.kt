@@ -4,38 +4,28 @@ package cc.zengtian.st.model
  * Created by ZengTian on 2019/9/5.
  */
 fun main() {
-//    println(IntrinsicNote.G.getInrinsicNotesForScale(ScaleSteps.IONIAN))
-//    println(Note(IntrinsicNote.FG, Accidental.FLAT))
-//    println(IntrinsicNote.C.getInrinsicNotesForScale(ScaleSteps.IONIAN))
-//    println(IntrinsicNote.D.getInrinsicNotesForScale(ScaleSteps.DORIAN))
-//    println(IntrinsicNote.E.getInrinsicNotesForScale(ScaleSteps.PHRYGIAN))
-//    println(IntrinsicNote.F.getInrinsicNotesForScale(ScaleSteps.LYDIAN))
-//    println(IntrinsicNote.G.getInrinsicNotesForScale(ScaleSteps.MIXOLYDIAN))
-//    println(IntrinsicNote.A.getInrinsicNotesForScale(ScaleSteps.AEOLIAN))
-//    println(IntrinsicNote.B.getInrinsicNotesForScale(ScaleSteps.LOCRIAN))
-//    println(IntrinsicNote.A.getInrinsicNotesForScale(ScaleSteps.HARMONIC_MINOR))
-//    println(IntrinsicNote.A.getInrinsicNotesForScale(ScaleSteps.MELODIC_MINOR_UPPER))
-//    println(IntrinsicNote.C.getInrinsicNotesForScale(ScaleSteps.PENTATONIC))
-//    println(IntrinsicNote.C.getInrinsicNotesForScale(ScaleSteps.CHROMATIC))
-//    println("============-=")
-
+//    IntrinsicNote.values().forEach { note ->
+//        ScaleSteps.values().forEach { scale ->
+//            run {
+//                println("$note $scale --- ${note.getInrinsicNotesForScale(scale)}")
+//            }
+//        }
+//    }
     Key.values().forEach {
         println(it.getMajorScaleNotes())
     }
-
 }
 
 class Note(
     val intrinsicNote: IntrinsicNote,
     val accidental: Accidental?
 ) {
-
     fun getUnresolvedIntrinsicNote(): IntrinsicNote {
         return intrinsicNote.getByOffset(-accidental.getOffset())
     }
 
     override fun toString(): String {
-        return accidental.toString() + getUnresolvedIntrinsicNote()
+        return accidental.getPrefix() + getUnresolvedIntrinsicNote()
     }
 }
 
@@ -57,34 +47,18 @@ enum class Key(private val startingNote: Note) {
     G(Note(IntrinsicNote.G, null));
 
     fun getNotes(scaleSteps: ScaleSteps): List<Note> {
-        if (scaleSteps == ScaleSteps.IONIAN) {
-            return getMajorScaleNotes()
-        }
-//        val intrinsicNotes = startingNote.intrinsicNote.getInrinsicNotesForScale(scaleSteps)
-//        val result = ArrayList<Note>(intrinsicNotes.size)
-//        result[0] = startingNote
-//        for (idx in intrinsicNotes.indices) {
-//            if (idx == 0) {
-//                continue
-//            }
-//            val leftNote = result[idx - 1]
-//            val leftAccidental = leftNote.accidental
-//            val rightIntrinsicNote = intrinsicNotes[idx]
-//            if (rightIntrinsicNote.needResolve) {
-//                val possibleOne = rightIntrinsicNote.getPossibleOneOffsetNotes()
-//
-//            }
-//        }
-            TODO()
+        val majorScale = getMajorScaleNotes()
+
+        TODO()
     }
 
-    fun getMajorScaleNotes() : List<Note> {
+    fun getMajorScaleNotes(): List<Note> {
         val startUnresolved = startingNote.getUnresolvedIntrinsicNote()
         val unresolveds = mutableListOf(startUnresolved)
-        var next = startUnresolved.getNextnoNeedResolveIntrinsicNote()
+        var next = startUnresolved.getNextNoNeedResolveIntrinsicNote()
         while (!unresolveds.contains(next)) {
             unresolveds.add(next)
-            next = next.getNextnoNeedResolveIntrinsicNote()
+            next = next.getNextNoNeedResolveIntrinsicNote()
         }
         val intrinsicNotes = startingNote.intrinsicNote.getInrinsicNotesForScale(ScaleSteps.IONIAN)
         val result = mutableListOf<Note>()
@@ -98,7 +72,7 @@ enum class Key(private val startingNote: Note) {
     }
 }
 
-enum class IntrinsicNote(val needResolve: Boolean) {
+enum class IntrinsicNote(private val needResolve: Boolean) {
     C(false),
     CD(true),
     D(false),
@@ -114,19 +88,19 @@ enum class IntrinsicNote(val needResolve: Boolean) {
 
 
     /**
-     * right: > 0
-     * left: < 0
+     * high: > 0
+     * low: < 0
      */
     fun getByOffset(offset: Int): IntrinsicNote {
         val result = (ordinal + offset) % 12
         return if (result >= 0) {
-             ofIdx(result)
+            ofIdx(result)
         } else {
             ofIdx(result + 12)
         }
     }
 
-    fun getOffset(another: IntrinsicNote) : Int {
+    fun getOffset(another: IntrinsicNote): Int {
         if (another == this) {
             return 0
         }
@@ -161,7 +135,7 @@ enum class IntrinsicNote(val needResolve: Boolean) {
         return list
     }
 
-    fun getNextnoNeedResolveIntrinsicNote() : IntrinsicNote{
+    fun getNextNoNeedResolveIntrinsicNote(): IntrinsicNote {
         var cur = this.getByOffset(1)
         while (cur != this) {
             if (!cur.needResolve) {
@@ -170,20 +144,6 @@ enum class IntrinsicNote(val needResolve: Boolean) {
             cur = cur.getByOffset(1)
         }
         throw IllegalStateException()
-    }
-
-    fun getPossibleOneOffsetNotes(): List<Note> {
-        return listOf(
-            Note(getByOffset(1), Accidental.FLAT),
-            Note(getByOffset(-1), Accidental.SHARP)
-        )
-    }
-
-    fun getPossibleTwoOffsetNotes(): List<Note> {
-        return listOf(
-            Note(getByOffset(2), Accidental.DOUBLE_FLAT),
-            Note(getByOffset(-2), Accidental.DOUBLE_SHARP)
-        )
     }
 }
 
@@ -199,7 +159,6 @@ enum class ScaleSteps(val steps: List<Int>) {
     MELODIC_MINOR_UPPER(listOf(2, 1, 2, 2, 2, 2)),
     PENTATONIC(listOf(2, 2, 3, 2)),
     CHROMATIC(listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
-
 }
 
 class Interval(val num: Int, val quality: IntervalQuality) {
@@ -224,7 +183,7 @@ enum class Accidental(val type: AccidentalType) {
     DOUBLE_SHARP(AccidentalType.SHARP),
     DOUBLE_FLAT(AccidentalType.FLAT);
 
-    override fun toString(): String {
+    fun getPrefix(): String {
         return super.toString() + "_"
     }
 }
@@ -250,9 +209,9 @@ fun getAccidentalByOffset(offset: Int): Accidental? {
     }
 }
 
-fun Accidental?.toString(): String {
+fun Accidental?.getPrefix(): String {
     if (this == null) {
         return ""
     }
-    return this.toString()
+    return this.getPrefix()
 }
