@@ -1,5 +1,7 @@
 package cc.zengtian.st.model
 
+import cc.zengtian.st.value.BUILT_IN_SCALE
+import cc.zengtian.st.value.IONIAN
 import kotlin.math.absoluteValue
 
 /**
@@ -7,7 +9,7 @@ import kotlin.math.absoluteValue
  */
 fun main() {
     Key.values().forEach { key ->
-        BUILT_IN_SCALE_STEPS.forEach { scale ->
+        BUILT_IN_SCALE.forEach { scale ->
             println("$key $scale ${key.getNotes(scale)}")
         }
     }
@@ -16,7 +18,8 @@ fun main() {
 class Note(val nativeNote: NativeNote, val accidental: Accidental?) {
 
     init {
-        require(!(nativeNote.needResolve && accidental == null)) { "invalid note $nativeNote" }
+        require(!(getUnresolvedNativeNote().needResolve && accidental != null)) { "invalid note ${getUnresolvedNativeNote()} $accidental" }
+        require(!(nativeNote.needResolve && accidental == null)) { "invalid note ${getUnresolvedNativeNote()} $accidental" }
     }
 
     fun getUnresolvedNativeNote(): NativeNote {
@@ -45,16 +48,16 @@ enum class Key(private val startingNote: Note) {
     D(Note(NativeNote.D, null)),
     G(Note(NativeNote.G, null));
 
-    fun getNotes(scaleSteps: ScaleSteps): List<Note> {
+    fun getNotes(scale: Scale): List<Note> {
         val majorScale = getMajorScaleNotes()
-        val relativeToMajor = scaleSteps.getRelativeStepsToMajor()
+        val relativeToMajor = scale.getRelativeStepsToMajor()
         val result = mutableListOf<Note>()
         for (pair in relativeToMajor) {
             val noteInMajor = majorScale[pair.first]
             val accidentalToBeAdded = pair.second
             val noteInResult = Note(
                 noteInMajor.nativeNote.getByOffset(accidentalToBeAdded.getOffset()),
-                getAccidentalByOffset(noteInMajor.accidental.getOffset() + accidentalToBeAdded.getOffset())
+                Accidental.getByOffset(noteInMajor.accidental.getOffset() + accidentalToBeAdded.getOffset())
             )
             result.add(noteInResult)
         }
@@ -74,14 +77,14 @@ enum class Key(private val startingNote: Note) {
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
             val native = nativeNotes[idx]
-            val accidental = getAccidentalByOffset(-native.getOffset(unresolve))
+            val accidental = Accidental.getByOffset(-native.getOffset(unresolve))
             result.add(Note(native, accidental))
         }
         return result
     }
 }
 
-enum class NativeNote( val needResolve: Boolean) {
+enum class NativeNote(val needResolve: Boolean) {
     C(false),
     CD(true),
     D(false),
@@ -134,10 +137,10 @@ enum class NativeNote( val needResolve: Boolean) {
         return values()[idx]
     }
 
-    fun getNativeNotesForScale(scaleSteps: ScaleSteps): List<NativeNote> {
+    fun getNativeNotesForScale(scale: Scale): List<NativeNote> {
         val list = mutableListOf<NativeNote>()
         list.add(this)
-        for (step in scaleSteps.steps) {
+        for (step in scale.steps) {
             list.add(list[list.size - 1].getByOffset(step))
         }
         return list
@@ -155,7 +158,7 @@ enum class NativeNote( val needResolve: Boolean) {
     }
 }
 
-class ScaleSteps(private val name: String, val steps: List<Int>) {
+class Scale(private val name: String, val steps: List<Int>) {
 
     private fun getRelativeStepsToRoot(): List<Int> {
         val inc = mutableListOf<Int>()
@@ -202,6 +205,10 @@ class ScaleSteps(private val name: String, val steps: List<Int>) {
         return result as List<Pair<Int, Accidental?>>
     }
 
+    fun getNoteCount(): Int {
+        return steps.size + 1
+    }
+
     override fun toString(): String {
         return name
     }
@@ -226,12 +233,27 @@ enum class AccidentalType {
     FLAT
 }
 
+class Chord
+
 @Suppress("unused")
 enum class Accidental(val offset: Int) {
+
     SHARP(1),
     FLAT(-1),
     DOUBLE_SHARP(2),
     DOUBLE_FLAT(-2);
+
+    companion object {
+        fun getByOffset(offset: Int): Accidental? {
+            check(offset.absoluteValue <= 2) { "wrong offset $offset" }
+            return values().find { it.offset == offset }
+        }
+
+        fun forEachIncludingNull(action: (Accidental?) -> Unit) {
+            for (element in values()) action(element)
+            action(null)
+        }
+    }
 
     fun getPrefix(): String {
         return super.toString() + "_"
@@ -248,11 +270,6 @@ enum class Accidental(val offset: Int) {
 
 fun Accidental?.getOffset(): Int {
     return this?.offset ?: 0
-}
-
-fun getAccidentalByOffset(offset: Int): Accidental? {
-    check(offset.absoluteValue <= 2) { "wrong offset $offset" }
-    return Accidental.values().find { it.offset == offset }
 }
 
 fun Accidental?.getPrefix(): String {
