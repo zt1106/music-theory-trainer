@@ -6,21 +6,6 @@ import kotlin.math.absoluteValue
  * Created by ZengTian on 2019/9/5.
  */
 fun main() {
-//    IntrinsicNote.values().forEach { note ->
-//        ScaleSteps.values().forEach { scale ->
-//            run {
-//                println("$note $scale --- ${note.getInrinsicNotesForScale(scale)}")
-//            }
-//        }
-//    }
-//    Key.values().forEach {
-//        println(it.getMajorScaleNotes())
-//    }
-//    println(IONIAN.getRelativeStepsToRoot())
-//    println(HARMONIC_MINOR.getRelativeStepsToRoot())
-//    println(HARMONIC_MINOR.getRelativeStepsToMajor())
-//    println(Key.C.getNotes(HARMONIC_MINOR))
-
     Key.values().forEach { key ->
         BUILT_IN_SCALE_STEPS.forEach { scale ->
             println("$key $scale ${key.getNotes(scale)}")
