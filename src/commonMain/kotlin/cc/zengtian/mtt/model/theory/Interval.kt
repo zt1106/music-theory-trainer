@@ -13,6 +13,8 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
             }
         }.toMap()
 
+        private val PERFECT_OR_MAJOR_STEPS = listOf(0, 2, 4, 5, 7, 9, 11, 12)
+
         fun values() = ALL_INTERVALS
 
         fun of(num: Int, quality: IntervalQuality): Interval {
@@ -69,8 +71,19 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         return of(9 - num, inverQuality)
     }
 
-    fun getPhysicalInterval(): Int {
-        TODO()
+    fun getPhysicalStep(): Int {
+        val inMaj = PERFECT_OR_MAJOR_STEPS[num - 1]
+        return when (quality) {
+            IntervalQuality.AUGMENTED -> inMaj + 1
+            IntervalQuality.MAJOR -> inMaj
+            IntervalQuality.PERFECT -> inMaj
+            IntervalQuality.MINOR -> inMaj - 1
+            IntervalQuality.DIMISHED -> if (is1458(num)) {
+                inMaj - 1
+            } else {
+                inMaj - 2
+            }
+        }
     }
 
     override fun toString(): String = "${quality}_$num"
