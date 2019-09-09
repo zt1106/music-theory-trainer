@@ -5,18 +5,18 @@ package cc.zengtian.mtt.model.theory
  * represent 12 well tempered notes
  */
 enum class WellTemperedNote(val needResolve: Boolean) {
-    C(false),
+    C_(false),
     CD(true),
-    D(false),
+    D_(false),
     DE(true),
-    E(false),
-    F(false),
+    E_(false),
+    F_(false),
     FG(true),
-    G(false),
+    G_(false),
     GA(true),
-    A(false),
+    A_(false),
     AB(true),
-    B(false);
+    B_(false);
 
 
     /**

@@ -1,5 +1,7 @@
 package cc.zengtian.mtt.model.theory
 
+import cc.zengtian.mtt.model.theory.IntervalQuality.*
+
 class Interval private constructor(val num: Int, val quality: IntervalQuality) {
 
     companion object {
@@ -38,17 +40,17 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         private fun of1BaseIndexInMajorScale(idx: Int, offset: Int): Interval? {
             return if (is1458(idx)) {
                 when (offset) {
-                    0 -> of(idx, IntervalQuality.PERFECT)
-                    1 -> of(idx, IntervalQuality.AUGMENTED)
-                    -1 -> of(idx, IntervalQuality.DIMISHED)
+                    0 -> of(idx, PERFECT)
+                    1 -> of(idx, AUGMENTED)
+                    -1 -> of(idx, DIMISHED)
                     else -> null
                 }
             } else {
                 when (offset) {
-                    0 -> of(idx, IntervalQuality.MAJOR)
-                    1 -> of(idx, IntervalQuality.AUGMENTED)
-                    -1 -> of(idx, IntervalQuality.MINOR)
-                    -2 -> of(idx, IntervalQuality.DIMISHED)
+                    0 -> of(idx, MAJOR)
+                    1 -> of(idx, AUGMENTED)
+                    -1 -> of(idx, MINOR)
+                    -2 -> of(idx, DIMISHED)
                     else -> null
                 }
             }
@@ -62,11 +64,11 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
 
     fun getInversion(): Interval {
         val inverQuality = when (quality) {
-            IntervalQuality.AUGMENTED -> IntervalQuality.DIMISHED
-            IntervalQuality.DIMISHED -> IntervalQuality.AUGMENTED
-            IntervalQuality.MINOR -> IntervalQuality.MAJOR
-            IntervalQuality.MAJOR -> IntervalQuality.MINOR
-            IntervalQuality.PERFECT -> IntervalQuality.PERFECT
+            AUGMENTED -> DIMISHED
+            DIMISHED -> AUGMENTED
+            MINOR -> MAJOR
+            MAJOR -> MINOR
+            PERFECT -> PERFECT
         }
         return of(9 - num, inverQuality)
     }
@@ -74,16 +76,25 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
     fun getPhysicalStep(): Int {
         val inMaj = PERFECT_OR_MAJOR_STEPS[num - 1]
         return when (quality) {
-            IntervalQuality.AUGMENTED -> inMaj + 1
-            IntervalQuality.MAJOR -> inMaj
-            IntervalQuality.PERFECT -> inMaj
-            IntervalQuality.MINOR -> inMaj - 1
-            IntervalQuality.DIMISHED -> if (is1458(num)) {
+            AUGMENTED -> inMaj + 1
+            MAJOR -> inMaj
+            PERFECT -> inMaj
+            MINOR -> inMaj - 1
+            DIMISHED -> if (is1458(num)) {
                 inMaj - 1
             } else {
                 inMaj - 2
             }
         }
+    }
+
+    fun getbelowFromAbove(above: Note) : Note {
+        TODO()
+    }
+
+    fun getAboveFromBelow(below: Note) : Note {
+
+        TODO()
     }
 
     override fun toString(): String = "${quality}_$num"

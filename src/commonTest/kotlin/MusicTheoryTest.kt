@@ -1,5 +1,11 @@
 
-import cc.zengtian.mtt.model.theory.*
+import cc.zengtian.mtt.model.theory.Accidental.*
+import cc.zengtian.mtt.model.theory.Interval
+import cc.zengtian.mtt.model.theory.IntervalQuality.*
+import cc.zengtian.mtt.model.theory.Key
+import cc.zengtian.mtt.model.theory.Note
+import cc.zengtian.mtt.model.theory.Scale
+import cc.zengtian.mtt.model.theory.WellTemperedNote.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -20,15 +26,7 @@ class MusicTheoryTest {
 
     @Test
     fun `test major scales using all letters`() {
-        val letters = listOf(
-            WellTemperedNote.A,
-            WellTemperedNote.B,
-            WellTemperedNote.C,
-            WellTemperedNote.D,
-            WellTemperedNote.E,
-            WellTemperedNote.F,
-            WellTemperedNote.G
-        )
+        val letters = listOf(A_, B_, C_, D_, E_, F_, G_)
         Key.values().map { it.getNotesOfScale(Scale.MAJOR).map { it.getBeforeAccidentalWellTemperedNote() } }
             .forEach { beforeAcc ->
                 assertTrue(beforeAcc.containsAll(letters))
@@ -49,33 +47,33 @@ class MusicTheoryTest {
 
     @Test
     fun `test get interval between notes`() {
-        val cg = Interval.of(Note.of(WellTemperedNote.C, null), Note.of(WellTemperedNote.G, null))
-        assertEquals(Interval.of(5, IntervalQuality.PERFECT), cg)
-        val cf = Interval.of(Note.of(WellTemperedNote.C, null), Note.of(WellTemperedNote.F, null))
-        assertEquals(Interval.of(4, IntervalQuality.PERFECT), cf)
-        val ge = Interval.of(Note.of(WellTemperedNote.G, null), Note.of(WellTemperedNote.E, null))
-        assertEquals(Interval.of(6, IntervalQuality.MAJOR), ge)
-        val geFlat = Interval.of(Note.of(WellTemperedNote.G, null), Note.of(WellTemperedNote.DE, Accidental.FLAT))
-        assertEquals(Interval.of(6, IntervalQuality.MINOR), geFlat)
-        val geDoubleflat = Interval.of(Note.of(WellTemperedNote.G, null), Note.of(WellTemperedNote.D, Accidental.DOUBLE_FLAT))
-        assertEquals(Interval.of(6, IntervalQuality.DIMISHED), geDoubleflat)
-        val geSharp = Interval.of(Note.of(WellTemperedNote.G, null), Note.of(WellTemperedNote.F, Accidental.SHARP))
-        assertEquals(Interval.of(6, IntervalQuality.AUGMENTED), geSharp)
-        val geDoublesharp = Interval.of(Note.of(WellTemperedNote.G, null), Note.of(WellTemperedNote.FG, Accidental.DOUBLE_SHARP))
+        val cg = Interval.of(Note.of(C_, null), Note.of(G_, null))
+        assertEquals(Interval.of(5, PERFECT), cg)
+        val cf = Interval.of(Note.of(C_, null), Note.of(F_, null))
+        assertEquals(Interval.of(4, PERFECT), cf)
+        val ge = Interval.of(Note.of(G_, null), Note.of(E_, null))
+        assertEquals(Interval.of(6, MAJOR), ge)
+        val geFlat = Interval.of(Note.of(G_, null), Note.of(DE, FLAT))
+        assertEquals(Interval.of(6, MINOR), geFlat)
+        val geDoubleflat = Interval.of(Note.of(G_, null), Note.of(D_, DOUBLE_FLAT))
+        assertEquals(Interval.of(6, DIMISHED), geDoubleflat)
+        val geSharp = Interval.of(Note.of(G_, null), Note.of(F_, SHARP))
+        assertEquals(Interval.of(6, AUGMENTED), geSharp)
+        val geDoublesharp = Interval.of(Note.of(G_, null), Note.of(FG, DOUBLE_SHARP))
         assertNull(geDoublesharp)
-        val gSharpE = Interval.of(Note.of(WellTemperedNote.GA, Accidental.SHARP), Note.of(WellTemperedNote.E, null))
-        assertEquals(Interval.of(6, IntervalQuality.MINOR), gSharpE)
-        val eFlatA = Interval.of(Note.of(WellTemperedNote.DE, Accidental.FLAT), Note.of(WellTemperedNote.A, null))
-        assertEquals(Interval.of(4, IntervalQuality.AUGMENTED), eFlatA)
+        val gSharpE = Interval.of(Note.of(GA, SHARP), Note.of(E_, null))
+        assertEquals(Interval.of(6, MINOR), gSharpE)
+        val eFlatA = Interval.of(Note.of(DE, FLAT), Note.of(A_, null))
+        assertEquals(Interval.of(4, AUGMENTED), eFlatA)
     }
 
     @Test
     fun `test interval inversion`() {
-        val aug4 = Interval.of(4, IntervalQuality.AUGMENTED)
-        assertEquals(Interval.of(5, IntervalQuality.DIMISHED), aug4.getInversion())
-        val p5 = Interval.of(5, IntervalQuality.PERFECT)
-        assertEquals(Interval.of(4, IntervalQuality.PERFECT), p5.getInversion())
-        val maj6 = Interval.of(6, IntervalQuality.MAJOR)
-        assertEquals(Interval.of(3, IntervalQuality.MINOR), maj6.getInversion())
+        val aug4 = Interval.of(4, AUGMENTED)
+        assertEquals(Interval.of(5, DIMISHED), aug4.getInversion())
+        val p5 = Interval.of(5, PERFECT)
+        assertEquals(Interval.of(4, PERFECT), p5.getInversion())
+        val maj6 = Interval.of(6, MAJOR)
+        assertEquals(Interval.of(3, MINOR), maj6.getInversion())
     }
 }
