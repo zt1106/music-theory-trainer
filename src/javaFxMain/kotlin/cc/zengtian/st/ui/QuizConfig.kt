@@ -2,8 +2,6 @@ package cc.zengtian.st.ui
 
 import cc.zengtian.st.model.Key
 import cc.zengtian.st.model.Scale
-import cc.zengtian.st.value.BUILT_IN_SCALE
-import cc.zengtian.st.value.IONIAN
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.scene.Parent
@@ -47,8 +45,8 @@ class QuestionConfigController : Controller() {
         }
     }
     val scales = mutableListOf<Pair<Scale, BooleanProperty>>().apply {
-        BUILT_IN_SCALE.forEach {
-            if (it == IONIAN) {
+        Scale.builtInValues().forEach {
+            if (it == Scale.IONIAN) {
                 this.add(Pair(it, SimpleBooleanProperty(true)))
             } else {
                 this.add(Pair(it, SimpleBooleanProperty(false)))
