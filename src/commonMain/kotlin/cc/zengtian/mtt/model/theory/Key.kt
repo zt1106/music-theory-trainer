@@ -3,55 +3,15 @@ package cc.zengtian.mtt.model.theory
 enum class Key(val startingNote: Note) {
     C(Note.of(WellTemperedNote.C, null)),
     F(Note.of(WellTemperedNote.F, null)),
-    B_FLAT(
-        Note.of(
-            WellTemperedNote.AB,
-            Accidental.FLAT
-        )
-    ),
-    E_FLAT(
-        Note.of(
-            WellTemperedNote.DE,
-            Accidental.FLAT
-        )
-    ),
-    A_FLAT(
-        Note.of(
-            WellTemperedNote.GA,
-            Accidental.FLAT
-        )
-    ),
-    D_FLAT(
-        Note.of(
-            WellTemperedNote.CD,
-            Accidental.FLAT
-        )
-    ),
-    C_SHARP(
-        Note.of(
-            WellTemperedNote.CD,
-            Accidental.SHARP
-        )
-    ),
-    G_FLAT(
-        Note.of(
-            WellTemperedNote.FG,
-            Accidental.FLAT
-        )
-    ),
-    F_SHARP(
-        Note.of(
-            WellTemperedNote.FG,
-            Accidental.SHARP
-        )
-    ),
+    B_FLAT(Note.of(WellTemperedNote.AB, Accidental.FLAT)),
+    E_FLAT(Note.of(WellTemperedNote.DE, Accidental.FLAT)),
+    A_FLAT(Note.of(WellTemperedNote.GA, Accidental.FLAT)),
+    D_FLAT(Note.of(WellTemperedNote.CD, Accidental.FLAT)),
+    C_SHARP(Note.of(WellTemperedNote.CD, Accidental.SHARP)),
+    G_FLAT(Note.of(WellTemperedNote.FG, Accidental.FLAT)),
+    F_SHARP(Note.of(WellTemperedNote.FG, Accidental.SHARP)),
     B(Note.of(WellTemperedNote.B, null)),
-    C_FLAT(
-        Note.of(
-            WellTemperedNote.B,
-            Accidental.FLAT
-        )
-    ),
+    C_FLAT(Note.of(WellTemperedNote.B, Accidental.FLAT)),
     E(Note.of(WellTemperedNote.E, null)),
     A(Note.of(WellTemperedNote.A, null)),
     D(Note.of(WellTemperedNote.D, null)),
