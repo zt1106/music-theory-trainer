@@ -74,4 +74,8 @@ enum class WellTemperedNote(val needResolve: Boolean) {
         }
         throw IllegalStateException()
     }
+
+    fun getKeys(): List<Key> {
+        return Key.values().filter { it.startingNote.wellTemperedNote == this }
+    }
 }

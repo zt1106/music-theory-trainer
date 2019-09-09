@@ -24,13 +24,13 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         }
 
         fun of(from: Note, to: Note): Interval? {
-            var offset = 0
-            val fromKey = from.getKey() ?: TODO()
+            val fromAccidental = from.accidental
+            val fromKey = from.getBeforeAccidentalWellTemperedNote().getKeys()[0]
             val fromScale = fromKey.getNotesOfScale(Scale.MAJOR)
             val fromScaleBeforeACC = fromScale.map { it.getBeforeAccidentalWellTemperedNote() }
             val toBeforeACC = to.getBeforeAccidentalWellTemperedNote()
             val idx = fromScaleBeforeACC.indexOf(toBeforeACC)
-            return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset())
+            return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset() - fromAccidental.getOffset())
         }
 
         private fun of1BaseIndexInMajorScale(idx: Int, offset: Int): Interval? {

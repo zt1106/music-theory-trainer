@@ -64,6 +64,6 @@ class MusicTheoryTest {
         val geDoublesharp = Interval.of(Note.of(WellTemperedNote.G, null), Note.of(WellTemperedNote.FG, Accidental.DOUBLE_SHARP))
         assertNull(geDoublesharp)
         val gSharpE = Interval.of(Note.of(WellTemperedNote.GA, Accidental.SHARP), Note.of(WellTemperedNote.E, null))
-
+        assertEquals(Interval.of(6, IntervalQuality.MINOR), gSharpE)
     }
 }
