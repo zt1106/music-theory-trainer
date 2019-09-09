@@ -1,21 +1,39 @@
 package cc.zengtian.st.model
 
-import cc.zengtian.st.value.BUILT_IN_SCALE
-import cc.zengtian.st.value.IONIAN
 import kotlin.math.absoluteValue
 
 /**
  * Created by ZengTian on 2019/9/5.
  */
 fun main() {
-    Key.values().forEach { key ->
-        BUILT_IN_SCALE.forEach { scale ->
-            println("$key $scale ${key.getNotesOfScale(scale)} accidental count: ${key.getAccidentalCountOfScale(scale)}")
-        }
-    }
+//    Key.values().forEach { key ->
+//        Scale.builtInValues().forEach { scale ->
+//            println("$key $scale ${key.getNotesOfScale(scale)} accidental count: ${key.getAccidentalCountOfScale(scale)}")
+//        }
+//    }
+//    Interval.values().forEach { println(it) }
+    Interval.of(Note.of(WellTemperedNote.F, null), Note.of(WellTemperedNote.B, Accidental.DOUBLE_SHARP)).println()
+
 }
 
-class Note(val wellTemperedNote: WellTemperedNote, val accidental: Accidental?) {
+class Note private constructor(val wellTemperedNote: WellTemperedNote, val accidental: Accidental?) {
+
+    companion object {
+        private val ALL_NOTES = mutableMapOf<Pair<WellTemperedNote, Accidental?>, Note>().apply {
+            WellTemperedNote.values().forEach { wellTemperedNote ->
+                Accidental.forEachIncludingNull { accidental ->
+                    try {
+                        put(wellTemperedNote to accidental, Note(wellTemperedNote, accidental))
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+        }.toMap()
+        val ALL_NON_DOUBLE_ACCIDENTAL_NOTES = ALL_NOTES.filterValues { it.accidental.getOffset().absoluteValue < 2 }
+        fun of( wellTemperedNote: WellTemperedNote,  accidental: Accidental?) : Note {
+            return ALL_NOTES[wellTemperedNote to accidental] ?: throw IllegalArgumentException()
+        }
+    }
 
     init {
         require(!(getBeforeAccidentalWellTemperedNote().needResolve && accidental != null)) { "invalid note ${getBeforeAccidentalWellTemperedNote()} $accidental" }
@@ -24,39 +42,49 @@ class Note(val wellTemperedNote: WellTemperedNote, val accidental: Accidental?) 
 
     fun getBeforeAccidentalWellTemperedNote(): WellTemperedNote = wellTemperedNote.getByOffset(-accidental.getOffset())
 
+    fun getKey() : Key? = Key.values().find { it.startingNote == this }
+
     override fun toString(): String = accidental.getPrefix() + getBeforeAccidentalWellTemperedNote()
 }
 
-enum class Key(private val startingNote: Note) {
-    C(Note(WellTemperedNote.C, null)),
-    F(Note(WellTemperedNote.F, null)),
-    B_FLAT(Note(WellTemperedNote.AB, Accidental.FLAT)),
-    E_FLAT(Note(WellTemperedNote.DE, Accidental.FLAT)),
-    A_FLAT(Note(WellTemperedNote.GA, Accidental.FLAT)),
-    D_FLAT(Note(WellTemperedNote.CD, Accidental.FLAT)),
-    C_SHARP(Note(WellTemperedNote.CD, Accidental.SHARP)),
-    G_FLAT(Note(WellTemperedNote.FG, Accidental.FLAT)),
-    F_SHARP(Note(WellTemperedNote.FG, Accidental.SHARP)),
-    B(Note(WellTemperedNote.B, null)),
-    C_FLAT(Note(WellTemperedNote.B, Accidental.FLAT)),
-    E(Note(WellTemperedNote.E, null)),
-    A(Note(WellTemperedNote.A, null)),
-    D(Note(WellTemperedNote.D, null)),
-    G(Note(WellTemperedNote.G, null));
+enum class Key(val startingNote: Note) {
+    C(Note.of(WellTemperedNote.C, null)),
+    F(Note.of(WellTemperedNote.F, null)),
+    B_FLAT(Note.of(WellTemperedNote.AB, Accidental.FLAT)),
+    E_FLAT(Note.of(WellTemperedNote.DE, Accidental.FLAT)),
+    A_FLAT(Note.of(WellTemperedNote.GA, Accidental.FLAT)),
+    D_FLAT(Note.of(WellTemperedNote.CD, Accidental.FLAT)),
+    C_SHARP(Note.of(WellTemperedNote.CD, Accidental.SHARP)),
+    G_FLAT(Note.of(WellTemperedNote.FG, Accidental.FLAT)),
+    F_SHARP(Note.of(WellTemperedNote.FG, Accidental.SHARP)),
+    B(Note.of(WellTemperedNote.B, null)),
+    C_FLAT(Note.of(WellTemperedNote.B, Accidental.FLAT)),
+    E(Note.of(WellTemperedNote.E, null)),
+    A(Note.of(WellTemperedNote.A, null)),
+    D(Note.of(WellTemperedNote.D, null)),
+    G(Note.of(WellTemperedNote.G, null));
+
+    companion object {
+        private val CACHED_NOTES = mutableMapOf<Pair<Key, Scale>, List<Note>>()
+    }
 
     fun getNotesOfScale(scale: Scale): List<Note> {
+        if (CACHED_NOTES.containsKey(this to scale)) {
+            return CACHED_NOTES[this to scale]!!
+        }
         val majorScale = getMajorScaleNotes()
         val relativeToMajor = scale.getRelativeStepsToMajor()
         val result = mutableListOf<Note>()
         for (pair in relativeToMajor) {
             val noteInMajor = majorScale[pair.first]
             val accidentalToBeAdded = pair.second
-            val noteInResult = Note(
+            val noteInResult = Note.of(
                 noteInMajor.wellTemperedNote.getByOffset(accidentalToBeAdded.getOffset()),
                 Accidental.getByOffset(noteInMajor.accidental.getOffset() + accidentalToBeAdded.getOffset())
             )
             result.add(noteInResult)
         }
+        CACHED_NOTES[this to scale] = result
         return result
     }
 
@@ -75,13 +103,13 @@ enum class Key(private val startingNote: Note) {
             unresolveds.add(next)
             next = next.getNextNoNeedResolveWellTemperedNote()
         }
-        val wellTemperedNotes = startingNote.wellTemperedNote.getWellTemperedNotesForScale(IONIAN)
+        val wellTemperedNotes = startingNote.wellTemperedNote.getWellTemperedNotesForScale(Scale.IONIAN)
         val result = mutableListOf<Note>()
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
             val wellTemperedNote = wellTemperedNotes[idx]
             val accidental = Accidental.getByOffset(-wellTemperedNote.getOffset(unresolve))
-            result.add(Note(wellTemperedNote, accidental))
+            result.add(Note.of(wellTemperedNote, accidental))
         }
         return result
     }
@@ -165,6 +193,39 @@ enum class WellTemperedNote(val needResolve: Boolean) {
 
 class Scale(private val name: String, val steps: List<Int>) {
 
+    @Suppress("MemberVisibilityCanBePrivate")
+    companion object {
+        val IONIAN = Scale("IONIAN", listOf(2, 2, 1, 2, 2, 2))
+        val DORIAN = Scale("DORIAN", listOf(2, 1, 2, 2, 2, 1))
+        val PHRYGIAN = Scale("PHRYGIAN", listOf(1, 2, 2, 2, 1, 2))
+        val LYDIAN = Scale("LYDIAN", listOf(2, 2, 2, 1, 2, 2))
+        val MIXOLYDIAN = Scale("MIXOLYDIAN", listOf(2, 2, 1, 2, 2, 1))
+        val AEOLIAN = Scale("AEOLIAN", listOf(2, 1, 2, 2, 1, 2))
+        val LOCRIAN = Scale("LOCRIAN", listOf(1, 2, 2, 1, 2, 2))
+        val HARMONIC_MINOR = Scale("HARMONIC_MINOR", listOf(2, 1, 2, 2, 1, 3))
+        val MELODIC_MINOR_ASCEND = Scale("MELODIC_MINOR_UPPER", listOf(2, 1, 2, 2, 2, 2))
+        val PENTATONIC = Scale("PENTATONIC", listOf(2, 2, 3, 2))
+        val CHROMATIC = Scale("CHROMATIC", listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+
+        val MAJOR = Scale("MAJOR", listOf(2, 2, 1, 2, 2, 2))
+        val MINOR = Scale("NATURAL_MINOR", listOf(2, 1, 2, 2, 1, 2))
+
+        private val BUILT_INS = listOf(
+            IONIAN,
+            DORIAN,
+            PHRYGIAN,
+            LYDIAN,
+            MIXOLYDIAN,
+            AEOLIAN,
+            LOCRIAN,
+            HARMONIC_MINOR,
+            MELODIC_MINOR_ASCEND,
+            PENTATONIC,
+            CHROMATIC
+        )
+        fun builtInValues() = BUILT_INS
+    }
+
     init {
         check(steps.isNotEmpty()) { "steps can't be empty" }
         check(steps.count { it <= 0 } == 0) { "step must > 0" }
@@ -240,16 +301,94 @@ class Scale(private val name: String, val steps: List<Int>) {
     }
 }
 
-class Interval(val num: Int, val quality: IntervalQuality) {
+class Interval private constructor(val num: Int, val quality: IntervalQuality) {
+
+    companion object {
+        private val ALL_INTERVALS = mutableMapOf<Pair<Int, IntervalQuality>, Interval>().apply {
+            for (i in 1..8) {
+                if (i == 1 || i == 4 || i == 5 || i == 8) {
+                    IntervalQuality.valuesOf1458().forEach { q ->
+                        this[i to q] = Interval(i, q)
+                    }
+                } else {
+                    IntervalQuality.valuesOf2367().forEach { q ->
+                        this[i to q] = Interval(i, q)
+                    }
+                }
+            }
+        }.toMap()
+
+        fun values() = ALL_INTERVALS
+
+        fun of(num: Int, quality: IntervalQuality) : Interval {
+            return ALL_INTERVALS[num to quality] ?: throw IllegalArgumentException()
+        }
+
+        fun of(from: WellTemperedNote, to: WellTemperedNote) : Interval {
+            TODO()
+        }
+
+        fun of(from: Note, to: Note): Interval? {
+            var offset = 0
+            val fromKey = from.getKey() ?: TODO()
+            val fromScale = fromKey.getNotesOfScale(Scale.MAJOR)
+            val fromScaleBeforeACC = fromScale.map { it.getBeforeAccidentalWellTemperedNote() }
+            val toBeforeACC = to.getBeforeAccidentalWellTemperedNote()
+            val idx = fromScaleBeforeACC.indexOf(toBeforeACC)
+            return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset())
+        }
+
+        private fun of1BaseIndexInMajorScale(idx: Int, offset: Int) : Interval? {
+            return if (is1458(idx)) {
+                when (offset) {
+                    0 -> of(idx, IntervalQuality.PERFECT)
+                    1 -> of(idx, IntervalQuality.AUGMENTED)
+                    -1 -> of(idx, IntervalQuality.DIMISHED)
+                    else -> null
+                }
+            } else {
+                when (offset) {
+                    0 -> of(idx, IntervalQuality.MAJOR)
+                    1 -> of(idx, IntervalQuality.AUGMENTED)
+                    -1 -> of(idx, IntervalQuality.MINOR)
+                    -2 -> of(idx, IntervalQuality.DIMISHED)
+                    else -> null
+                }
+            }
+        }
+
+        private fun is1458(i: Int) : Boolean{
+            check(i in 1..8)
+            return (i == 1 || i == 4 || i == 5 || i == 8)
+        }
+    }
+
+    fun reverse() : Interval {
+        TODO()
+    }
+
+    fun getPhysicalInterval() : Int {
+        TODO()
+    }
 
     override fun toString(): String = "${quality}_$num"
+}
+
+fun Any?.println() {
+    this?.apply { println(this) }
 }
 
 enum class IntervalQuality {
     AUGMENTED,
     MAJOR,
+    PERFECT,
     MINOR,
-    DIMISHED
+    DIMISHED;
+
+    companion object {
+        fun valuesOf1458() : List<IntervalQuality> = listOf(AUGMENTED, PERFECT, DIMISHED)
+        fun valuesOf2367() : List<IntervalQuality> = listOf(AUGMENTED, MAJOR, MINOR, DIMISHED)
+    }
 }
 
 enum class AccidentalType {
@@ -293,3 +432,5 @@ enum class Accidental(val offset: Int) {
 fun Accidental?.getOffset(): Int = this?.offset ?: 0
 
 fun Accidental?.getPrefix(): String = this?.getPrefix() ?: ""
+
+operator fun Accidental?.unaryMinus() : Accidental? = this?.let { Accidental.getByOffset(-it.offset) }
