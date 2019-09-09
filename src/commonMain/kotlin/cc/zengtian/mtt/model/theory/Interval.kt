@@ -34,7 +34,10 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
             val fromScaleBeforeACC = fromScale.map { it.getBeforeAccidentalWellTemperedNote() }
             val toBeforeACC = to.getBeforeAccidentalWellTemperedNote()
             val idx = fromScaleBeforeACC.indexOf(toBeforeACC)
-            return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset() - fromAccidental.getOffset())
+            return of1BaseIndexInMajorScale(
+                idx + 1,
+                to.accidental.getOffset() - fromScale[idx].accidental.getOffset() - fromAccidental.getOffset()
+            )
         }
 
         private fun of1BaseIndexInMajorScale(idx: Int, offset: Int): Interval? {
@@ -88,11 +91,13 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         }
     }
 
-    fun getbelowFromAbove(above: Note) : Note {
+    fun getbelowFromAbove(above: Note): Note {
+        val aboveBeforeAcc = above.getBeforeAccidentalWellTemperedNote()
+        val majBeforeAcc = aboveBeforeAcc.getByOffset(-num - 1)
         TODO()
     }
 
-    fun getAboveFromBelow(below: Note) : Note {
+    fun getAboveFromBelow(below: Note): Note {
 
         TODO()
     }

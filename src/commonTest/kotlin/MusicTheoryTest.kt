@@ -76,4 +76,10 @@ class MusicTheoryTest {
         val maj6 = Interval.of(6, MAJOR)
         assertEquals(Interval.of(3, MINOR), maj6.getInversion())
     }
+
+    @Test
+    fun `test interval get below from above`() {
+        val g = Note.of(G_, null)
+        val p5 = Interval.of(5, PERFECT)
+    }
 }
