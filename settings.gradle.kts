@@ -1,2 +1,2 @@
-rootProject.name = "music-theory-exercise"
+rootProject.name = "music-theory-trainer"
 

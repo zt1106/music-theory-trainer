@@ -1,7 +1,7 @@
 package cc.zengtian.st.ui
 
-import cc.zengtian.st.model.Key
-import cc.zengtian.st.model.Scale
+import cc.zengtian.mtt.model.theory.Key
+import cc.zengtian.mtt.model.theory.Scale
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.scene.Parent
