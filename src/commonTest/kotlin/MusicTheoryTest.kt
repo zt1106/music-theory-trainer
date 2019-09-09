@@ -65,5 +65,17 @@ class MusicTheoryTest {
         assertNull(geDoublesharp)
         val gSharpE = Interval.of(Note.of(WellTemperedNote.GA, Accidental.SHARP), Note.of(WellTemperedNote.E, null))
         assertEquals(Interval.of(6, IntervalQuality.MINOR), gSharpE)
+        val eFlatA = Interval.of(Note.of(WellTemperedNote.DE, Accidental.FLAT), Note.of(WellTemperedNote.A, null))
+        assertEquals(Interval.of(4, IntervalQuality.AUGMENTED), eFlatA)
+    }
+
+    @Test
+    fun `test interval inversion`() {
+        val aug4 = Interval.of(4, IntervalQuality.AUGMENTED)
+        assertEquals(Interval.of(5, IntervalQuality.DIMISHED), aug4.getInversion())
+        val p5 = Interval.of(5, IntervalQuality.PERFECT)
+        assertEquals(Interval.of(4, IntervalQuality.PERFECT), p5.getInversion())
+        val maj6 = Interval.of(6, IntervalQuality.MAJOR)
+        assertEquals(Interval.of(3, IntervalQuality.MINOR), maj6.getInversion())
     }
 }

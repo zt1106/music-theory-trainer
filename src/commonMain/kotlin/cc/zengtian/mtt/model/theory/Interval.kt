@@ -58,8 +58,15 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         }
     }
 
-    fun reverse(): Interval {
-        TODO()
+    fun getInversion(): Interval {
+        val inverQuality = when (quality) {
+            IntervalQuality.AUGMENTED -> IntervalQuality.DIMISHED
+            IntervalQuality.DIMISHED -> IntervalQuality.AUGMENTED
+            IntervalQuality.MINOR -> IntervalQuality.MAJOR
+            IntervalQuality.MAJOR -> IntervalQuality.MINOR
+            IntervalQuality.PERFECT -> IntervalQuality.PERFECT
+        }
+        return of(9 - num, inverQuality)
     }
 
     fun getPhysicalInterval(): Int {
