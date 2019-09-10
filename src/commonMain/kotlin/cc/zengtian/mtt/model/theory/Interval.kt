@@ -1,6 +1,7 @@
 package cc.zengtian.mtt.model.theory
 
 import cc.zengtian.mtt.model.theory.IntervalQuality.*
+import kotlin.math.absoluteValue
 
 class Interval private constructor(val num: Int, val quality: IntervalQuality) {
 
@@ -73,12 +74,12 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         return of(9 - num, inverQuality)
     }
 
-    fun getPhysicalStep(): Int {
+    private fun getPhysicalStep(): Int {
         val inMaj = PERFECT_OR_MAJOR_STEPS[num - 1]
         return inMaj + getOffsetToMajorOrPerfect()
     }
 
-    fun getOffsetToMajorOrPerfect() : Int {
+    private fun getOffsetToMajorOrPerfect() : Int {
         return when (quality) {
             AUGMENTED -> 1
             MAJOR -> 0
@@ -93,13 +94,16 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
     }
 
     fun getbelowFromAbove(above: Note): Note? {
-        val physicalStep = getPhysicalStep()
-        val aboutWTNote = above.wellTemperedNote
-        val belowWTNote = aboutWTNote.getByOffset(-physicalStep)
-        val possibleKeys = belowWTNote.getKeys()
-        return possibleKeys.find { key ->
-            val idx = num
-        }?.startingNote
+        val aboveBefore = above.getBeforeAccidentalWellTemperedNote()
+        val belowBefore = aboveBefore.getNoNeedResolveByOffset(-(num - 1))
+        val belowWTN = above.wellTemperedNote.getByOffset(-getPhysicalStep())
+        val belowOffset = belowBefore.getOffset(belowWTN)
+        val belowAccidental = if (belowOffset.absoluteValue <= 2) {
+            Accidental.getByOffset(belowOffset)
+        } else {
+            return null
+        }
+        return Note.ofWellTempered(belowWTN, belowAccidental)
     }
 
     fun getAboveFromBelow(below: Note): Note {

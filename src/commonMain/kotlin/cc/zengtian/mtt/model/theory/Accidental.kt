@@ -38,6 +38,7 @@ fun Accidental?.getPrefix(): String = this?.getPrefix() ?: ""
 operator fun Accidental?.unaryMinus() : Accidental? = this?.let {
     Accidental.getByOffset(-it.offset)
 }
+fun Accidental?.toString() : String = this?.toString() ?: ""
 
 enum class AccidentalType {
     SHARP,

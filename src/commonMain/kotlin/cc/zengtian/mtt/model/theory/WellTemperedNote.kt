@@ -1,5 +1,7 @@
 package cc.zengtian.mtt.model.theory
 
+import kotlin.math.absoluteValue
+
 /**
  * @param needResolve whether need to be transformed to a sharp or flat note in music theory
  * represent 12 well tempered notes
@@ -64,18 +66,41 @@ enum class WellTemperedNote(val needResolve: Boolean) {
         return list
     }
 
-    fun getNextNoNeedResolveWellTemperedNote(): WellTemperedNote {
-        var cur = this.getByOffset(1)
+    fun getNoNeedResolveByOffset(offset: Int) : WellTemperedNote {
+        require(!needResolve)
+        var result = this
+        repeat(offset.absoluteValue) {
+            result = result.getNextNoNeedResolveWellTemperedNote(offset > 0)
+        }
+        return result
+    }
+
+    fun getNextNoNeedResolveWellTemperedNote(toRight: Boolean = true): WellTemperedNote {
+        val offset = if (toRight) {
+            1
+        } else {
+            -1
+        }
+        var cur = this.getByOffset(offset)
         while (cur != this) {
             if (!cur.needResolve) {
                 return cur
             }
-            cur = cur.getByOffset(1)
+            cur = cur.getByOffset(offset)
         }
         throw IllegalStateException()
     }
 
     fun getKeys(): List<Key> {
         return Key.values().filter { it.startingNote.wellTemperedNote == this }
+    }
+
+    override fun toString(): String {
+        val s = super.toString()
+        return if (!needResolve) {
+            s.substring(0, 1)
+        } else {
+            s
+        }
     }
 }
