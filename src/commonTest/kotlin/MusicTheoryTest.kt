@@ -99,6 +99,17 @@ class MusicTheoryTest {
         val aug5 = Interval.of(5, AUGMENTED)
         val eDoubleflat = Note.of(E_, DOUBLE_FLAT)
         assertEquals(eDoubleflat, aug5.getbelowFromAbove(bFlat))
+    }
 
+    @Test
+    fun `test interval get above from below`() {
+        val cFlat = Note.of(C_, FLAT)
+        val min3 = Interval.of(3, MINOR)
+        val eFlat = Note.of(E_, FLAT)
+        assertEquals(eFlat, min3.getAboveFromBelow(cFlat))
+        val e = Note.of(E_, null)
+        val aug1 = Interval.of(1, AUGMENTED)
+        val eSharp = Note.of(E_, SHARP)
+        assertEquals(eSharp, aug1.getAboveFromBelow(e))
     }
 }

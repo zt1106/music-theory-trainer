@@ -106,9 +106,19 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         return Note.ofWellTempered(belowWTN, belowAccidental)
     }
 
-    fun getAboveFromBelow(below: Note): Note {
-
-        TODO()
+    fun getAboveFromBelow(below: Note): Note? {
+        val belowBefore = below.getBeforeAccidentalWellTemperedNote()
+        val belowKey = Key.ofNote(Note.ofWellTempered(belowBefore, null))!!
+        val belowMajorNotes = belowKey.getNotesOfScale(Scale.MAJOR)
+        val noteOfNum = belowMajorNotes[num - 1]
+        val offset = getOffsetToMajorOrPerfect()
+        val aboveWTN = noteOfNum.wellTemperedNote.getByOffset(offset)
+        val aboveBefore = noteOfNum.getBeforeAccidentalWellTemperedNote()
+        return try {
+            Note.ofWellTempered(aboveWTN, Accidental.getByOffset(aboveBefore.getOffset(aboveWTN)))
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override fun toString(): String = "${quality}_$num"
