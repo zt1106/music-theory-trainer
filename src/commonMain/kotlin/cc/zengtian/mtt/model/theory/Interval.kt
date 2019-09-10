@@ -75,23 +75,31 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
 
     fun getPhysicalStep(): Int {
         val inMaj = PERFECT_OR_MAJOR_STEPS[num - 1]
+        return inMaj + getOffsetToMajorOrPerfect()
+    }
+
+    fun getOffsetToMajorOrPerfect() : Int {
         return when (quality) {
-            AUGMENTED -> inMaj + 1
-            MAJOR -> inMaj
-            PERFECT -> inMaj
-            MINOR -> inMaj - 1
+            AUGMENTED -> 1
+            MAJOR -> 0
+            PERFECT -> 0
+            MINOR -> -1
             DIMISHED -> if (is1458(num)) {
-                inMaj - 1
+                -1
             } else {
-                inMaj - 2
+                -2
             }
         }
     }
 
-    fun getbelowFromAbove(above: Note): Note {
-        val aboveBeforeAcc = above.getBeforeAccidentalWellTemperedNote()
-        val majBeforeAcc = aboveBeforeAcc.getByOffset(-num - 1)
-        TODO()
+    fun getbelowFromAbove(above: Note): Note? {
+        val physicalStep = getPhysicalStep()
+        val aboutWTNote = above.wellTemperedNote
+        val belowWTNote = aboutWTNote.getByOffset(-physicalStep)
+        val possibleKeys = belowWTNote.getKeys()
+        return possibleKeys.find { key ->
+            val idx = num
+        }?.startingNote
     }
 
     fun getAboveFromBelow(below: Note): Note {
