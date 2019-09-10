@@ -1,6 +1,6 @@
 package cc.zengtian.mtt.model.theory
 
-class Scale(private val name: String, val steps: List<Int>) {
+class Scale private constructor(private val name: String, val steps: List<Int>) {
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
@@ -32,27 +32,22 @@ class Scale(private val name: String, val steps: List<Int>) {
             PENTATONIC,
             CHROMATIC
         )
+
         fun builtInValues() = BUILT_INS
     }
 
-    init {
-        check(steps.isNotEmpty()) { "steps can't be empty" }
-        check(steps.count { it <= 0 } == 0) { "step must > 0" }
-        check(steps.sum() < 12) { "steps sum must < 12" }
-    }
-
-    private fun getRelativeStepsToRoot(): List<Int> {
+    private val stepsToRoot: List<Int> by lazy {
         val inc = mutableListOf<Int>()
         inc.add(0)
         for (step in steps) {
             inc.add(inc[inc.size - 1] + step)
         }
-        return inc
+        inc
     }
 
-    fun getRelativeStepsToMajor(): List<Pair<Int, Accidental?>> {
-        val majorToRoot = IONIAN.getRelativeStepsToRoot()
-        val thisToRoot = getRelativeStepsToRoot()
+    val stepPairToMajor: List<Pair<Int, Accidental?>> by lazy {
+        val majorToRoot = IONIAN.stepsToRoot
+        val thisToRoot = stepsToRoot
         val result = ArrayList<Pair<Int, Accidental?>?>(thisToRoot.size)
         for (idx in thisToRoot.indices) {
             result.add(null)
@@ -83,10 +78,16 @@ class Scale(private val name: String, val steps: List<Int>) {
             }
         }
         @Suppress("UNCHECKED_CAST")
-        return result as List<Pair<Int, Accidental?>>
+        result as List<Pair<Int, Accidental?>>
     }
 
-    fun getNoteCount(): Int = steps.size + 1
+    val noteCount: Int by lazy { steps.size + 1 }
+
+    init {
+        check(steps.isNotEmpty()) { "steps can't be empty" }
+        check(steps.count { it <= 0 } == 0) { "step must > 0" }
+        check(steps.sum() < 12) { "steps sum must < 12" }
+    }
 
     override fun toString(): String = name
 

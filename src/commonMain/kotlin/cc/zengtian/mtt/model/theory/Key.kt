@@ -28,18 +28,37 @@ enum class Key(val startingNote: Note) {
         }
     }
 
+    private val majorScaleNotes: List<Note> by lazy {
+        val startUnresolved = startingNote.beforeAccidentalWTN
+        val unresolveds = mutableListOf(startUnresolved)
+        var next = startUnresolved.getNextNoNeedResolveWellTemperedNote()
+        while (!unresolveds.contains(next)) {
+            unresolveds.add(next)
+            next = next.getNextNoNeedResolveWellTemperedNote()
+        }
+        val wellTemperedNotes = startingNote.wTN.getWellTemperedNotesForScale(Scale.IONIAN)
+        val result = mutableListOf<Note>()
+        for (idx in unresolveds.indices) {
+            val unresolve = unresolveds[idx]
+            val wellTemperedNote = wellTemperedNotes[idx]
+            val accidental =
+                Accidental.getByOffset(-wellTemperedNote.getOffset(unresolve))
+            result.add(Note.ofWellTempered(wellTemperedNote, accidental))
+        }
+        result
+    }
+
     fun getNotesOfScale(scale: Scale): List<Note> {
         if (CACHED_NOTES.containsKey(this to scale)) {
             return CACHED_NOTES[this to scale]!!
         }
-        val majorScale = getMajorScaleNotes()
-        val relativeToMajor = scale.getRelativeStepsToMajor()
+        val relativeToMajor = scale.stepPairToMajor
         val result = mutableListOf<Note>()
         for (pair in relativeToMajor) {
-            val noteInMajor = majorScale[pair.first]
+            val noteInMajor = majorScaleNotes[pair.first]
             val accidentalToBeAdded = pair.second
             val noteInResult = Note.ofWellTempered(
-                noteInMajor.wellTemperedNote.getByOffset(accidentalToBeAdded.getOffset()),
+                noteInMajor.wTN.getByOffset(accidentalToBeAdded.getOffset()),
                 Accidental.getByOffset(noteInMajor.accidental.getOffset() + accidentalToBeAdded.getOffset())
             )
             result.add(noteInResult)
@@ -55,23 +74,4 @@ enum class Key(val startingNote: Note) {
 
     fun getAccidentalNotesOfScale(scale: Scale): List<Note> = getNotesOfScale(scale).filter { it.accidental != null }
 
-    private fun getMajorScaleNotes(): List<Note> {
-        val startUnresolved = startingNote.getBeforeAccidentalWellTemperedNote()
-        val unresolveds = mutableListOf(startUnresolved)
-        var next = startUnresolved.getNextNoNeedResolveWellTemperedNote()
-        while (!unresolveds.contains(next)) {
-            unresolveds.add(next)
-            next = next.getNextNoNeedResolveWellTemperedNote()
-        }
-        val wellTemperedNotes = startingNote.wellTemperedNote.getWellTemperedNotesForScale(Scale.IONIAN)
-        val result = mutableListOf<Note>()
-        for (idx in unresolveds.indices) {
-            val unresolve = unresolveds[idx]
-            val wellTemperedNote = wellTemperedNotes[idx]
-            val accidental =
-                Accidental.getByOffset(-wellTemperedNote.getOffset(unresolve))
-            result.add(Note.ofWellTempered(wellTemperedNote, accidental))
-        }
-        return result
-    }
 }

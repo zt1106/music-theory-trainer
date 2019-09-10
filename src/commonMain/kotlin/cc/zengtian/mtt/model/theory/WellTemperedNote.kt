@@ -20,6 +20,7 @@ enum class WellTemperedNote(val needResolve: Boolean) {
     AB(true),
     B_(false);
 
+    val keys: List<Key> by lazy { Key.values().filter { it.startingNote.wTN == this } }
 
     /**
      * high: > 0
@@ -89,10 +90,6 @@ enum class WellTemperedNote(val needResolve: Boolean) {
             cur = cur.getByOffset(offset)
         }
         throw IllegalStateException()
-    }
-
-    fun getKeys(): List<Key> {
-        return Key.values().filter { it.startingNote.wellTemperedNote == this }
     }
 
     override fun toString(): String {

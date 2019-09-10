@@ -2,7 +2,7 @@ package cc.zengtian.mtt.model.theory
 
 import kotlin.math.absoluteValue
 
-class Note private constructor(val wellTemperedNote: WellTemperedNote, val accidental: Accidental?) {
+class Note private constructor(val wTN: WellTemperedNote, val accidental: Accidental?) {
 
     companion object {
         private val ALL_NOTES = mutableMapOf<Pair<WellTemperedNote, Accidental?>, Note>().apply {
@@ -26,14 +26,14 @@ class Note private constructor(val wellTemperedNote: WellTemperedNote, val accid
         }
     }
 
+    val key: Key? by lazy { Key.values().find { it.startingNote == this } }
+
+    val beforeAccidentalWTN: WellTemperedNote by lazy { wTN.getByOffset(-accidental.getOffset()) }
+
     init {
-        require(!(getBeforeAccidentalWellTemperedNote().needResolve && accidental != null)) { "invalid note ${getBeforeAccidentalWellTemperedNote()} $accidental" }
-        require(!(wellTemperedNote.needResolve && accidental == null)) { "invalid note ${getBeforeAccidentalWellTemperedNote()} $accidental" }
+        require(!(beforeAccidentalWTN.needResolve && accidental != null)) { "invalid note $beforeAccidentalWTN $accidental" }
+        require(!(wTN.needResolve && accidental == null)) { "invalid note $beforeAccidentalWTN $accidental" }
     }
-
-    fun getBeforeAccidentalWellTemperedNote(): WellTemperedNote = wellTemperedNote.getByOffset(-accidental.getOffset())
-
-    fun getKey(): Key? = Key.values().find { it.startingNote == this }
-
-    override fun toString(): String = getBeforeAccidentalWellTemperedNote().toString() + "_" + accidental.toString()
+    
+    override fun toString(): String = beforeAccidentalWTN.toString() + "_" + accidental.toString()
 }

@@ -30,10 +30,10 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
 
         fun of(from: Note, to: Note): Interval? {
             val fromAccidental = from.accidental
-            val fromKey = from.getBeforeAccidentalWellTemperedNote().getKeys()[0]
+            val fromKey = from.beforeAccidentalWTN.keys[0]
             val fromScale = fromKey.getNotesOfScale(Scale.MAJOR)
-            val fromScaleBeforeACC = fromScale.map { it.getBeforeAccidentalWellTemperedNote() }
-            val toBeforeACC = to.getBeforeAccidentalWellTemperedNote()
+            val fromScaleBeforeACC = fromScale.map { it.beforeAccidentalWTN }
+            val toBeforeACC = to.beforeAccidentalWTN
             val idx = fromScaleBeforeACC.indexOf(toBeforeACC)
             return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset() - fromAccidental.getOffset())
         }
@@ -63,7 +63,7 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         }
     }
 
-    fun getInversion(): Interval {
+    val inversion: Interval by lazy {
         val inverQuality = when (quality) {
             AUGMENTED -> DIMISHED
             DIMISHED -> AUGMENTED
@@ -71,16 +71,13 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
             MAJOR -> MINOR
             PERFECT -> PERFECT
         }
-        return of(9 - num, inverQuality)
+        of(9 - num, inverQuality)
     }
 
-    private fun getPhysicalStep(): Int {
-        val inMaj = PERFECT_OR_MAJOR_STEPS[num - 1]
-        return inMaj + getOffsetToMajorOrPerfect()
-    }
+    val physicalStep: Int by lazy { offsetToMajorOrPerfect + PERFECT_OR_MAJOR_STEPS[num - 1] }
 
-    private fun getOffsetToMajorOrPerfect() : Int {
-        return when (quality) {
+    private val offsetToMajorOrPerfect: Int by lazy {
+        when (quality) {
             AUGMENTED -> 1
             MAJOR -> 0
             PERFECT -> 0
@@ -94,9 +91,9 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
     }
 
     fun getbelowFromAbove(above: Note): Note? {
-        val aboveBefore = above.getBeforeAccidentalWellTemperedNote()
+        val aboveBefore = above.beforeAccidentalWTN
         val belowBefore = aboveBefore.getNoNeedResolveByOffset(-(num - 1))
-        val belowWTN = above.wellTemperedNote.getByOffset(-getPhysicalStep())
+        val belowWTN = above.wTN.getByOffset(-physicalStep)
         val belowOffset = belowBefore.getOffset(belowWTN)
         val belowAccidental = if (belowOffset.absoluteValue <= 2) {
             Accidental.getByOffset(belowOffset)
@@ -107,13 +104,12 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
     }
 
     fun getAboveFromBelow(below: Note): Note? {
-        val belowBefore = below.getBeforeAccidentalWellTemperedNote()
+        val belowBefore = below.beforeAccidentalWTN
         val belowKey = Key.ofNote(Note.ofWellTempered(belowBefore, null))!!
         val belowMajorNotes = belowKey.getNotesOfScale(Scale.MAJOR)
         val noteOfNum = belowMajorNotes[num - 1]
-        val offset = getOffsetToMajorOrPerfect()
-        val aboveWTN = noteOfNum.wellTemperedNote.getByOffset(offset)
-        val aboveBefore = noteOfNum.getBeforeAccidentalWellTemperedNote()
+        val aboveWTN = noteOfNum.wTN.getByOffset(offsetToMajorOrPerfect)
+        val aboveBefore = noteOfNum.beforeAccidentalWTN
         return try {
             Note.ofWellTempered(aboveWTN, Accidental.getByOffset(aboveBefore.getOffset(aboveWTN)))
         } catch (e: Exception) {

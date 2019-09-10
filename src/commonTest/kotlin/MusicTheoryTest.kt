@@ -26,7 +26,7 @@ class MusicTheoryTest {
     @Test
     fun `test major scales using all letters`() {
         val letters = listOf(A_, B_, C_, D_, E_, F_, G_)
-        Key.values().map { it.getNotesOfScale(Scale.MAJOR).map { it.getBeforeAccidentalWellTemperedNote() } }
+        Key.values().map { key -> key.getNotesOfScale(Scale.MAJOR).map { note -> note.beforeAccidentalWTN } }
             .forEach { beforeAcc ->
                 assertTrue(beforeAcc.alsoPrintln().containsAll(letters))
             }
@@ -38,7 +38,7 @@ class MusicTheoryTest {
         Key.values().forEach { key ->
             scales.forEach { scale ->
                 val notes = key.getNotesOfScale(scale)
-                val beforeAcc = notes.map { it.getBeforeAccidentalWellTemperedNote() }.alsoPrintln()
+                val beforeAcc = notes.map { it.beforeAccidentalWTN }.alsoPrintln()
                 assertEquals(notes.size, beforeAcc.distinct().size)
             }
         }
@@ -70,13 +70,13 @@ class MusicTheoryTest {
     fun `test interval inversion`() {
         val aug4 = Interval.of(4, AUGMENTED)
         val dim5 = Interval.of(5, DIMISHED)
-        assertEquals(dim5, aug4.getInversion())
+        assertEquals(dim5, aug4.inversion)
         val p5 = Interval.of(5, PERFECT)
         val p4 = Interval.of(4, PERFECT)
-        assertEquals(p4, p5.getInversion())
+        assertEquals(p4, p5.inversion)
         val maj6 = Interval.of(6, MAJOR)
         val min3 = Interval.of(3, MINOR)
-        assertEquals(min3, maj6.getInversion())
+        assertEquals(min3, maj6.inversion)
     }
 
     @Test

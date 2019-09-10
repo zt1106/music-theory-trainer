@@ -2,7 +2,6 @@ package cc.zengtian.mtt.model.theory
 
 import kotlin.math.absoluteValue
 
-@Suppress("unused")
 enum class Accidental(val offset: Int) {
 
     SHARP(1),
@@ -22,10 +21,8 @@ enum class Accidental(val offset: Int) {
         }
     }
 
-    fun getPrefix(): String = super.toString() + "_"
-
-    fun getType(): AccidentalType {
-        return if (offset > 0) {
+    val type: AccidentalType by lazy {
+        if (offset > 0) {
             AccidentalType.SHARP
         } else {
             AccidentalType.FLAT
@@ -34,11 +31,11 @@ enum class Accidental(val offset: Int) {
 }
 
 fun Accidental?.getOffset(): Int = this?.offset ?: 0
-fun Accidental?.getPrefix(): String = this?.getPrefix() ?: ""
-operator fun Accidental?.unaryMinus() : Accidental? = this?.let {
+operator fun Accidental?.unaryMinus(): Accidental? = this?.let {
     Accidental.getByOffset(-it.offset)
 }
-fun Accidental?.toString() : String = this?.toString() ?: ""
+
+fun Accidental?.toString(): String = this?.toString() ?: ""
 
 enum class AccidentalType {
     SHARP,
