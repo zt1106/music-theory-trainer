@@ -6,19 +6,11 @@ import kotlin.math.absoluteValue
  * @param needResolve whether need to be transformed to a sharp or flat note in music theory
  * represent 12 well tempered notes
  */
-enum class WellTemperedNote(val needResolve: Boolean) {
-    C_(false),
-    CD(true),
-    D_(false),
-    DE(true),
-    E_(false),
-    F_(false),
-    FG(true),
-    G_(false),
-    GA(true),
-    A_(false),
-    AB(true),
-    B_(false);
+enum class WellTemperedNote {
+
+    C_, CD, D_, DE, E_, F_, FG, G_, GA, A_, AB, B_;
+
+    val needResolve: Boolean by lazy { !name.endsWith("_") }
 
     val keys: List<Key> by lazy { Key.values().filter { it.startingNote.wTN == this } }
 
@@ -67,7 +59,7 @@ enum class WellTemperedNote(val needResolve: Boolean) {
         return list
     }
 
-    fun getNoNeedResolveByOffset(offset: Int) : WellTemperedNote {
+    fun getNoNeedResolveByOffset(offset: Int): WellTemperedNote {
         require(!needResolve)
         var result = this
         repeat(offset.absoluteValue) {
@@ -93,11 +85,10 @@ enum class WellTemperedNote(val needResolve: Boolean) {
     }
 
     override fun toString(): String {
-        val s = super.toString()
-        return if (!needResolve) {
-            s.substring(0, 1)
+        return if (name.endsWith("_")) {
+            name.substring(0, 1)
         } else {
-            s
+            name
         }
     }
 }
