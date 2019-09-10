@@ -29,7 +29,7 @@ class MusicTheoryTest {
         val letters = listOf(A_, B_, C_, D_, E_, F_, G_)
         Key.values().map { it.getNotesOfScale(Scale.MAJOR).map { it.getBeforeAccidentalWellTemperedNote() } }
             .forEach { beforeAcc ->
-                assertTrue(beforeAcc.containsAll(letters))
+                assertTrue(beforeAcc.alsoPrintln().containsAll(letters))
             }
     }
 
@@ -39,7 +39,7 @@ class MusicTheoryTest {
         Key.values().forEach { key ->
             scales.forEach { scale ->
                 val notes = key.getNotesOfScale(scale)
-                val beforeAcc = notes.map { it.getBeforeAccidentalWellTemperedNote() }
+                val beforeAcc = notes.map { it.getBeforeAccidentalWellTemperedNote() }.alsoPrintln()
                 assertEquals(notes.size, beforeAcc.distinct().size)
             }
         }
