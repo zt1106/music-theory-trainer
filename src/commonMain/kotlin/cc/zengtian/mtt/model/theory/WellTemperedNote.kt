@@ -27,7 +27,7 @@ enum class WellTemperedNote {
         }
     }
 
-    fun getOffset(another: WellTemperedNote): Int {
+    fun getOffsetTo(another: WellTemperedNote): Int {
         if (another == this) {
             return 0
         }

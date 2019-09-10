@@ -42,7 +42,7 @@ enum class Key(val startingNote: Note) {
             val unresolve = unresolveds[idx]
             val wellTemperedNote = wellTemperedNotes[idx]
             val accidental =
-                Accidental.getByOffset(-wellTemperedNote.getOffset(unresolve))
+                Accidental.getByOffset(-wellTemperedNote.getOffsetTo(unresolve))
             result.add(Note.ofWellTempered(wellTemperedNote, accidental))
         }
         result

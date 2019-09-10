@@ -94,7 +94,7 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         val aboveBefore = above.beforeAccidentalWTN
         val belowBefore = aboveBefore.getNoNeedResolveByOffset(-(num - 1))
         val belowWTN = above.wTN.getByOffset(-physicalStep)
-        val belowOffset = belowBefore.getOffset(belowWTN)
+        val belowOffset = belowBefore.getOffsetTo(belowWTN)
         val belowAccidental = if (belowOffset.absoluteValue <= 2) {
             Accidental.getByOffset(belowOffset)
         } else {
@@ -111,7 +111,7 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         val aboveWTN = noteOfNum.wTN.getByOffset(offsetToMajorOrPerfect)
         val aboveBefore = noteOfNum.beforeAccidentalWTN
         return try {
-            Note.ofWellTempered(aboveWTN, Accidental.getByOffset(aboveBefore.getOffset(aboveWTN)))
+            Note.ofWellTempered(aboveWTN, Accidental.getByOffset(aboveBefore.getOffsetTo(aboveWTN)))
         } catch (e: Exception) {
             null
         }

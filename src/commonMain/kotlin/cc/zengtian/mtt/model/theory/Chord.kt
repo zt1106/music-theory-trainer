@@ -6,8 +6,10 @@ class Chord private constructor(val rootNote: Note,
 }
 
 enum class ChordType {
-    MAJOR,
-    MINOR,
-    AUGMENTED,
-    DIMISHED
+    MAJOR_TRIAD,
+    MINOR_TRIAD,
+    AUGMENTED_TRIAD,
+    DIMISHED_TRIAD,
+    MAJOR_MAJOR_7TH,
+    DOMINANT_7TH
 }
