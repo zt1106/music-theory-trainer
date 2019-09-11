@@ -3,7 +3,6 @@ package cc.zengtian.mtt.model.theory
 import kotlin.math.absoluteValue
 
 /**
- * @param needResolve whether need to be transformed to a sharp or flat note in music theory
  * represent 12 well tempered notes
  */
 enum class WellTemperedNote {
@@ -84,11 +83,13 @@ enum class WellTemperedNote {
         throw IllegalStateException()
     }
 
-    override fun toString(): String {
-        return if (name.endsWith("_")) {
+    private val showName: String by lazy {
+        if (name.endsWith("_")) {
             name.substring(0, 1)
         } else {
             name
         }
     }
+
+    override fun toString(): String = showName
 }
