@@ -1,55 +1,137 @@
 package cc.zengtian.mtt.model.theory
 
-//class Chord private constructor(val rootNote: Note,
-//                                val otherNotes: Set<Note>){
-//
-//    init {
-//        require(otherNotes.map { it.wTN }.toMutableSet().apply { this.add(rootNote.wTN) }.size == otherNotes.size + 1) {
-//            "duplicate notes found in $rootNote $otherNotes"
-//        }
-//    }
-//
-//    val offsetsToRoot : List<Int> by lazy {
-//        otherNotes.
-//    }
-//
-//    val type: ChordType? by lazy { TODO() }
-//}
+import cc.zengtian.mtt.ext.asSingletonList
+import cc.zengtian.mtt.model.theory.ChordAnnotation.*
+import cc.zengtian.mtt.model.theory.IntervalQuality.*
+import cc.zengtian.mtt.model.theory.WellTemperedNote.*
 
-open class RootlessChord(private val offsetSet: Set<Int>) {
+/**
+ * @param stepsInput relative offsets to root note
+ */
+open class RootlessChord(stepsInput: Set<Int>) {
+
+    private val steps: Set<Int>
+
     init {
-        require(offsetSet.size >= 2) { "chord must have at least 3 notes" }
-        require(offsetSet.size <= 11) { "chord has too many notes" }
-        require(offsetSet.min()!! > 0) { "offset to root must > 0" }
-        require(offsetSet.max()!! < 11) { "offset to root must < 11" }
+        steps = stepsInput.map {
+            val module = it % 12
+            if (module < 0) {
+                return@map module + 12
+            }
+            module
+        }.toSet()
+        require(steps.size >= 2) { "chord must have at least 3 notes" }
+        require(steps.min()!! > 0) { "offsets can't have root" }
     }
 
-    val offsets: List<Int> by lazy { offsetSet.sorted() }
+    private val size: Int by lazy { steps.size + 1 }
 
-    val size: Int by lazy { offsetSet.size + 1 }
+    private fun hasIntervals(vararg intervals: Interval): Boolean {
+        return intervals.all { steps.contains(it.physicalStep) }
+    }
 
-    val chordType: ChordType? by lazy {
+    fun getInversions() : List<RootlessChord> {
+        TODO()
+    }
 
-        null
+    val annotation: List<ChordAnnotation> by lazy {
+        if (size == 3) {
+            // common triads without inversion (major, minor, dimished, augmented)
+            if (hasIntervals(Interval.of(3, MINOR), Interval.of(5, PERFECT))) {
+                return@lazy MINOR_TRIAD.asSingletonList()
+            }
+            if (hasIntervals(Interval.of(3, MAJOR), Interval.of(5, PERFECT))) {
+                return@lazy MAJOR_TRIAD.asSingletonList()
+            }
+            if (hasIntervals(Interval.of(3, MINOR), Interval.of(4, PERFECT))) {
+                return@lazy DIMISHED_TRIAD.asSingletonList()
+            }
+            if (hasIntervals(Interval.of(3, MINOR), Interval.of(7, DIMISHED))) {
+                return@lazy AUGMENTED_TRIAD.asSingletonList()
+            }
+            // common triads first inversion TODO
+            // common triads second inversion TODO
+            // 7th chord omits 5th 3rd TODO
+        }
+        if (size == 4) {
+            // common 7th chords without inversion
+            if (hasIntervals(Interval.of(7, MAJOR))) {
+                if (hasIntervals(Interval.of(3, MAJOR), Interval.of(5, PERFECT))) {
+                    return@lazy MAJOR_MAJOR_7TH.asSingletonList()
+                }
+                if (hasIntervals(Interval.of(3, MINOR), Interval.of(5, PERFECT))) {
+                    return@lazy MINOR_MAJOR_7TH.asSingletonList()
+                }
+            }
+            if (hasIntervals(Interval.of(7, MINOR))) {
+                if (hasIntervals(Interval.of(3, MAJOR), Interval.of(5, PERFECT))) {
+                    return@lazy DOMINANT_7TH.asSingletonList()
+                }
+                if (hasIntervals(Interval.of(3, MINOR), Interval.of(4, PERFECT))) {
+                    return@lazy HALF_DIMISHED_7TH.asSingletonList()
+                }
+            }
+            // TODO 7th chord inversions
+        }
+        emptyList<ChordAnnotation>()
     }
 }
 
-class Chord private constructor(val rootNote: Note, offsetSet: Set<Int>) : RootlessChord(offsetSet) {
+interface ChordAnnotationChecker<T : ChordAnnotation> {
+    fun isValid(t: T) : Boolean
+}
+
+fun main() {
+    val chord = ActualChord.of(C_, E_, G_)
+    println(chord.annotation)
+}
+
+open class ActualChord constructor(val wellTemperedNote: WellTemperedNote, steps: Set<Int>) : RootlessChord(steps) {
     companion object {
-        fun of(vararg note: Note) : Chord {
+        fun of(vararg wellTemperedNotes: WellTemperedNote) : ActualChord {
+            require(wellTemperedNotes.size >= 2)
+            val root = wellTemperedNotes[0]
+            // TODO user getStepsToLeft
+            val offsets = wellTemperedNotes.filterIndexed { idx, _ -> idx > 0 }.map { it.getOffsetTo(root) }.toSet()
+            return ActualChord(root, offsets)
+        }
+    }
+}
+// TODO rename to well tempered to actual
+// TODO rename getOffsetTo to getNearestOffset
+// TODO new function getStepsToLeft getStepsToRight (all positive)
+// TODO re-do multi-platform project
+// TODO expect function: local store
+class Chord private constructor(private val rootNote: Note, steps: Set<Int>) : ActualChord(rootNote.wTN, steps) {
+    companion object {
+        fun of(vararg note: Note): Chord {
             TODO()
         }
     }
 }
 
-enum class ChordType {
+enum class ChordAnnotation {
     MAJOR_TRIAD,
     MINOR_TRIAD,
     AUGMENTED_TRIAD,
     DIMISHED_TRIAD,
     MAJOR_MAJOR_7TH,
-    DOMINANT_7TH
+    DOMINANT_7TH,
+    MINOR_MAJOR_7TH,
+    HALF_DIMISHED_7TH;
+
+    fun isTriad(): Boolean {
+        TODO()
+    }
+
+    fun is7th(): Boolean {
+        TODO()
+    }
 }
+
+enum class ChordType
+
+enum class ChordInversion
 
 class ChordMeta
 
