@@ -24,16 +24,16 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
             return ALL_INTERVALS[num to quality] ?: throw IllegalArgumentException("$num $quality")
         }
 
-        fun of(from: WellTemperedNote, to: WellTemperedNote): Interval {
+        fun of(from: ActualNote, to: ActualNote): Interval {
             TODO()
         }
 
         fun of(from: Note, to: Note): Interval? {
             val fromAccidental = from.accidental
-            val fromKey = from.beforeAccidentalWTN.keys[0]
+            val fromKey = from.beforeAccidentalActual.keys[0]
             val fromScale = fromKey.getNotesOfScale(Scale.MAJOR)
-            val fromScaleBeforeACC = fromScale.map { it.beforeAccidentalWTN }
-            val toBeforeACC = to.beforeAccidentalWTN
+            val fromScaleBeforeACC = fromScale.map { it.beforeAccidentalActual }
+            val toBeforeACC = to.beforeAccidentalActual
             val idx = fromScaleBeforeACC.indexOf(toBeforeACC)
             return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset() - fromAccidental.getOffset())
         }
@@ -91,27 +91,27 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
     }
 
     fun getbelowFromAbove(above: Note): Note? {
-        val aboveBefore = above.beforeAccidentalWTN
+        val aboveBefore = above.beforeAccidentalActual
         val belowBefore = aboveBefore.getNoNeedResolveByOffset(-(num - 1))
-        val belowWTN = above.wTN.getByOffset(-physicalStep)
-        val belowOffset = belowBefore.getOffsetTo(belowWTN)
+        val belowActual = above.actual.getByOffset(-physicalStep)
+        val belowOffset = belowBefore.getOffsetTo(belowActual)
         val belowAccidental = if (belowOffset.absoluteValue <= 2) {
             Accidental.getByOffset(belowOffset)
         } else {
             return null
         }
-        return Note.ofWellTempered(belowWTN, belowAccidental)
+        return Note.ofActual(belowActual, belowAccidental)
     }
 
     fun getAboveFromBelow(below: Note): Note? {
-        val belowBefore = below.beforeAccidentalWTN
-        val belowKey = Key.ofNote(Note.ofWellTempered(belowBefore, null))!!
+        val belowBefore = below.beforeAccidentalActual
+        val belowKey = Key.ofNote(Note.ofActual(belowBefore, null))!!
         val belowMajorNotes = belowKey.getNotesOfScale(Scale.MAJOR)
         val noteOfNum = belowMajorNotes[num - 1]
-        val aboveWTN = noteOfNum.wTN.getByOffset(offsetToMajorOrPerfect)
-        val aboveBefore = noteOfNum.beforeAccidentalWTN
+        val aboveActual = noteOfNum.actual.getByOffset(offsetToMajorOrPerfect)
+        val aboveBefore = noteOfNum.beforeAccidentalActual
         return try {
-            Note.ofWellTempered(aboveWTN, Accidental.getByOffset(aboveBefore.getOffsetTo(aboveWTN)))
+            Note.ofActual(aboveActual, Accidental.getByOffset(aboveBefore.getOffsetTo(aboveActual)))
         } catch (e: Exception) {
             null
         }

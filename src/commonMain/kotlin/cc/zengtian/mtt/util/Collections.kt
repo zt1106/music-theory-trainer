@@ -1,4 +1,4 @@
-package cc.zengtian.mtt.ext
+package cc.zengtian.mtt.util
 
 /**
  * Created by ZengTian on 2019/9/9.

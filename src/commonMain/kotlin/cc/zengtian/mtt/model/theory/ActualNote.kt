@@ -5,19 +5,19 @@ import kotlin.math.absoluteValue
 /**
  * represent 12 well tempered notes
  */
-enum class WellTemperedNote {
+enum class ActualNote {
 
     C_, CD, D_, DE, E_, F_, FG, G_, GA, A_, AB, B_;
 
     val needResolve: Boolean by lazy { !name.endsWith("_") }
 
-    val keys: List<Key> by lazy { Key.values().filter { it.startingNote.wTN == this } }
+    val keys: List<Key> by lazy { Key.values().filter { it.startingNote.actual == this } }
 
     /**
      * high: > 0
      * low: < 0
      */
-    fun getByOffset(offset: Int): WellTemperedNote {
+    fun getByOffset(offset: Int): ActualNote {
         val result = (ordinal + offset) % 12
         return if (result >= 0) {
             ofIdx(result)
@@ -26,7 +26,7 @@ enum class WellTemperedNote {
         }
     }
 
-    fun getOffsetTo(another: WellTemperedNote): Int {
+    fun getOffsetTo(another: ActualNote): Int {
         if (another == this) {
             return 0
         }
@@ -47,10 +47,10 @@ enum class WellTemperedNote {
         }
     }
 
-    private fun ofIdx(idx: Int): WellTemperedNote = values()[idx]
+    private fun ofIdx(idx: Int): ActualNote = values()[idx]
 
-    fun getWellTemperedNotesForScale(scale: Scale): List<WellTemperedNote> {
-        val list = mutableListOf<WellTemperedNote>()
+    fun getActualNotesForScale(scale: Scale): List<ActualNote> {
+        val list = mutableListOf<ActualNote>()
         list.add(this)
         for (step in scale.steps) {
             list.add(list[list.size - 1].getByOffset(step))
@@ -58,16 +58,16 @@ enum class WellTemperedNote {
         return list
     }
 
-    fun getNoNeedResolveByOffset(offset: Int): WellTemperedNote {
+    fun getNoNeedResolveByOffset(offset: Int): ActualNote {
         require(!needResolve)
         var result = this
         repeat(offset.absoluteValue) {
-            result = result.getNextNoNeedResolveWellTemperedNote(offset > 0)
+            result = result.getNextNoNeedResolveActualNote(offset > 0)
         }
         return result
     }
 
-    fun getNextNoNeedResolveWellTemperedNote(toRight: Boolean = true): WellTemperedNote {
+    fun getNextNoNeedResolveActualNote(toRight: Boolean = true): ActualNote {
         val offset = if (toRight) {
             1
         } else {

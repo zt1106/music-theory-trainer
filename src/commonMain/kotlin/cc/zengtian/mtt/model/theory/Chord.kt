@@ -1,14 +1,14 @@
 package cc.zengtian.mtt.model.theory
 
-import cc.zengtian.mtt.ext.asSingletonList
+import cc.zengtian.mtt.model.theory.ActualNote.*
 import cc.zengtian.mtt.model.theory.ChordAnnotation.*
 import cc.zengtian.mtt.model.theory.IntervalQuality.*
-import cc.zengtian.mtt.model.theory.WellTemperedNote.*
+import cc.zengtian.mtt.util.asSingletonList
 
 /**
  * @param stepsInput relative offsets to root note
  */
-open class RootlessChord(stepsInput: Set<Int>) {
+open class RelativeChord(stepsInput: Set<Int>) {
 
     private val steps: Set<Int>
 
@@ -30,7 +30,7 @@ open class RootlessChord(stepsInput: Set<Int>) {
         return intervals.all { steps.contains(it.physicalStep) }
     }
 
-    fun getInversions() : List<RootlessChord> {
+    fun getInversions() : List<RelativeChord> {
         TODO()
     }
 
@@ -86,13 +86,13 @@ fun main() {
     println(chord.annotation)
 }
 
-open class ActualChord constructor(val wellTemperedNote: WellTemperedNote, steps: Set<Int>) : RootlessChord(steps) {
+open class ActualChord constructor(val actualNote: ActualNote, steps: Set<Int>) : RelativeChord(steps) {
     companion object {
-        fun of(vararg wellTemperedNotes: WellTemperedNote) : ActualChord {
-            require(wellTemperedNotes.size >= 2)
-            val root = wellTemperedNotes[0]
+        fun of(vararg actualNotes: ActualNote) : ActualChord {
+            require(actualNotes.size >= 2)
+            val root = actualNotes[0]
             // TODO user getStepsToLeft
-            val offsets = wellTemperedNotes.filterIndexed { idx, _ -> idx > 0 }.map { it.getOffsetTo(root) }.toSet()
+            val offsets = actualNotes.filterIndexed { idx, _ -> idx > 0 }.map { it.getOffsetTo(root) }.toSet()
             return ActualChord(root, offsets)
         }
     }
@@ -100,9 +100,7 @@ open class ActualChord constructor(val wellTemperedNote: WellTemperedNote, steps
 // TODO rename to well tempered to actual
 // TODO rename getOffsetTo to getNearestOffset
 // TODO new function getStepsToLeft getStepsToRight (all positive)
-// TODO re-do multi-platform project
-// TODO expect function: local store
-class Chord private constructor(private val rootNote: Note, steps: Set<Int>) : ActualChord(rootNote.wTN, steps) {
+class Chord private constructor(private val rootNote: Note, steps: Set<Int>) : ActualChord(rootNote.actual, steps) {
     companion object {
         fun of(vararg note: Note): Chord {
             TODO()
