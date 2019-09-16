@@ -23,7 +23,7 @@ enum class Key(val startingNote: Note) {
 
     companion object {
         private val CACHED_NOTES = mutableMapOf<Pair<Key, Scale>, List<Note>>()
-        fun ofNote(note: Note) : Key? {
+        fun ofNote(note: Note): Key? {
             return values().find { it.startingNote == note }
         }
     }
@@ -41,8 +41,7 @@ enum class Key(val startingNote: Note) {
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
             val actualNote = actualNotes[idx]
-            val accidental =
-                Accidental.getByOffset(-actualNote.getOffsetTo(unresolve))
+            val accidental = Accidental.getByOffset(-actualNote.getShortestOffsetTo(unresolve))
             result.add(Note.ofActual(actualNote, accidental))
         }
         result

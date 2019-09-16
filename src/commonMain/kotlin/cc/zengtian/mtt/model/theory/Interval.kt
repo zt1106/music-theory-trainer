@@ -6,12 +6,12 @@ import kotlin.math.absoluteValue
 class Interval private constructor(val num: Int, val quality: IntervalQuality) {
 
     companion object {
-        private val ALL_INTERVALS = mutableMapOf<Pair<Int, IntervalQuality>, Interval>().apply {
+        private val ALL_INTERVALS = mutableMapOf<Int, Interval>().apply {
             for (i in 1..8) {
                 if (is1458(i)) {
-                    IntervalQuality.valuesOf1458().forEach { q -> this[i to q] = Interval(i, q) }
+                    IntervalQuality.valuesOf1458().forEach { q -> this[getCompositeKey(i, q)] = Interval(i, q) }
                 } else {
-                    IntervalQuality.valuesOf2367().forEach { q -> this[i to q] = Interval(i, q) }
+                    IntervalQuality.valuesOf2367().forEach { q -> this[getCompositeKey(i, q)] = Interval(i, q) }
                 }
             }
         }.toMap()
@@ -21,7 +21,7 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         fun values() = ALL_INTERVALS
 
         fun of(num: Int, quality: IntervalQuality): Interval {
-            return ALL_INTERVALS[num to quality] ?: throw IllegalArgumentException("$num $quality")
+            return ALL_INTERVALS[getCompositeKey(num, quality)] ?: throw IllegalArgumentException("$num $quality")
         }
 
         fun of(from: ActualNote, to: ActualNote): Interval {
@@ -36,6 +36,10 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
             val toBeforeACC = to.beforeAccidentalActual
             val idx = fromScaleBeforeACC.indexOf(toBeforeACC)
             return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset() - fromAccidental.getOffset())
+        }
+
+        private fun getCompositeKey(num: Int, quality: IntervalQuality) : Int {
+            return num * 10 + quality.ordinal
         }
 
         private fun of1BaseIndexInMajorScale(idx: Int, offset: Int): Interval? {
@@ -94,7 +98,7 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         val aboveBefore = above.beforeAccidentalActual
         val belowBefore = aboveBefore.getNoNeedResolveByOffset(-(num - 1))
         val belowActual = above.actual.getByOffset(-physicalStep)
-        val belowOffset = belowBefore.getOffsetTo(belowActual)
+        val belowOffset = belowBefore.getShortestOffsetTo(belowActual)
         val belowAccidental = if (belowOffset.absoluteValue <= 2) {
             Accidental.getByOffset(belowOffset)
         } else {
@@ -111,7 +115,7 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
         val aboveActual = noteOfNum.actual.getByOffset(offsetToMajorOrPerfect)
         val aboveBefore = noteOfNum.beforeAccidentalActual
         return try {
-            Note.ofActual(aboveActual, Accidental.getByOffset(aboveBefore.getOffsetTo(aboveActual)))
+            Note.ofActual(aboveActual, Accidental.getByOffset(aboveBefore.getShortestOffsetTo(aboveActual)))
         } catch (e: Exception) {
             null
         }

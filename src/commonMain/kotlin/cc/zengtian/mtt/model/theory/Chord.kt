@@ -6,21 +6,28 @@ import cc.zengtian.mtt.model.theory.IntervalQuality.*
 import cc.zengtian.mtt.util.asSingletonList
 
 /**
- * @param stepsInput relative offsets to root note
+ * @param offsets offsets to root note
  */
-open class RelativeChord(stepsInput: Set<Int>) {
+open class RelativeChord(offsets: Set<Int>) {
+
+    companion object {
+        fun of(vararg offsets: Int) : RelativeChord {
+
+            TODO()
+        }
+    }
 
     private val steps: Set<Int>
 
     init {
-        steps = stepsInput.map {
+        steps = offsets.map {
             val module = it % 12
             if (module < 0) {
                 return@map module + 12
             }
             module
         }.toSet()
-        require(steps.size >= 2) { "chord must have at least 3 notes" }
+        require(steps.isNotEmpty()) { "chord must have at least 2 notes" }
         require(steps.min()!! > 0) { "offsets can't have root" }
     }
 
@@ -30,8 +37,15 @@ open class RelativeChord(stepsInput: Set<Int>) {
         return intervals.all { steps.contains(it.physicalStep) }
     }
 
-    fun getInversions() : List<RelativeChord> {
-        TODO()
+    val inversions: List<RelativeChord> by lazy {
+        val result = mutableListOf<RelativeChord>()
+        val rootAdded = steps.toMutableList().apply { add(0, 0) }.toList()
+        repeat(steps.size) {
+            val idx = it + 1
+            val steps = rootAdded.map { step -> step - rootAdded[idx] }.filter { step -> step != 0 }
+            result.add(RelativeChord(steps.toSet()))
+        }
+        result
     }
 
     val annotation: List<ChordAnnotation> by lazy {
@@ -75,31 +89,39 @@ open class RelativeChord(stepsInput: Set<Int>) {
         }
         emptyList<ChordAnnotation>()
     }
+
+    private val toString: String by lazy {
+        steps.toString()
+    }
+
+    override fun toString(): String = toString
 }
 
 interface ChordAnnotationChecker<T : ChordAnnotation> {
-    fun isValid(t: T) : Boolean
+    fun isValid(t: T): Boolean
 }
 
 fun main() {
     val chord = ActualChord.of(C_, E_, G_)
     println(chord.annotation)
+    chord.inversions.forEach { println(it) }
+    val set1 = mutableSetOf(1, 4, 5)
+    val set2 = setOf(5, 4, 1)
+    println(set1.hashCode())
+    println(set2.hashCode())
 }
 
 open class ActualChord constructor(val actualNote: ActualNote, steps: Set<Int>) : RelativeChord(steps) {
     companion object {
-        fun of(vararg actualNotes: ActualNote) : ActualChord {
+        fun of(vararg actualNotes: ActualNote): ActualChord {
             require(actualNotes.size >= 2)
             val root = actualNotes[0]
-            // TODO user getStepsToLeft
-            val offsets = actualNotes.filterIndexed { idx, _ -> idx > 0 }.map { it.getOffsetTo(root) }.toSet()
+            val offsets = actualNotes.filterIndexed { idx, _ -> idx > 0 }.map { it.getStepsToLeft(root) }.toSet()
             return ActualChord(root, offsets)
         }
     }
 }
-// TODO rename to well tempered to actual
-// TODO rename getOffsetTo to getNearestOffset
-// TODO new function getStepsToLeft getStepsToRight (all positive)
+
 class Chord private constructor(private val rootNote: Note, steps: Set<Int>) : ActualChord(rootNote.actual, steps) {
     companion object {
         fun of(vararg note: Note): Chord {

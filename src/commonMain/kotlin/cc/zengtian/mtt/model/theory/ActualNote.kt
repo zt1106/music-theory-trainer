@@ -26,24 +26,29 @@ enum class ActualNote {
         }
     }
 
-    fun getOffsetTo(another: ActualNote): Int {
-        if (another == this) {
-            return 0
-        }
-        val rightDistance = if (another.ordinal > this.ordinal) {
-            another.ordinal - this.ordinal
-        } else {
-            another.ordinal + 12 - this.ordinal
-        }
-        val leftDistance = if (another.ordinal < this.ordinal) {
+    fun getStepsToLeft(another: ActualNote): Int {
+        return if (another.ordinal <= this.ordinal) {
             this.ordinal - another.ordinal
         } else {
             this.ordinal + 12 - another.ordinal
         }
-        return if (rightDistance < leftDistance) {
-            rightDistance
+    }
+
+    fun getStepsToRight(another: ActualNote): Int {
+        return if (another.ordinal >= this.ordinal) {
+            another.ordinal - this.ordinal
         } else {
-            -leftDistance
+            another.ordinal + 12 - this.ordinal
+        }
+    }
+
+    fun getShortestOffsetTo(another: ActualNote): Int {
+        val left = getStepsToLeft(another)
+        val right = getStepsToRight(another)
+        return if (right < left) {
+            right
+        } else {
+            -left
         }
     }
 
@@ -83,7 +88,7 @@ enum class ActualNote {
         throw IllegalStateException()
     }
 
-    private val showName: String by lazy {
+    private val toString: String by lazy {
         if (name.endsWith("_")) {
             name.substring(0, 1)
         } else {
@@ -91,5 +96,7 @@ enum class ActualNote {
         }
     }
 
-    override fun toString(): String = showName
+    override fun toString(): String = toString
 }
+
+
