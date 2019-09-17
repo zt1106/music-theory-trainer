@@ -1,9 +1,6 @@
 package cc.zengtian.mtt.model.theory
 
 import cc.zengtian.mtt.model.theory.ActualNote.*
-import cc.zengtian.mtt.model.theory.ChordType.*
-import cc.zengtian.mtt.model.theory.IntervalQuality.*
-import cc.zengtian.mtt.util.asSingletonList
 
 /**
  * @param offsets offsets to root note
@@ -36,8 +33,12 @@ open class RelativeChord(offsets: Set<Int>) {
         return intervals.all { steps.contains(it.physicalStep) }
     }
 
+    /**
+     * include itself!!
+     */
     val inversions: List<RelativeChord> by lazy {
         val result = mutableListOf<RelativeChord>()
+        result.add(this)
         val rootAdded = steps.toMutableList().apply { add(0, 0) }.toList()
         repeat(steps.size) {
             val idx = it + 1
@@ -47,46 +48,17 @@ open class RelativeChord(offsets: Set<Int>) {
         result
     }
 
-    val annotations: List<ChordType> by lazy {
-        if (size == 3) {
-            // common triads without inversion (major, minor, dimished, augmented)
-            if (hasIntervals(Interval.of(3, MINOR), Interval.of(5, PERFECT))) {
-                return@lazy MINOR_TRIAD.asSingletonList()
+    val annotations: List<ChordAnnotation> by lazy {
+        val result = mutableListOf<ChordAnnotation>()
+        // no six; suspend; etc
+        ChordType.valuesOfSize(size).forEach { chordType ->
+            inversions.forEachIndexed { inversion, chord ->
+                if (chord.steps == chordType.steps) {
+                    result.add(ChordAnnotation(chordType, inversion))
+                }
             }
-            if (hasIntervals(Interval.of(3, MAJOR), Interval.of(5, PERFECT))) {
-                return@lazy MAJOR_TRIAD.asSingletonList()
-            }
-            if (hasIntervals(Interval.of(3, MINOR), Interval.of(4, PERFECT))) {
-                return@lazy DIMISHED_TRIAD.asSingletonList()
-            }
-            if (hasIntervals(Interval.of(3, MINOR), Interval.of(7, DIMISHED))) {
-                return@lazy AUGMENTED_TRIAD.asSingletonList()
-            }
-            // common triads first inversion TODO
-            // common triads second inversion TODO
-            // 7th chord omits 5th 3rd TODO
         }
-        if (size == 4) {
-            // common 7th chords without inversion
-            if (hasIntervals(Interval.of(7, MAJOR))) {
-                if (hasIntervals(Interval.of(3, MAJOR), Interval.of(5, PERFECT))) {
-                    return@lazy MAJOR_MAJOR_7TH.asSingletonList()
-                }
-                if (hasIntervals(Interval.of(3, MINOR), Interval.of(5, PERFECT))) {
-                    return@lazy MINOR_MAJOR_7TH.asSingletonList()
-                }
-            }
-            if (hasIntervals(Interval.of(7, MINOR))) {
-                if (hasIntervals(Interval.of(3, MAJOR), Interval.of(5, PERFECT))) {
-                    return@lazy DOMINANT_7TH.asSingletonList()
-                }
-                if (hasIntervals(Interval.of(3, MINOR), Interval.of(4, PERFECT))) {
-                    return@lazy HALF_DIMISHED_7TH.asSingletonList()
-                }
-            }
-            // TODO 7th chord inversions
-        }
-        emptyList<ChordType>()
+        result
     }
 
     private val toString: String by lazy {
@@ -115,7 +87,7 @@ interface ChordAnnotationChecker<T : ChordType> {
 
 fun main() {
     val chord = ActualChord.of(C_, DE, FG, A_)
-    println(chord.annotations)
+    chord.annotations.forEach { println("${it.chordType} ${it.inversion}") }
     chord.inversions.forEach { println(it) }
 }
 
@@ -138,8 +110,8 @@ class Chord private constructor(private val rootNote: Note, steps: Set<Int>) : A
     }
 }
 
-enum class ChordAnnotation(val chordType: ChordType,
-                           val inversion: Int) {
+class ChordAnnotation(val chordType: ChordType,
+                      val inversion: Int) {
 
 }
 
@@ -151,12 +123,13 @@ enum class ChordType(val steps: Set<Int>) {
     MAJOR_MAJOR_7TH(setOf(4, 7, 11)),
     DOMINANT_7TH(setOf(4, 7, 10)),
     MINOR_MAJOR_7TH(setOf(3, 7, 11)),
-    HALF_DIMISHED_7TH(setOf(3, 6, 10));
+    HALF_DIMISHED_7TH(setOf(3, 6, 10)),
+    DIMISHED_7TH(setOf(3, 6, 9));
 
     companion object {
         val triads: List<ChordType> by lazy { values().filter { it.isTriad() } }
         val sevens: List<ChordType> by lazy { values().filter { it.is7th() } }
-        fun valuesOfSize(chordSize : Int) : List<ChordType> {
+        fun valuesOfSize(chordSize: Int): List<ChordType> {
             return values().filter { it.steps.size + 1 == chordSize }
         }
     }
