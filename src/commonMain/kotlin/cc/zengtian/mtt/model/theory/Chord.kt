@@ -1,7 +1,7 @@
 package cc.zengtian.mtt.model.theory
 
 import cc.zengtian.mtt.model.theory.ActualNote.*
-import cc.zengtian.mtt.model.theory.ChordAnnotation.*
+import cc.zengtian.mtt.model.theory.ChordType.*
 import cc.zengtian.mtt.model.theory.IntervalQuality.*
 import cc.zengtian.mtt.util.asSingletonList
 
@@ -11,11 +11,10 @@ import cc.zengtian.mtt.util.asSingletonList
 open class RelativeChord(offsets: Set<Int>) {
 
     companion object {
-        fun of(vararg offsets: Int) : RelativeChord {
 
-            TODO()
-        }
     }
+
+    constructor(vararg offsets: Int) : this(offsets.toSet())
 
     private val steps: Set<Int>
 
@@ -48,7 +47,7 @@ open class RelativeChord(offsets: Set<Int>) {
         result
     }
 
-    val annotation: List<ChordAnnotation> by lazy {
+    val annotations: List<ChordType> by lazy {
         if (size == 3) {
             // common triads without inversion (major, minor, dimished, augmented)
             if (hasIntervals(Interval.of(3, MINOR), Interval.of(5, PERFECT))) {
@@ -87,7 +86,7 @@ open class RelativeChord(offsets: Set<Int>) {
             }
             // TODO 7th chord inversions
         }
-        emptyList<ChordAnnotation>()
+        emptyList<ChordType>()
     }
 
     private val toString: String by lazy {
@@ -95,20 +94,29 @@ open class RelativeChord(offsets: Set<Int>) {
     }
 
     override fun toString(): String = toString
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is RelativeChord) return false
+
+        if (steps != other.steps) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return steps.hashCode()
+    }
 }
 
-interface ChordAnnotationChecker<T : ChordAnnotation> {
+interface ChordAnnotationChecker<T : ChordType> {
     fun isValid(t: T): Boolean
 }
 
 fun main() {
-    val chord = ActualChord.of(C_, E_, G_)
-    println(chord.annotation)
+    val chord = ActualChord.of(C_, DE, FG, A_)
+    println(chord.annotations)
     chord.inversions.forEach { println(it) }
-    val set1 = mutableSetOf(1, 4, 5)
-    val set2 = setOf(5, 4, 1)
-    println(set1.hashCode())
-    println(set2.hashCode())
 }
 
 open class ActualChord constructor(val actualNote: ActualNote, steps: Set<Int>) : RelativeChord(steps) {
@@ -130,33 +138,32 @@ class Chord private constructor(private val rootNote: Note, steps: Set<Int>) : A
     }
 }
 
-enum class ChordAnnotation {
-    MAJOR_TRIAD,
-    MINOR_TRIAD,
-    AUGMENTED_TRIAD,
-    DIMISHED_TRIAD,
-    MAJOR_MAJOR_7TH,
-    DOMINANT_7TH,
-    MINOR_MAJOR_7TH,
-    HALF_DIMISHED_7TH;
+enum class ChordAnnotation(val chordType: ChordType,
+                           val inversion: Int) {
 
-    fun isTriad(): Boolean {
-        TODO()
-    }
-
-    fun is7th(): Boolean {
-        TODO()
-    }
 }
 
-enum class ChordType
+enum class ChordType(val steps: Set<Int>) {
+    MAJOR_TRIAD(setOf(4, 7)),
+    MINOR_TRIAD(setOf(3, 7)),
+    AUGMENTED_TRIAD(setOf(4, 8)),
+    DIMISHED_TRIAD(setOf(3, 6)),
+    MAJOR_MAJOR_7TH(setOf(4, 7, 11)),
+    DOMINANT_7TH(setOf(4, 7, 10)),
+    MINOR_MAJOR_7TH(setOf(3, 7, 11)),
+    HALF_DIMISHED_7TH(setOf(3, 6, 10));
 
-enum class ChordInversion
+    companion object {
+        val triads: List<ChordType> by lazy { values().filter { it.isTriad() } }
+        val sevens: List<ChordType> by lazy { values().filter { it.is7th() } }
+        fun valuesOfSize(chordSize : Int) : List<ChordType> {
+            return values().filter { it.steps.size + 1 == chordSize }
+        }
+    }
 
-class ChordMeta
+    fun isTriad(): Boolean = steps.size == 2
 
-class ChordNotation
+    fun is7th(): Boolean = steps.size == 3
+}
 
-class ChordNotationConfig
-
-enum class ChordNotationType
+// TODO dimished 7 special case, annotations size should be 4

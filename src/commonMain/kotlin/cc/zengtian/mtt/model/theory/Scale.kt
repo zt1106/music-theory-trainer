@@ -92,17 +92,11 @@ class Scale private constructor(private val name: String, val steps: List<Int>) 
     override fun toString(): String = name
 
     override fun equals(other: Any?): Boolean {
-        if (other == null || other !is Scale) {
-            return false
-        }
-        if (steps.size != other.steps.size) {
-            return false
-        }
-        for (idx in steps.indices) {
-            if (steps[idx] != other.steps[idx]) {
-                return false
-            }
-        }
+        if (this === other) return true
+        if (other !is Scale) return false
+
+        if (steps != other.steps) return false
+
         return true
     }
 
