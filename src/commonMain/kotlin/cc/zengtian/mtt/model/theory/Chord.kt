@@ -64,7 +64,7 @@ open class RelativeChord(offsets: Set<Int>) {
         // TODO suspended, six
         // minor 7th flat 5
         // TODO ??
-
+        result.sortBy { it.inversion }
         result
     }
 

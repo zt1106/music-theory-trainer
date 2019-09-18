@@ -22,7 +22,7 @@ import kotlin.test.assertEquals
 class ChordTest {
     @Test
     fun `test dimished 7th annotations`() {
-        val chord = ActualChord(ActualNote.C_, ActualNote.DE, ActualNote.FG, ActualNote.A_)
+        val chord = ActualChord(ActualNote.C, ActualNote.DE, ActualNote.FG, ActualNote.A)
         assertEquals(4, chord.annotations.size)
         chord.annotations.forEachIndexed { idx, annotation ->
             assertEquals(annotation.chordType, ChordType.DIMISHED_7TH)

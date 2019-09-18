@@ -2,24 +2,23 @@ package cc.zengtian.mtt.model.theory
 
 import cc.zengtian.mtt.model.theory.Accidental.FLAT
 import cc.zengtian.mtt.model.theory.Accidental.SHARP
-import cc.zengtian.mtt.model.theory.ActualNote.*
 
 enum class Key(val startingNote: Note) {
-    C(Note.ofActual(C_, null)),
-    F(Note.ofActual(F_, null)),
-    B_FLAT(Note.ofActual(AB, FLAT)),
-    E_FLAT(Note.ofActual(DE, FLAT)),
-    A_FLAT(Note.ofActual(GA, FLAT)),
-    D_FLAT(Note.ofActual(CD, FLAT)),
-    C_SHARP(Note.ofActual(CD, SHARP)),
-    G_FLAT(Note.ofActual(FG, FLAT)),
-    F_SHARP(Note.ofActual(FG, SHARP)),
-    B(Note.ofActual(B_, null)),
-    C_FLAT(Note.ofActual(B_, FLAT)),
-    E(Note.ofActual(E_, null)),
-    A(Note.ofActual(A_, null)),
-    D(Note.ofActual(D_, null)),
-    G(Note.ofActual(G_, null));
+    C(Note.ofActual(ActualNote.C, null)),
+    F(Note.ofActual(ActualNote.F, null)),
+    B_FLAT(Note.ofActual(ActualNote.AB, FLAT)),
+    E_FLAT(Note.ofActual(ActualNote.DE, FLAT)),
+    A_FLAT(Note.ofActual(ActualNote.GA, FLAT)),
+    D_FLAT(Note.ofActual(ActualNote.CD, FLAT)),
+    C_SHARP(Note.ofActual(ActualNote.CD, SHARP)),
+    G_FLAT(Note.ofActual(ActualNote.FG, FLAT)),
+    F_SHARP(Note.ofActual(ActualNote.FG, SHARP)),
+    B(Note.ofActual(ActualNote.B, null)),
+    C_FLAT(Note.ofActual(ActualNote.B, FLAT)),
+    E(Note.ofActual(ActualNote.E, null)),
+    A(Note.ofActual(ActualNote.A, null)),
+    D(Note.ofActual(ActualNote.D, null)),
+    G(Note.ofActual(ActualNote.G, null));
 
     companion object {
         private val CACHED_NOTES = mutableMapOf<Pair<Key, Scale>, List<Note>>()

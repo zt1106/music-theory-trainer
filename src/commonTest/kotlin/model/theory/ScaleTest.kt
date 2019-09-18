@@ -1,9 +1,9 @@
 package model.theory
 
 import alsoPrintln
+import cc.zengtian.mtt.model.theory.ActualNote.*
 import cc.zengtian.mtt.model.theory.Key
 import cc.zengtian.mtt.model.theory.Scale
-import cc.zengtian.mtt.model.theory.ActualNote
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -23,7 +23,7 @@ class ScaleTest {
 
     @Test
     fun `test major scales using all letters`() {
-        val letters = listOf(ActualNote.A_, ActualNote.B_, ActualNote.C_, ActualNote.D_, ActualNote.E_, ActualNote.F_, ActualNote.G_)
+        val letters = listOf(A, B, C, D, E, F, G)
         Key.values().map { key -> key.getNotesOfScale(Scale.MAJOR).map { note -> note.beforeAccidentalActual } }
             .forEach { beforeAcc ->
                 assertTrue(beforeAcc.alsoPrintln().containsAll(letters))

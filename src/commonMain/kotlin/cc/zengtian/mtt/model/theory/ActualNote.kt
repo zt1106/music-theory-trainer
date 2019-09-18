@@ -7,9 +7,9 @@ import kotlin.math.absoluteValue
  */
 enum class ActualNote {
 
-    C_, CD, D_, DE, E_, F_, FG, G_, GA, A_, AB, B_;
+    C, CD, D, DE, E, F, FG, G, GA, A, AB, B;
 
-    val needResolve: Boolean by lazy { !name.endsWith("_") }
+    val needResolve: Boolean by lazy { name.length == 2 }
 
     val keys: List<Key> by lazy { Key.values().filter { it.startingNote.actual == this } }
 
