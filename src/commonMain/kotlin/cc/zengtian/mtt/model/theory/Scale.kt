@@ -4,20 +4,20 @@ class Scale private constructor(private val name: String, val steps: List<Int>) 
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
-        val IONIAN = Scale("IONIAN", listOf(2, 2, 1, 2, 2, 2))
-        val DORIAN = Scale("DORIAN", listOf(2, 1, 2, 2, 2, 1))
-        val PHRYGIAN = Scale("PHRYGIAN", listOf(1, 2, 2, 2, 1, 2))
-        val LYDIAN = Scale("LYDIAN", listOf(2, 2, 2, 1, 2, 2))
-        val MIXOLYDIAN = Scale("MIXOLYDIAN", listOf(2, 2, 1, 2, 2, 1))
-        val AEOLIAN = Scale("AEOLIAN", listOf(2, 1, 2, 2, 1, 2))
-        val LOCRIAN = Scale("LOCRIAN", listOf(1, 2, 2, 1, 2, 2))
-        val HARMONIC_MINOR = Scale("HARMONIC_MINOR", listOf(2, 1, 2, 2, 1, 3))
-        val MELODIC_MINOR_ASCEND = Scale("MELODIC_MINOR_UPPER", listOf(2, 1, 2, 2, 2, 2))
-        val PENTATONIC = Scale("PENTATONIC", listOf(2, 2, 3, 2))
-        val CHROMATIC = Scale("CHROMATIC", listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+        val IONIAN = Scale("IONIAN", 2, 2, 1, 2, 2, 2)
+        val DORIAN = Scale("DORIAN", 2, 1, 2, 2, 2, 1)
+        val PHRYGIAN = Scale("PHRYGIAN", 1, 2, 2, 2, 1, 2)
+        val LYDIAN = Scale("LYDIAN", 2, 2, 2, 1, 2, 2)
+        val MIXOLYDIAN = Scale("MIXOLYDIAN", 2, 2, 1, 2, 2, 1)
+        val AEOLIAN = Scale("AEOLIAN", 2, 1, 2, 2, 1, 2)
+        val LOCRIAN = Scale("LOCRIAN", 1, 2, 2, 1, 2, 2)
+        val HARMONIC_MINOR = Scale("HARMONIC_MINOR", 2, 1, 2, 2, 1, 3)
+        val MELODIC_MINOR_ASCEND = Scale("MELODIC_MINOR_UPPER", 2, 1, 2, 2, 2, 2)
+        val PENTATONIC = Scale("PENTATONIC", 2, 2, 3, 2)
+        val CHROMATIC = Scale("CHROMATIC", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
-        val MAJOR = Scale("MAJOR", listOf(2, 2, 1, 2, 2, 2))
-        val MINOR = Scale("NATURAL_MINOR", listOf(2, 1, 2, 2, 1, 2))
+        val MAJOR = Scale("MAJOR", 2, 2, 1, 2, 2, 2)
+        val MINOR = Scale("NATURAL_MINOR", 2, 1, 2, 2, 1, 2)
 
         private val BUILT_INS = listOf(
             IONIAN,
@@ -35,6 +35,8 @@ class Scale private constructor(private val name: String, val steps: List<Int>) 
 
         fun builtInValues() = BUILT_INS
     }
+    
+    constructor(name: String, vararg stepsArr: Int) : this(name, stepsArr.toList())
 
     private val stepsToRoot: List<Int> by lazy {
         val inc = mutableListOf<Int>()
