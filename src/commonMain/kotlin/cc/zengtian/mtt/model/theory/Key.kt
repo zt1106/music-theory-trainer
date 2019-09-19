@@ -56,8 +56,8 @@ enum class Key(val startingNote: Note) {
             val noteInMajor = majorScaleNotes[pair.first]
             val accidentalToBeAdded = pair.second
             val noteInResult = Note.ofActual(
-                noteInMajor.actual.getByOffset(accidentalToBeAdded.getOffset()),
-                Accidental.getByOffset(noteInMajor.accidental.getOffset() + accidentalToBeAdded.getOffset())
+                noteInMajor.actual.getByOffset(accidentalToBeAdded.offset),
+                Accidental.getByOffset(noteInMajor.accidental.offset + accidentalToBeAdded.offset)
             )
             result.add(noteInResult)
         }

@@ -6,7 +6,6 @@ package cc.zengtian.mtt.model.theory
 open class RelativeChord(offsets: Set<Int>) {
 
     companion object {
-
     }
 
     constructor(vararg offsets: Int) : this(offsets.toSet())
@@ -132,8 +131,25 @@ class ChordAnnotation(val chordType: ChordType,
     fun getBeforeInversionRootActualNote(root : ActualNote) : ActualNote = root.getByOffset(-beforeInversionRootStep)
 }
 
-enum class InversionSymbol(val size: Int, val inversion: Int) {
+enum class LeadSheetSymbol {
 
+}
+
+/**
+ * figured bass notation for triads and 7ths without additional accidentals
+ */
+enum class FiguredBass(val size: Int, val inversion: Int) {
+    NULL(3, 0),
+    SIX(3, 1),
+    SIX_FOUR(3, 2),
+    SEVEN(4, 0),
+    SIX_FIVE(4, 1),
+    FOUR_THREE(4, 2),
+    FOUR_TWO(4, 3);
+
+    fun realizeToLeadSheet(key: Key) {
+
+    }
 }
 
 // TODO change to normal class so new chord type can be added?
@@ -154,7 +170,10 @@ enum class ChordType(val steps: Set<Int>) {
         fun valuesOfSize(chordSize: Int): List<ChordType> {
             return values().filter { it.steps.size + 1 == chordSize }
         }
+
     }
+
+    fun of(root: ActualNote) : ActualChord = ActualChord(root, steps)
 
     constructor(vararg stepsArr: Int) : this(stepsArr.toSet())
 

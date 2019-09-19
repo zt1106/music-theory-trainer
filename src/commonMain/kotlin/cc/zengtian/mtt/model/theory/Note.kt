@@ -15,7 +15,7 @@ class Note private constructor(val actual: ActualNote, val accidental: Accidenta
                 }
             }
         }.toMap()
-        val ALL_NON_DOUBLE_ACCIDENTAL_NOTES = ALL_NOTES.filterValues { it.accidental.getOffset().absoluteValue < 2 }
+        val ALL_NON_DOUBLE_ACCIDENTAL_NOTES = ALL_NOTES.filterValues { it.accidental.offset.absoluteValue < 2 }
         // common notes
         val C = of(ActualNote.C, null)
         val C_SHARP = of(ActualNote.C, Accidental.SHARP)
@@ -41,18 +41,18 @@ class Note private constructor(val actual: ActualNote, val accidental: Accidenta
 
         fun of(actualNote: ActualNote, accidental: Accidental?): Note {
             require(!actualNote.needResolve)
-            return ALL_NOTES[getCompositeKey(actualNote.getByOffset(accidental.getOffset()), accidental)]
+            return ALL_NOTES[getCompositeKey(actualNote.getByOffset(accidental.offset), accidental)]
                 ?: throw IllegalArgumentException("$actualNote $accidental")
         }
 
         private fun getCompositeKey(actualNote: ActualNote, accidental: Accidental?): Int {
-            return actualNote.ordinal * 100 + accidental.getOffset()
+            return actualNote.ordinal * 100 + accidental.offset
         }
     }
 
     val key: Key? by lazy { Key.values().find { it.startingNote == this } }
 
-    val beforeAccidentalActual: ActualNote by lazy { actual.getByOffset(-accidental.getOffset()) }
+    val beforeAccidentalActual: ActualNote by lazy { actual.getByOffset(-accidental.offset) }
 
     init {
         require(!(beforeAccidentalActual.needResolve && accidental != null)) { "invalid note $beforeAccidentalActual $accidental" }

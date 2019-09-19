@@ -30,7 +30,9 @@ enum class Accidental(val offset: Int) {
     }
 }
 
-fun Accidental?.getOffset(): Int = this?.offset ?: 0
+val Accidental?.offset: Int
+    get() = this?.offset ?: 0
+
 operator fun Accidental?.unaryMinus(): Accidental? = this?.let {
     Accidental.getByOffset(-it.offset)
 }

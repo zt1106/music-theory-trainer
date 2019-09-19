@@ -35,7 +35,7 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
             val fromScaleBeforeACC = fromScale.map { it.beforeAccidentalActual }
             val toBeforeACC = to.beforeAccidentalActual
             val idx = fromScaleBeforeACC.indexOf(toBeforeACC)
-            return of1BaseIndexInMajorScale(idx + 1, to.accidental.getOffset() - fromScale[idx].accidental.getOffset() - fromAccidental.getOffset())
+            return of1BaseIndexInMajorScale(idx + 1, to.accidental.offset - fromScale[idx].accidental.offset - fromAccidental.offset)
         }
 
         private fun getCompositeKey(num: Int, quality: IntervalQuality) : Int {
