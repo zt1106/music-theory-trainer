@@ -48,7 +48,7 @@ open class RelativeChord(offsets: Set<Int>) {
         val result = mutableListOf<ChordAnnotation>()
         val inversionsWithItself = inversions.toMutableList().apply { add(0, this@RelativeChord) }
         // all common chords(defined in ChordType) with their inversions
-        ChordType.values().forEach { chordType ->
+        ChordSonority.values().forEach { chordType ->
             inversionsWithItself.forEachIndexed { idx, chord ->
                 if (chord.steps == chordType.steps) {
                     val inversion = if (idx == 0) {
@@ -100,8 +100,10 @@ class Chord private constructor(val root : Note, val others : Set<Note>) : Actua
     others.map { it.actual.getStepsToLeft(root.actual) }.toSet()) {
 
     val notes = others.toMutableSet().apply { add(root) }.toSet()
+    // TODO filter duplicate other notes in init block
+    constructor(vararg notes: Note) : this(notes[0], notes.filterIndexed { index, _ -> index > 0 }.toSet())
 
-    constructor(vararg notes : Note) : this(notes[0], notes.filterIndexed { index, _ -> index > 0 }.toSet())
+    constructor(notes : List<Note>) : this(notes[0], notes.filterIndexed { index, _ -> index > 0 }.toSet())
 
     init {
         require(notes.map { it.actual }.toSet().size == others.size + 1)
@@ -112,28 +114,53 @@ class Chord private constructor(val root : Note, val others : Set<Note>) : Actua
         val beforeActualNote = annotation.getBeforeInversionRootActualNote(root.actual)
         return notes.find { it.actual == beforeActualNote } ?: throw IllegalStateException()
     }
+
+    private val toString by lazy { "${root}_${others.map { it.toString() }.joinToString("_")}" }
+
+    override fun toString(): String = toString
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        if (!super.equals(other)) return false
+
+        other as Chord
+
+        if (root != other.root) return false
+        if (others != other.others) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + root.hashCode()
+        result = 31 * result + others.hashCode()
+        return result
+    }
 }
 
-class ChordAnnotation(val chordType: ChordType,
+class ChordAnnotation(val chordSonority: ChordSonority,
                       val inversion: Int) {
     init {
-        require(inversion < chordType.size) {"invalid inversion: $inversion"}
+        require(inversion < chordSonority.size) {"invalid inversion: $inversion"}
     }
 
     val beforeInversionRootStep : Int by lazy {
         if (inversion == 0) {
             0
         }else {
-            chordType.steps.sorted()[inversion - 1]
+            chordSonority.steps.sorted()[inversion - 1]
         }
     }
 
     fun getBeforeInversionRootActualNote(root : ActualNote) : ActualNote = root.getByOffset(-beforeInversionRootStep)
 }
 
-enum class LeadSheetSymbol {
+class LeadSheetAnnotation(val root: Note, val annotation: ChordAnnotation) {
 
 }
+
+class RomanNumAnnotation
 
 /**
  * figured bass notation for triads and 7ths without additional accidentals
@@ -147,13 +174,24 @@ enum class FiguredBass(val size: Int, val inversion: Int) {
     FOUR_THREE(4, 2),
     FOUR_TWO(4, 3);
 
-    fun realizeToLeadSheet(key: Key) {
-
+    fun realizeToChordAnnotation(root: Note, key: Key) : ChordAnnotation {
+        TODO()
     }
 }
 
+// TODO change Note to enum class? if Note need to be inherited? NO!
+
 // TODO change to normal class so new chord type can be added?
-enum class ChordType(val steps: Set<Int>) {
+
+enum class DiatonicChordType(val indexInScale: List<Int>) {
+    TRIAD(0, 2, 4),
+    SEVEN_TH(0, 2, 4, 6);
+
+    constructor(vararg indexes: Int) : this(indexes.toList())
+    val size = indexInScale.size
+}
+
+enum class ChordSonority(val steps: Set<Int>) {
     MAJOR_TRIAD(4, 7),
     MINOR_TRIAD(3, 7),
     AUGMENTED_TRIAD(4, 8),
@@ -165,21 +203,11 @@ enum class ChordType(val steps: Set<Int>) {
     DIMISHED_7TH(3, 6, 9);
 
     companion object {
-        val triads: List<ChordType> by lazy { values().filter { it.isTriad() } }
-        val sevens: List<ChordType> by lazy { values().filter { it.is7th() } }
-        fun valuesOfSize(chordSize: Int): List<ChordType> {
-            return values().filter { it.steps.size + 1 == chordSize }
-        }
-
     }
-
-    fun of(root: ActualNote) : ActualChord = ActualChord(root, steps)
 
     constructor(vararg stepsArr: Int) : this(stepsArr.toSet())
 
     val size : Int by lazy { steps.size + 1 }
 
-    fun isTriad(): Boolean = steps.size == 2
-
-    fun is7th(): Boolean = steps.size == 3
+    fun of(root: ActualNote) : ActualChord = ActualChord(root, steps)
 }
