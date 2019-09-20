@@ -1,3 +1,5 @@
+import kotlin.test.assertEquals
+
 /**
  * Created by ZengTian on 2019/9/10.
  */
@@ -7,5 +9,23 @@ fun Any?.println() {
 
 fun <T : Any?> T.alsoPrintln(): T {
     this.println()
+    return this
+}
+
+fun Any?.assertEquals(other: Any, message: String? = null) {
+    assertEquals(other, this, message)
+}
+
+fun <T : Any?> T.assertEqualsAnd(other: Any, message: String? = null): T {
+    this.assertEquals(other, message)
+    return this
+}
+
+fun <T : Any?> T.assertTrue(block: (T) -> Boolean) {
+    kotlin.test.assertTrue { block(this) }
+}
+
+fun <T : Any?> T.assertTrueAnd(block: (T) -> Boolean): T {
+    this.assertTrue(block)
     return this
 }
