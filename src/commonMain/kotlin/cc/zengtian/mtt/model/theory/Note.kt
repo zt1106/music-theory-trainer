@@ -59,5 +59,13 @@ class Note private constructor(val actual: ActualNote, val accidental: Accidenta
         require(!(actual.needResolve && accidental == null)) { "invalid note $beforeAccidentalActual $accidental" }
     }
 
-    override fun toString(): String = beforeAccidentalActual.toString() + "_" + accidental.toString()
+    private val toString : String by lazy {
+        if (accidental == null) {
+            beforeAccidentalActual.toString()
+        } else {
+            beforeAccidentalActual.toString() + "_" + accidental.toString()
+        }
+    }
+
+    override fun toString(): String = toString
 }
