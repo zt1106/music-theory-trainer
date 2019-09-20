@@ -65,6 +65,21 @@ enum class Key(val startingNote: Note) {
         return result
     }
 
+    fun getDiatonicChord(scale: Scale, diatonicChordType: DiatonicChordType, num : Int) : Chord {
+        require(scale.noteCount == 7) { "scale: $scale not supported" }
+        val scaleNotes = getNotesOfScale(scale)
+        val notes = mutableListOf<Note>()
+        val offset = num - 1
+        for (idx in diatonicChordType.indexInScale) {
+            var offsetAdded = idx + offset
+            if (offsetAdded > 6) {
+                offsetAdded -= 7
+            }
+            notes.add(scaleNotes[offsetAdded])
+        }
+        return Chord(notes)
+    }
+
     fun getAccidentalCountOfScale(scale: Scale): Int {
         val notes = getNotesOfScale(scale)
         return notes.count { it.accidental != null }
