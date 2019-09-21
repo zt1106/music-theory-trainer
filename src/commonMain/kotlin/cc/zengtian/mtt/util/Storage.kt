@@ -23,6 +23,14 @@ object Storage {
         }
     }
 
+    inline fun <reified T : Any> saveByClassName(value: T) {
+        save(T::class.simpleName!!, value)
+    }
+
+    inline fun <reified T : Any> getByClassName() : T? {
+        return get(T::class.simpleName!!)
+    }
+
     @UseExperimental(ImplicitReflectionSerializer::class)
     inline fun <reified T : Any> save(key: String, value: T) {
         LocalStorage.save(key, Json.stringify(value).base64Encode())

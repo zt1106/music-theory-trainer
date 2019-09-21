@@ -1,4 +1,4 @@
-package cc.zengtian.mtt.model.config
+package cc.zengtian.mtt.config
 
 import kotlinx.serialization.Serializable
 

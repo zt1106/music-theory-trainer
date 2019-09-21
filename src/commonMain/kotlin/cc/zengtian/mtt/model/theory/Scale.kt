@@ -1,5 +1,8 @@
 package cc.zengtian.mtt.model.theory
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class Scale private constructor(val name: String, val steps: List<Int>) {
 
     @Suppress("MemberVisibilityCanBePrivate")
