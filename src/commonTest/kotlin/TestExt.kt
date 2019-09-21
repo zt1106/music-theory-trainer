@@ -1,4 +1,5 @@
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  * Created by ZengTian on 2019/9/10.
@@ -7,7 +8,7 @@ fun Any?.println() {
     this?.apply { println(this) }
 }
 
-fun <T : Any?> T.alsoPrintln(): T {
+fun <T : Any?> T.printlnAnd(): T {
     this.println()
     return this
 }
@@ -28,4 +29,8 @@ fun <T : Any?> T.assertTrue(block: (T) -> Boolean) {
 fun <T : Any?> T.assertTrueAnd(block: (T) -> Boolean): T {
     this.assertTrue(block)
     return this
+}
+
+fun Any?.assertIsNull() {
+    assertNull(this)
 }

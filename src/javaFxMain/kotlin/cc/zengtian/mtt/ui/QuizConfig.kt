@@ -1,4 +1,4 @@
-package cc.zengtian.st.ui
+package cc.zengtian.mtt.ui
 
 import cc.zengtian.mtt.model.theory.Key
 import cc.zengtian.mtt.model.theory.Scale

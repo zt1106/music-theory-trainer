@@ -1,9 +1,9 @@
-package cc.zengtian.st
+package cc.zengtian.mtt
 
 /**
  * Created by ZengTian on 2019/9/5.
  */
-import cc.zengtian.st.ui.QuestionConfigView
+import cc.zengtian.mtt.ui.QuestionConfigView
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.Stylesheet

@@ -34,7 +34,7 @@ enum class ActualNote {
         }
     }
 
-    fun getStepsToRight(another: ActualNote): Int {
+    private fun getStepsToRight(another: ActualNote): Int {
         return if (another.ordinal >= this.ordinal) {
             another.ordinal - this.ordinal
         } else {
@@ -87,16 +87,6 @@ enum class ActualNote {
         }
         throw IllegalStateException()
     }
-
-    private val toString: String by lazy {
-        if (name.endsWith("_")) {
-            name.substring(0, 1)
-        } else {
-            name
-        }
-    }
-
-    override fun toString(): String = toString
 }
 
 

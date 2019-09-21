@@ -1,6 +1,6 @@
 package model.theory
 
-import alsoPrintln
+import printlnAnd
 import cc.zengtian.mtt.model.theory.ActualNote.*
 import cc.zengtian.mtt.model.theory.Key
 import cc.zengtian.mtt.model.theory.Scale
@@ -26,7 +26,7 @@ class ScaleTest {
         val letters = listOf(A, B, C, D, E, F, G)
         Key.values().map { key -> key.getNotesOfScale(Scale.MAJOR).map { note -> note.beforeAccidentalActual } }
             .forEach { beforeAcc ->
-                assertTrue(beforeAcc.alsoPrintln().containsAll(letters))
+                assertTrue(beforeAcc.printlnAnd().containsAll(letters))
             }
     }
 
@@ -36,7 +36,7 @@ class ScaleTest {
         Key.values().forEach { key ->
             scales.forEach { scale ->
                 val notes = key.getNotesOfScale(scale)
-                val beforeAcc = notes.map { it.beforeAccidentalActual }.alsoPrintln()
+                val beforeAcc = notes.map { it.beforeAccidentalActual }.printlnAnd()
                 assertEquals(notes.size, beforeAcc.distinct().size)
             }
         }

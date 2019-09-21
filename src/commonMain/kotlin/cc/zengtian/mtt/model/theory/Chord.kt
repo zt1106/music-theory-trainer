@@ -96,20 +96,20 @@ open class ActualChord constructor(val actualNote: ActualNote, steps: Set<Int>) 
 
 }
 
-class Chord private constructor(val root : Note, val others : Set<Note>) : ActualChord(root.actual,
+class Chord private constructor(val root: Note, val others: Set<Note>) : ActualChord(root.actual,
     others.map { it.actual.getStepsToLeft(root.actual) }.toSet()) {
 
     val notes = others.toMutableSet().apply { add(root) }.toSet()
-    // TODO filter duplicate other notes in init block
+
     constructor(vararg notes: Note) : this(notes[0], notes.filterIndexed { index, _ -> index > 0 }.toSet())
 
-    constructor(notes : List<Note>) : this(notes[0], notes.filterIndexed { index, _ -> index > 0 }.toSet())
+    constructor(notes: List<Note>) : this(notes[0], notes.filterIndexed { index, _ -> index > 0 }.toSet())
 
     init {
         require(notes.map { it.actual }.toSet().size == others.size + 1)
     }
 
-    fun beforeInversionRootNote(annotation: ChordAnnotation) : Note {
+    fun beforeInversionRootNote(annotation: ChordAnnotation): Note {
         require(annotations.contains(annotation))
         val beforeActualNote = annotation.getBeforeInversionRootActualNote(root.actual)
         return notes.find { it.actual == beforeActualNote } ?: throw IllegalStateException()
@@ -142,18 +142,18 @@ class Chord private constructor(val root : Note, val others : Set<Note>) : Actua
 class ChordAnnotation(val chordSonority: ChordSonority,
                       val inversion: Int) {
     init {
-        require(inversion < chordSonority.size) {"invalid inversion: $inversion"}
+        require(inversion < chordSonority.size) { "invalid inversion: $inversion" }
     }
 
-    val beforeInversionRootStep : Int by lazy {
+    val beforeInversionRootStep: Int by lazy {
         if (inversion == 0) {
             0
-        }else {
+        } else {
             chordSonority.steps.sorted()[inversion - 1]
         }
     }
 
-    fun getBeforeInversionRootActualNote(root : ActualNote) : ActualNote = root.getByOffset(-beforeInversionRootStep)
+    fun getBeforeInversionRootActualNote(root: ActualNote): ActualNote = root.getByOffset(-beforeInversionRootStep)
 }
 
 class LeadSheetAnnotation(val root: Note, val annotation: ChordAnnotation) {
@@ -174,7 +174,7 @@ enum class FiguredBass(val size: Int, val inversion: Int) {
     FOUR_THREE(4, 2),
     FOUR_TWO(4, 3);
 
-    fun realizeToChordAnnotation(root: Note, key: Key) : ChordAnnotation {
+    fun realizeToChordAnnotation(root: Note, key: Key): ChordAnnotation {
         TODO()
     }
 }
@@ -188,6 +188,7 @@ enum class DiatonicChordType(val indexInScale: List<Int>) {
     SEVEN_TH(0, 2, 4, 6);
 
     constructor(vararg indexes: Int) : this(indexes.toList())
+
     val size = indexInScale.size
 }
 
@@ -207,7 +208,7 @@ enum class ChordSonority(val steps: Set<Int>) {
 
     constructor(vararg stepsArr: Int) : this(stepsArr.toSet())
 
-    val size : Int by lazy { steps.size + 1 }
+    val size: Int by lazy { steps.size + 1 }
 
-    fun of(root: ActualNote) : ActualChord = ActualChord(root, steps)
+    fun of(root: ActualNote): ActualChord = ActualChord(root, steps)
 }

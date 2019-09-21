@@ -12,3 +12,5 @@ fun Napier.info(s: String) = i(s)
 fun Napier.debug(s: String) = d(s)
 
 fun Napier.debug(s: String, e: Exception) = d(s, e)
+
+fun Napier.error(s: String, e: Exception) = e(s, e)

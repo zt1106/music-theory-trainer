@@ -1,6 +1,6 @@
 package cc.zengtian.mtt.model.theory
 
-class Scale private constructor(private val name: String, val steps: List<Int>) {
+class Scale private constructor(val name: String, val steps: List<Int>) {
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
