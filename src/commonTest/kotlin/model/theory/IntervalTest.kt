@@ -29,10 +29,8 @@ class IntervalTest {
 
     @Test
     fun `test interval get below from above`() {
-        val g = Note.ofActual(G, null)
         val p5 = Interval.of(5, PERFECT)
-        val c = Note.ofActual(C, null)
-        assertEquals(c, p5.getbelowFromAbove(g))
+        assertEquals(Note.C, p5.getbelowFromAbove(Note.G))
         val cFlat = Note.ofActual(B, FLAT)
         val aug2 = Interval.of(2, AUGMENTED)
         assertNull(aug2.getbelowFromAbove(cFlat))

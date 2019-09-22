@@ -14,5 +14,12 @@ data class ScaleQuizConfig (
         val excluded = listOf(Key.C, Key.G_FLAT, Key.C_FLAT, Key.C_SHARP)
         excluded.containsNot(it)
     }.map { it.name }.toSet(),
-    val selectedScales: Set<String> = setOf(Scale.IONIAN.name)
+    val selectedScales: Set<String> = setOf(Scale.IONIAN.name),
+    val questionCount: Int = 0,
+    val selectedAnswerType: Set<ScaleQuestionAnswerType> = ScaleQuestionAnswerType.values().toSet()
 )
+
+
+enum class ScaleQuestionAnswerType {
+    KEY, SCALE, NUM, NOTE
+}

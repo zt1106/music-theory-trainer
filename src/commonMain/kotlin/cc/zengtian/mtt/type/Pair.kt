@@ -10,15 +10,15 @@ data class MutablePair<A, B>(
     override fun toString(): String = "($first, $second)"
 }
 
-typealias CheckBoxValue<T> = MutablePair<T, Boolean>
+typealias CheckBoxModel<T> = MutablePair<T, Boolean>
 
-var CheckBoxValue<*>.selected
+var CheckBoxModel<*>.selected
     get() = this.second
     set(value) {
         this.second = value
     }
 
-var <T> CheckBoxValue<T>.data
+var <T> CheckBoxModel<T>.data
     get() = this.first
     set(value) {
         this.first = value

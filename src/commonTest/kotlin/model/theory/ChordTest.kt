@@ -1,20 +1,11 @@
 package model.theory
 
 import assertEquals
-import cc.zengtian.mtt.model.theory.*
+import cc.zengtian.mtt.model.theory.ActualChord
+import cc.zengtian.mtt.model.theory.ActualNote
+import cc.zengtian.mtt.model.theory.Chord
 import cc.zengtian.mtt.model.theory.ChordSonority.*
-import cc.zengtian.mtt.model.theory.Note.A_FLAT
-import cc.zengtian.mtt.model.theory.Note.B
-import cc.zengtian.mtt.model.theory.Note.B_FLAT
-import cc.zengtian.mtt.model.theory.Note.C
-import cc.zengtian.mtt.model.theory.Note.D_FLAT
-import cc.zengtian.mtt.model.theory.Note.D_SHARP
-import cc.zengtian.mtt.model.theory.Note.E
-import cc.zengtian.mtt.model.theory.Note.E_FLAT
-import cc.zengtian.mtt.model.theory.Note.F
-import cc.zengtian.mtt.model.theory.Note.F_SHARP
-import cc.zengtian.mtt.model.theory.Note.G
-import cc.zengtian.mtt.model.theory.Note.G_SHARP
+import cc.zengtian.mtt.model.theory.Note.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -76,6 +67,6 @@ class ChordTest {
         Chord(C, E, G, B_FLAT).annotations[0].chordSonority.assertEquals(DOMINANT_7TH)
         Chord(C, E_FLAT, G, B).annotations[0].chordSonority.assertEquals(MINOR_MAJOR_7TH)
         Chord(C, E_FLAT, F_SHARP, B_FLAT).annotations[0].chordSonority.assertEquals(HALF_DIMISHED_7TH)
-        Chord(C, E_FLAT, F_SHARP, Note.of(ActualNote.B, Accidental.DOUBLE_FLAT)).annotations[0].chordSonority.assertEquals(DIMISHED_7TH)
+        Chord(C, E_FLAT, F_SHARP, B_DOUBLE_FLAT).annotations[0].chordSonority.assertEquals(DIMISHED_7TH)
     }
 }

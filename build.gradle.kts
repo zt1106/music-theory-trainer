@@ -16,7 +16,7 @@ kotlin {
     val javaFx = jvm("javaFx") {
         @Suppress("UNUSED_VARIABLE") val main by compilations.getting {
             kotlinOptions {
-                jvmTarget = "1.6"
+                jvmTarget = "1.8"
             }
         }
     }
