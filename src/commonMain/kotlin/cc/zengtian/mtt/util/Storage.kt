@@ -12,6 +12,7 @@ expect object LocalStorage {
     fun remove(key: String)
 }
 
+@UseExperimental(ImplicitReflectionSerializer::class)
 object Storage {
     fun remove(key: String) = LocalStorage.remove(key)
     fun getString(key: String): String? = LocalStorage.get(key)
@@ -31,12 +32,20 @@ object Storage {
         return get(T::class.simpleName!!)
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
+    // not working right now
+//    inline fun <reified T : Any> getByClassNameOrNew() : T {
+//        val old = getByClassName<T>()
+//        if (old != null) {
+//            return old
+//        }
+//        val con = T::class.constructors.find { it.parameters.isEmpty() } ?: throw IllegalArgumentException()
+//        return con.call().apply { saveByClassName(this) }
+//    }
+
     inline fun <reified T : Any> save(key: String, value: T) {
         LocalStorage.save(key, Json.stringify(value).base64Encode())
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     inline fun <reified T : Any> get(key: String): T? {
         val str = LocalStorage.get(key) ?: return null
         return try {
@@ -47,12 +56,10 @@ object Storage {
         }
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     inline fun <reified T : Any> saveList(key: String, list: List<T>) {
         LocalStorage.save(key, Json.stringify(list).base64Encode())
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     inline fun <reified T : Any> getList(key: String): List<T> {
         val str = LocalStorage.get(key) ?: return emptyList()
         return try {
@@ -63,12 +70,10 @@ object Storage {
         }
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     inline fun <reified V : Any> saveMap(key: String, map: Map<String, V>) {
         LocalStorage.save(key, Json.stringify(map).base64Encode())
     }
 
-    @UseExperimental(ImplicitReflectionSerializer::class)
     inline fun <reified V : Any> getMap(key: String): Map<String, V> {
         val str = LocalStorage.get(key) ?: return emptyMap()
         return try {
