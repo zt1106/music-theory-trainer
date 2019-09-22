@@ -86,5 +86,4 @@ enum class Key(val startingNote: Note) {
     }
 
     fun getAccidentalNotesOfScale(scale: Scale): List<Note> = getNotesOfScale(scale).filter { it.accidental != null }
-
 }

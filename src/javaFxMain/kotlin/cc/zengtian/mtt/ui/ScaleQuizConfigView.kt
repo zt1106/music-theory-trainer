@@ -1,9 +1,9 @@
 package cc.zengtian.mtt.ui
 
 import cc.zengtian.mtt.controller.ScaleQuizConfigController
-import cc.zengtian.mtt.type.data
-import cc.zengtian.mtt.type.selected
-import javafx.beans.property.SimpleBooleanProperty
+import cc.zengtian.mtt.model.ui.data
+import cc.zengtian.mtt.model.ui.selected
+import cc.zengtian.mtt.util.checkbox
 import javafx.scene.Parent
 import tornadofx.*
 
@@ -16,17 +16,38 @@ class ScaleQuizConfigView : View() {
         hbox {
             vbox {
                 label("select keys")
-                controller.keyModels.forEach { checkBoxValue ->
-                    checkbox(checkBoxValue.data.name, SimpleBooleanProperty(checkBoxValue.selected)) {
-                        setOnAction { checkBoxValue.selected = isSelected }
+                controller.keyModels.forEach { model ->
+                    checkbox(model.data.name, model.selected) {
+                        setOnAction { model.selected = isSelected }
                     }
                 }
             }
             vbox {
                 label("select scales")
-                controller.scaleModels.forEach { checkBoxValue ->
-                    checkbox(checkBoxValue.data.name, SimpleBooleanProperty(checkBoxValue.selected)) {
-                        setOnAction { checkBoxValue.selected = isSelected }
+                controller.scaleModels.forEach { model ->
+                    checkbox(model.data.name, model.selected) {
+                        setOnAction { model.selected = isSelected }
+                    }
+                }
+            }
+            vbox {
+                label("select question type")
+                controller.answerTypeModels.forEach { model ->
+                    checkbox(model.data.name, model.selected) {
+                        setOnAction { model.selected = isSelected }
+                    }
+                }
+            }
+            vbox {
+                label("select note display")
+                togglegroup {
+                    controller.noteDisplayModel.data.forEach { type ->
+                        radiobutton(controller.noteDisplayModel.textGetter(type)) {
+                            if (controller.noteDisplayModel.selected == type) {
+                                isSelected = true
+                            }
+                            setOnAction { controller.noteDisplayModel.selected = type }
+                        }
                     }
                 }
             }

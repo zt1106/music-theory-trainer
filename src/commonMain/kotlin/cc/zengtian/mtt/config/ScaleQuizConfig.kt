@@ -16,10 +16,15 @@ data class ScaleQuizConfig (
     }.map { it.name }.toSet(),
     val selectedScales: Set<String> = setOf(Scale.IONIAN.name),
     val questionCount: Int = 0,
-    val selectedAnswerType: Set<ScaleQuestionAnswerType> = ScaleQuestionAnswerType.values().toSet()
+    val selectedAnswerType: Set<ScaleQuestionAnswerType> = ScaleQuestionAnswerType.values().toSet(),
+    val selectedNoteDisplayType: NoteDisplayType = NoteDisplayType.LATIN
 )
 
 
 enum class ScaleQuestionAnswerType {
     KEY, SCALE, NUM, NOTE
+}
+
+enum class NoteDisplayType {
+    LATIN, STAFF
 }
