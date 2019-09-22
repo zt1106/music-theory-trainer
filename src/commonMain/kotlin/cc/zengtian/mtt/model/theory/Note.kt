@@ -1,39 +1,54 @@
 package cc.zengtian.mtt.model.theory
 
-import kotlin.math.absoluteValue
+import cc.zengtian.mtt.model.theory.Accidental.*
 
-class Note private constructor(val actual: ActualNote, val accidental: Accidental?) {
+enum class Note constructor(actual: ActualNote, val accidental: Accidental?) {
+
+    // no accidental
+    C(ActualNote.C, null),
+    D(ActualNote.D, null),
+    E(ActualNote.E, null),
+    F(ActualNote.F, null),
+    G(ActualNote.G, null),
+    A(ActualNote.A, null),
+    B(ActualNote.B, null),
+    // one accidental
+    C_SHARP(ActualNote.C, SHARP),
+    C_FLAT(ActualNote.C, FLAT),
+    D_SHARP(ActualNote.D, SHARP),
+    D_FLAT(ActualNote.D, FLAT),
+    E_SHARP(ActualNote.E, SHARP),
+    E_FLAT(ActualNote.E, FLAT),
+    F_SHARP(ActualNote.F, SHARP),
+    F_FLAT(ActualNote.F, FLAT),
+    G_SHARP(ActualNote.G, SHARP),
+    G_FLAT(ActualNote.G, FLAT),
+    A_SHARP(ActualNote.A, SHARP),
+    A_FLAT(ActualNote.A, FLAT),
+    B_SHARP(ActualNote.B, SHARP),
+    B_FLAT(ActualNote.B, FLAT),
+    // two accidental
+    C_DOUBLE_SHARP(ActualNote.C, DOUBLE_SHARP),
+    C_DOUBLE_FLAT(ActualNote.C, DOUBLE_FLAT),
+    D_DOUBLE_SHARP(ActualNote.D, DOUBLE_SHARP),
+    D_DOUBLE_FLAT(ActualNote.D, DOUBLE_FLAT),
+    E_DOUBLE_SHARP(ActualNote.E, DOUBLE_SHARP),
+    E_DOUBLE_FLAT(ActualNote.E, DOUBLE_FLAT),
+    F_DOUBLE_SHARP(ActualNote.F, DOUBLE_SHARP),
+    F_DOUBLE_FLAT(ActualNote.F, DOUBLE_FLAT),
+    G_DOUBLE_SHARP(ActualNote.G, DOUBLE_SHARP),
+    G_DOUBLE_FLAT(ActualNote.G, DOUBLE_FLAT),
+    A_DOUBLE_SHARP(ActualNote.A, DOUBLE_SHARP),
+    A_DOUBLE_FLAT(ActualNote.A, DOUBLE_FLAT),
+    B_DOUBLE_SHARP(ActualNote.B, DOUBLE_SHARP),
+    B_DOUBLE_FLAT(ActualNote.B, DOUBLE_FLAT);
 
     companion object {
         private val ALL_NOTES = mutableMapOf<Int, Note>().apply {
-            ActualNote.values().forEach { actualNote ->
-                Accidental.forEachIncludingNull { accidental ->
-                    try {
-                        put(getCompositeKey(actualNote, accidental), Note(actualNote, accidental))
-                    } catch (e: Exception) {
-                    }
-                }
+            values().forEach { note ->
+                put(getCompositeKey(note.actual, note.accidental), note)
             }
         }.toMap()
-        val ALL_NON_DOUBLE_ACCIDENTAL_NOTES = ALL_NOTES.filterValues { it.accidental.offset.absoluteValue < 2 }
-        // common notes
-        val C = of(ActualNote.C, null)
-        val C_SHARP = of(ActualNote.C, Accidental.SHARP)
-        val D_FLAT = of(ActualNote.D, Accidental.FLAT)
-        val D = of(ActualNote.D, null)
-        val D_SHARP = of(ActualNote.D, Accidental.SHARP)
-        val E_FLAT = of(ActualNote.E, Accidental.FLAT)
-        val E = of(ActualNote.E, null)
-        val F = of(ActualNote.F, null)
-        val F_SHARP = of(ActualNote.F, Accidental.SHARP)
-        val G_FLAT = of(ActualNote.G, Accidental.FLAT)
-        val G = of(ActualNote.G, null)
-        val G_SHARP = of(ActualNote.G, Accidental.SHARP)
-        val A_FLAT = of(ActualNote.A, Accidental.FLAT)
-        val A = of(ActualNote.A, null)
-        val A_SHARP = of(ActualNote.A, Accidental.SHARP)
-        val B_FLAT = of(ActualNote.B, Accidental.FLAT)
-        val B = of(ActualNote.B, null)
         fun ofActual(actualNote: ActualNote, accidental: Accidental?): Note {
             return ALL_NOTES[getCompositeKey(actualNote, accidental)]
                 ?: throw IllegalArgumentException("$actualNote $accidental")
@@ -50,16 +65,13 @@ class Note private constructor(val actual: ActualNote, val accidental: Accidenta
         }
     }
 
+    val actual: ActualNote = actual.getByOffset(accidental.offset)
+
     val key: Key? by lazy { Key.values().find { it.startingNote == this } }
 
-    val beforeAccidentalActual: ActualNote by lazy { actual.getByOffset(-accidental.offset) }
+    val beforeAccidentalActual: ActualNote by lazy { this.actual.getByOffset(-accidental.offset) }
 
-    init {
-        require(!(beforeAccidentalActual.needResolve && accidental != null)) { "invalid note $beforeAccidentalActual $accidental" }
-        require(!(actual.needResolve && accidental == null)) { "invalid note $beforeAccidentalActual $accidental" }
-    }
-
-    private val toString : String by lazy {
+    private val toString: String by lazy {
         if (accidental == null) {
             beforeAccidentalActual.toString()
         } else {
