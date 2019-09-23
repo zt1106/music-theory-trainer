@@ -19,8 +19,15 @@ class ScaleQuizController {
 
     private val keys = Key.values().filter { config.selectedKeys.contains(it.name) }
 
-    var cur: ScaleQuestionModel = generateQuestion()
-        private set
+    var curQuestion: ScaleQuestionModel = generateQuestion()
+        private set(value) {
+            if (value != field) {
+                curQuestionChangedListeners.forEach { it(value) }
+            }
+            field = value
+        }
+
+    val curQuestionChangedListeners = mutableListOf<(ScaleQuestionModel) -> Unit>()
 
     var answeredCount = 0
         private set
@@ -48,13 +55,13 @@ class ScaleQuizController {
         if (totalCount == config.questionCount) {
             return false
         }
-        if (cur.isAnswered()) {
+        if (curQuestion.isAnswered()) {
             answeredCount++
         }
-        if (cur.isCorrect()) {
+        if (curQuestion.isCorrect()) {
             correctCount++
         }
-        cur = generateQuestion()
+        curQuestion = generateQuestion()
         return true
     }
 }
