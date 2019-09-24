@@ -6,7 +6,10 @@ import cc.zengtian.mtt.model.theory.Key
 import cc.zengtian.mtt.model.theory.Note
 import cc.zengtian.mtt.model.theory.Scale
 import cc.zengtian.mtt.util.Storage
+import kotlin.properties.Delegates
+import kotlin.properties.ObservableProperty
 import kotlin.random.Random
+import kotlin.reflect.KProperty
 
 /**
  * Created by ZengTian on 2019/9/22.
@@ -29,6 +32,8 @@ class ScaleQuizController {
 
     val curQuestionChangedListeners = mutableListOf<(ScaleQuestionModel) -> Unit>()
 
+    fun notifyCurQuestionChanged() = curQuestionChangedListeners.forEach { it(curQuestion) }
+
     var answeredCount = 0
         private set
 
@@ -41,11 +46,18 @@ class ScaleQuizController {
     private fun generateQuestion(): ScaleQuestionModel {
         val scale = scales.random()
         val key = keys.random()
-        val num = Random.nextInt(1, scale.noteCount + 1)
+        // exclude 1 because too easy
+        val num = Random.nextInt(2, scale.noteCount + 1)
         val scaleNotes = key.getNotesOfScale(scale)
         val note = scaleNotes[num - 1]
         val type = config.selectedAnswerType.random()
         return ScaleQuestionModel(num, key, scale, note, type)
+    }
+
+    fun answer(answer: Any) {
+        if (!curQuestion.isAnswered()) {
+            curQuestion.answer = answer
+        }
     }
 
     /**
@@ -71,19 +83,43 @@ data class ScaleQuestionModel(
     val key: Key,
     val scale: Scale,
     val note: Note,
-    val answerType: ScaleQuestionAnswerType,
-    var userAnswer: Any? = null
+    val answerType: ScaleQuestionAnswerType
 ) {
-    val numOptions: List<Int> by lazy {
+    var answerProperty = Delegates.observable<Any?>(null){ property, oldValue, newValue ->
+
+    }
+
+    var answer: Any? = null
+        set(value) {
+            if (field != null) {
+                return
+            }
+            field = value
+            answeredListeners.forEach { it(this) }
+        }
+
+    val answeredListeners: MutableList<(ScaleQuestionModel) -> Unit> = mutableListOf()
+
+    private val numOptions: List<Int> by lazy {
         val list = mutableListOf<Int>()
         repeat(scale.noteCount) {
             list.add(it + 1)
         }
         list
     }
-    val keyOptions: List<Key> by lazy { Key.values().toList() }
-    val scaleOptions: List<Scale> by lazy { Scale.builtInValues() }
-    val noteOptions: List<Note> by lazy { Note.values().toList() }
+    private val keyOptions: List<Key> by lazy { Key.values().toList() }
+    private val scaleOptions: List<Scale> by lazy { Scale.builtInValues() }
+    private val noteOptions: List<Note> by lazy { Note.values().toList() }
+
+    val options: List<Any> by lazy {
+        when (answerType) {
+            ScaleQuestionAnswerType.KEY -> keyOptions
+            ScaleQuestionAnswerType.SCALE -> scaleOptions
+            ScaleQuestionAnswerType.NUM -> numOptions
+            ScaleQuestionAnswerType.NOTE -> noteOptions
+        }
+    }
+
     @Suppress("IMPLICIT_CAST_TO_ANY")
     val correctAnswer: Any by lazy {
         when (answerType) {
@@ -94,6 +130,28 @@ data class ScaleQuestionModel(
         }
     }
 
-    fun isCorrect() = correctAnswer == userAnswer
-    fun isAnswered() = userAnswer != null
+    val questionText: String by lazy {
+        when (answerType) {
+            ScaleQuestionAnswerType.KEY -> "$num $note $scale?"
+            ScaleQuestionAnswerType.SCALE -> "$num $note $key?"
+            ScaleQuestionAnswerType.NUM -> "$note $key $scale?"
+            ScaleQuestionAnswerType.NOTE -> "$num $key $scale?"
+        }
+    }
+
+    fun isCorrect() = correctAnswer == answer
+    fun isAnswered() = answer != null
+}
+
+class SimpleProperty<T>(t: T) : ObservableProperty<T>(t) {
+
+    val observers = mutableListOf<(property: KProperty<*>, oldValue: T, newValue: T) -> Unit>()
+
+    fun MutableList<(property: KProperty<*>, oldValue: T, newValue: T) -> Unit>.add(block:(T) -> Unit) {
+//        observers.add()
+    }
+
+    override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T) {
+        observers.forEach { observer -> observer(property, oldValue, newValue) }
+    }
 }
