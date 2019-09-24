@@ -31,6 +31,7 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.13.0")
                 implementation("com.github.aakira:napier:0.0.8")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.1")
 //                implementation("com.soywiz:korim:1.6.6")
                 // not working right now!
 //                implementation("com.russhwolf:multiplatform-settings:0.3.3")
@@ -53,6 +54,7 @@ kotlin {
                 implementation("org.apache.xmlgraphics:batik-svg-dom:1.11")
                 implementation("org.apache.xmlgraphics:batik-swing:1.11")
                 implementation("org.apache.xmlgraphics:batik-svggen:1.11")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.3.1")
 //                implementation("com.russhwolf:multiplatform-settings-jvm:0.3.3")
             }
         }
