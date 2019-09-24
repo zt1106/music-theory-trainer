@@ -1,6 +1,6 @@
-package cc.zengtian.mtt.model.theory
+package cc.zengtian.mtt.theory
 
-import cc.zengtian.mtt.model.theory.IntervalQuality.*
+import cc.zengtian.mtt.theory.IntervalQuality.*
 import kotlin.math.absoluteValue
 
 class Interval private constructor(val num: Int, val quality: IntervalQuality) {

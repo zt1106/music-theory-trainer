@@ -1,6 +1,6 @@
-package cc.zengtian.mtt.model.theory
+package cc.zengtian.mtt.theory
 
-import cc.zengtian.mtt.model.theory.Accidental.*
+import cc.zengtian.mtt.theory.Accidental.*
 
 enum class Note constructor(actual: ActualNote, val accidental: Accidental?) {
 

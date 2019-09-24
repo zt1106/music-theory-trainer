@@ -1,4 +1,4 @@
-package cc.zengtian.mtt.model.ui
+package cc.zengtian.mtt.ui
 
 /**
  * Created by ZengTian on 2019/9/22.

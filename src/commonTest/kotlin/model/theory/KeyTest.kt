@@ -1,21 +1,21 @@
 package model.theory
 
 import assertEquals
-import cc.zengtian.mtt.model.theory.Chord
-import cc.zengtian.mtt.model.theory.DiatonicChordType.SEVEN_TH
-import cc.zengtian.mtt.model.theory.DiatonicChordType.TRIAD
-import cc.zengtian.mtt.model.theory.Key
-import cc.zengtian.mtt.model.theory.Note.A
-import cc.zengtian.mtt.model.theory.Note.B
-import cc.zengtian.mtt.model.theory.Note.B_FLAT
-import cc.zengtian.mtt.model.theory.Note.C
-import cc.zengtian.mtt.model.theory.Note.D
-import cc.zengtian.mtt.model.theory.Note.E
-import cc.zengtian.mtt.model.theory.Note.E_FLAT
-import cc.zengtian.mtt.model.theory.Note.F
-import cc.zengtian.mtt.model.theory.Note.G
-import cc.zengtian.mtt.model.theory.Scale.Companion.MAJOR
-import cc.zengtian.mtt.model.theory.Scale.Companion.MINOR
+import cc.zengtian.mtt.theory.Chord
+import cc.zengtian.mtt.theory.DiatonicChordType.SEVEN_TH
+import cc.zengtian.mtt.theory.DiatonicChordType.TRIAD
+import cc.zengtian.mtt.theory.Key
+import cc.zengtian.mtt.theory.Note.A
+import cc.zengtian.mtt.theory.Note.B
+import cc.zengtian.mtt.theory.Note.B_FLAT
+import cc.zengtian.mtt.theory.Note.C
+import cc.zengtian.mtt.theory.Note.D
+import cc.zengtian.mtt.theory.Note.E
+import cc.zengtian.mtt.theory.Note.E_FLAT
+import cc.zengtian.mtt.theory.Note.F
+import cc.zengtian.mtt.theory.Note.G
+import cc.zengtian.mtt.theory.Scale.Companion.MAJOR
+import cc.zengtian.mtt.theory.Scale.Companion.MINOR
 import kotlin.test.Test
 
 /**

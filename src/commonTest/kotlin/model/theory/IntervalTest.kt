@@ -1,10 +1,10 @@
 package model.theory
 
-import cc.zengtian.mtt.model.theory.Accidental.*
-import cc.zengtian.mtt.model.theory.ActualNote.*
-import cc.zengtian.mtt.model.theory.Interval
-import cc.zengtian.mtt.model.theory.IntervalQuality.*
-import cc.zengtian.mtt.model.theory.Note
+import cc.zengtian.mtt.theory.Accidental.*
+import cc.zengtian.mtt.theory.ActualNote.*
+import cc.zengtian.mtt.theory.Interval
+import cc.zengtian.mtt.theory.IntervalQuality.*
+import cc.zengtian.mtt.theory.Note
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

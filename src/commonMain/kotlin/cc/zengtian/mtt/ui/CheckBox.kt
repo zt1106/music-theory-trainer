@@ -1,4 +1,4 @@
-package cc.zengtian.mtt.model.ui
+package cc.zengtian.mtt.ui
 
 import cc.zengtian.mtt.type.MutablePair
 

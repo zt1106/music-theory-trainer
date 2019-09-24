@@ -34,7 +34,7 @@ class ScaleQuizFragment : Fragment() {
                             borderColor += box(Color.TRANSPARENT)
                         }
                         if (answer == question.correctAnswer) {
-                            question.answerProperty.addListener {
+                            question.answerProp.addListener {
                                 style(true) {
                                     borderColor += box(Color.GREEN)
                                 }

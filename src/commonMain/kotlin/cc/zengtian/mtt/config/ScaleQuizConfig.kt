@@ -1,7 +1,7 @@
 package cc.zengtian.mtt.config
 
-import cc.zengtian.mtt.model.theory.Key
-import cc.zengtian.mtt.model.theory.Scale
+import cc.zengtian.mtt.theory.Key
+import cc.zengtian.mtt.theory.Scale
 import cc.zengtian.mtt.util.containsNot
 import kotlinx.serialization.Serializable
 

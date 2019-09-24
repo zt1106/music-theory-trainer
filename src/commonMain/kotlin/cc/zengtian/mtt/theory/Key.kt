@@ -1,7 +1,7 @@
-package cc.zengtian.mtt.model.theory
+package cc.zengtian.mtt.theory
 
-import cc.zengtian.mtt.model.theory.Accidental.FLAT
-import cc.zengtian.mtt.model.theory.Accidental.SHARP
+import cc.zengtian.mtt.theory.Accidental.FLAT
+import cc.zengtian.mtt.theory.Accidental.SHARP
 
 enum class Key(val startingNote: Note) {
     C(Note.ofActual(ActualNote.C, null)),

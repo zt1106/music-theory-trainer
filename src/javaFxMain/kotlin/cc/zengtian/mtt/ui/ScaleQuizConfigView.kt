@@ -1,8 +1,6 @@
 package cc.zengtian.mtt.ui
 
 import cc.zengtian.mtt.controller.ScaleQuizConfigController
-import cc.zengtian.mtt.model.ui.data
-import cc.zengtian.mtt.model.ui.selected
 import cc.zengtian.mtt.util.checkbox
 import javafx.scene.Parent
 import tornadofx.*

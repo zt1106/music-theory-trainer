@@ -3,12 +3,12 @@ package cc.zengtian.mtt.controller
 import cc.zengtian.mtt.config.NoteDisplayType
 import cc.zengtian.mtt.config.ScaleQuestionAnswerType
 import cc.zengtian.mtt.config.ScaleQuizConfig
-import cc.zengtian.mtt.model.theory.Key
-import cc.zengtian.mtt.model.theory.Scale
-import cc.zengtian.mtt.model.ui.CheckBoxModel
-import cc.zengtian.mtt.model.ui.RadioButtonModel
-import cc.zengtian.mtt.model.ui.data
-import cc.zengtian.mtt.model.ui.selected
+import cc.zengtian.mtt.theory.Key
+import cc.zengtian.mtt.theory.Scale
+import cc.zengtian.mtt.ui.CheckBoxModel
+import cc.zengtian.mtt.ui.RadioButtonModel
+import cc.zengtian.mtt.ui.data
+import cc.zengtian.mtt.ui.selected
 import cc.zengtian.mtt.util.Storage
 import cc.zengtian.mtt.util.StorageKey
 

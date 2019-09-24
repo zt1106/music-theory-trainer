@@ -1,11 +1,11 @@
 package model.theory
 
 import assertEquals
-import cc.zengtian.mtt.model.theory.ActualChord
-import cc.zengtian.mtt.model.theory.ActualNote
-import cc.zengtian.mtt.model.theory.Chord
-import cc.zengtian.mtt.model.theory.ChordSonority.*
-import cc.zengtian.mtt.model.theory.Note.*
+import cc.zengtian.mtt.theory.ActualChord
+import cc.zengtian.mtt.theory.ActualNote
+import cc.zengtian.mtt.theory.Chord
+import cc.zengtian.mtt.theory.ChordSonority.*
+import cc.zengtian.mtt.theory.Note.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

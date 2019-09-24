@@ -1,4 +1,4 @@
-package cc.zengtian.mtt.model.theory
+package cc.zengtian.mtt.theory
 
 import kotlinx.serialization.Serializable
 

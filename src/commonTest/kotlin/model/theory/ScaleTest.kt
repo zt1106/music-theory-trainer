@@ -1,9 +1,9 @@
 package model.theory
 
 import printlnAnd
-import cc.zengtian.mtt.model.theory.ActualNote.*
-import cc.zengtian.mtt.model.theory.Key
-import cc.zengtian.mtt.model.theory.Scale
+import cc.zengtian.mtt.theory.ActualNote.*
+import cc.zengtian.mtt.theory.Key
+import cc.zengtian.mtt.theory.Scale
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

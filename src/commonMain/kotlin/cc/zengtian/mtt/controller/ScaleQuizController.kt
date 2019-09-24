@@ -2,9 +2,9 @@ package cc.zengtian.mtt.controller
 
 import cc.zengtian.mtt.config.ScaleQuestionAnswerType
 import cc.zengtian.mtt.config.ScaleQuizConfig
-import cc.zengtian.mtt.model.theory.Key
-import cc.zengtian.mtt.model.theory.Note
-import cc.zengtian.mtt.model.theory.Scale
+import cc.zengtian.mtt.theory.Key
+import cc.zengtian.mtt.theory.Note
+import cc.zengtian.mtt.theory.Scale
 import cc.zengtian.mtt.util.Property
 import cc.zengtian.mtt.util.Storage
 import kotlin.random.Random
@@ -74,8 +74,8 @@ data class ScaleQuestionModel(
     val note: Note,
     val answerType: ScaleQuestionAnswerType
 ) {
-    var answerProperty = Property<Any?>(null)
-    var answer: Any? by answerProperty
+    var answerProp = Property<Any?>(null)
+    var answer: Any? by answerProp
 
     private val numOptions: List<Int> by lazy {
         val list = mutableListOf<Int>()
