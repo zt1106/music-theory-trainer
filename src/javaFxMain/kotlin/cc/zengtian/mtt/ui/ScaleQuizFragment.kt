@@ -18,13 +18,13 @@ class ScaleQuizFragment : Fragment() {
 
     override val root = vbox {
         label {
-            controller.curQuestionChangedListeners.add {question -> text = question.questionText }
+            controller.curQuestionProp.addListener{ question -> text = question.questionText }
             style {
                 fontSize = 20.px
             }
         }
         flowpane {
-            controller.curQuestionChangedListeners.add {question ->
+            controller.curQuestionProp.addListener {question ->
                 children.clear()
                 question.options.forEach { answer ->
                     button(answer.toString()) {
@@ -34,7 +34,7 @@ class ScaleQuizFragment : Fragment() {
                             borderColor += box(Color.TRANSPARENT)
                         }
                         if (answer == question.correctAnswer) {
-                            question.answeredListeners.add {
+                            question.answerProperty.addListener {
                                 style(true) {
                                     borderColor += box(Color.GREEN)
                                 }
@@ -61,6 +61,6 @@ class ScaleQuizFragment : Fragment() {
                 }
             }
         }
-        controller.notifyCurQuestionChanged()
+        controller.curQuestion = controller.curQuestion
     }
 }

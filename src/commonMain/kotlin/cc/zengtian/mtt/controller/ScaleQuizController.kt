@@ -5,11 +5,9 @@ import cc.zengtian.mtt.config.ScaleQuizConfig
 import cc.zengtian.mtt.model.theory.Key
 import cc.zengtian.mtt.model.theory.Note
 import cc.zengtian.mtt.model.theory.Scale
+import cc.zengtian.mtt.util.Property
 import cc.zengtian.mtt.util.Storage
-import kotlin.properties.Delegates
-import kotlin.properties.ObservableProperty
 import kotlin.random.Random
-import kotlin.reflect.KProperty
 
 /**
  * Created by ZengTian on 2019/9/22.
@@ -22,17 +20,8 @@ class ScaleQuizController {
 
     private val keys = Key.values().filter { config.selectedKeys.contains(it.name) }
 
-    var curQuestion: ScaleQuestionModel = generateQuestion()
-        private set(value) {
-            if (value != field) {
-                curQuestionChangedListeners.forEach { it(value) }
-            }
-            field = value
-        }
-
-    val curQuestionChangedListeners = mutableListOf<(ScaleQuestionModel) -> Unit>()
-
-    fun notifyCurQuestionChanged() = curQuestionChangedListeners.forEach { it(curQuestion) }
+    val curQuestionProp = Property(generateQuestion())
+    var curQuestion by curQuestionProp
 
     var answeredCount = 0
         private set
@@ -85,20 +74,8 @@ data class ScaleQuestionModel(
     val note: Note,
     val answerType: ScaleQuestionAnswerType
 ) {
-    var answerProperty = Delegates.observable<Any?>(null){ property, oldValue, newValue ->
-
-    }
-
-    var answer: Any? = null
-        set(value) {
-            if (field != null) {
-                return
-            }
-            field = value
-            answeredListeners.forEach { it(this) }
-        }
-
-    val answeredListeners: MutableList<(ScaleQuestionModel) -> Unit> = mutableListOf()
+    var answerProperty = Property<Any?>(null)
+    var answer: Any? by answerProperty
 
     private val numOptions: List<Int> by lazy {
         val list = mutableListOf<Int>()
@@ -143,15 +120,3 @@ data class ScaleQuestionModel(
     fun isAnswered() = answer != null
 }
 
-class SimpleProperty<T>(t: T) : ObservableProperty<T>(t) {
-
-    val observers = mutableListOf<(property: KProperty<*>, oldValue: T, newValue: T) -> Unit>()
-
-    fun MutableList<(property: KProperty<*>, oldValue: T, newValue: T) -> Unit>.add(block:(T) -> Unit) {
-//        observers.add()
-    }
-
-    override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T) {
-        observers.forEach { observer -> observer(property, oldValue, newValue) }
-    }
-}
