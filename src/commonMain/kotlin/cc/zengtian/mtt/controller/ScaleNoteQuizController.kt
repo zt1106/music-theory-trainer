@@ -12,7 +12,7 @@ import kotlin.random.Random
 /**
  * Created by ZengTian on 2019/9/22.
  */
-class ScaleQuizController {
+class ScaleNoteQuizController {
 
     private val config: ScaleQuizConfig by lazy { Storage.getByClassName() ?: ScaleQuizConfig() }
 
@@ -23,14 +23,24 @@ class ScaleQuizController {
     val curQuestionProp = Property(generateQuestion())
     var curQuestion by curQuestionProp
 
-    var answeredCount = 0
+    val answeredCountProp = Property(0)
+    var answeredCount by answeredCountProp
         private set
 
-    var correctCount = 0
+    val correctCountProp = Property(0)
+    var correctCount by correctCountProp
         private set
 
-    var totalCount = 1
+    val totalCountProp = Property(1)
+    var totalCount by totalCountProp
         private set
+
+    fun notifyAllProps() {
+        curQuestion = curQuestion
+        answeredCount = answeredCount
+        correctCount = correctCount
+        totalCount = totalCount
+    }
 
     private fun generateQuestion(): ScaleQuestionModel {
         val scale = scales.random()
@@ -56,6 +66,7 @@ class ScaleQuizController {
         if (totalCount == config.questionCount) {
             return false
         }
+        totalCount++
         if (curQuestion.isAnswered()) {
             answeredCount++
         }
@@ -74,7 +85,7 @@ data class ScaleQuestionModel(
     val note: Note,
     val answerType: ScaleQuestionAnswerType
 ) {
-    var answerProp = Property<Any?>(null)
+    val answerProp = Property<Any?>(null)
     var answer: Any? by answerProp
 
     private val numOptions: List<Int> by lazy {

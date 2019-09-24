@@ -1,6 +1,7 @@
 package cc.zengtian.mtt.ui
 
-import cc.zengtian.mtt.controller.ScaleQuizController
+import cc.zengtian.mtt.controller.ScaleNoteQuizController
+import cc.zengtian.mtt.util.CompositeProperty
 import javafx.scene.paint.Color
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -14,17 +15,32 @@ import tornadofx.*
  */
 class ScaleNoteQuizFragment : Fragment() {
 
-    private val controller = ScaleQuizController()
+    private val c = ScaleNoteQuizController()
 
     override val root = vbox {
+        hbox {
+            spacing = 30.0
+            label {
+                c.correctCountProp.addListener { count -> text = "Correct: $count" }
+            }
+            label {
+                c.answeredCountProp.addListener { count -> text = "Answered: $count" }
+            }
+            label {
+                CompositeProperty(c.answeredCountProp, c.correctCountProp).anyChanged {
+                    val rate = String.format("%.2f", c.correctCount.toDouble() * 100 / c.answeredCount)
+                    text = "Rate: $rate %"
+                }
+            }
+        }
         label {
-            controller.curQuestionProp.addListener{ question -> text = question.questionText }
+            c.curQuestionProp.addListener{ question -> text = question.questionText }
             style {
                 fontSize = 20.px
             }
         }
         flowpane {
-            controller.curQuestionProp.addListener {question ->
+            c.curQuestionProp.addListener { question ->
                 children.clear()
                 question.options.forEach { answer ->
                     button(answer.toString()) {
@@ -41,12 +57,12 @@ class ScaleNoteQuizFragment : Fragment() {
                             }
                         }
                         setOnAction {
-                            if (controller.curQuestion.isAnswered()) {
+                            if (c.curQuestion.isAnswered()) {
                                 return@setOnAction
                             }
-                            controller.answer(answer)
+                            c.answer(answer)
                             GlobalScope.launch(Dispatchers.JavaFx) {
-                                if (controller.curQuestion.isCorrect()) {
+                                if (c.curQuestion.isCorrect()) {
                                     delay(500)
                                 } else {
                                     style(true) {
@@ -54,13 +70,13 @@ class ScaleNoteQuizFragment : Fragment() {
                                     }
                                     delay(2000)
                                 }
-                                controller.next()
+                                c.next()
                             }
                         }
                     }
                 }
             }
         }
-        controller.curQuestion = controller.curQuestion
+        c.notifyAllProps()
     }
 }
