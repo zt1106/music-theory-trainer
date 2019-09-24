@@ -35,7 +35,7 @@ enum class Key(val startingNote: Note) {
             unresolveds.add(next)
             next = next.getNextNoNeedResolveActualNote()
         }
-        val actualNotes = startingNote.actual.getActualNotesForScale(Scale.IONIAN)
+        val actualNotes = startingNote.actual.getActualNotesForScale(Scale.MAJOR)
         val result = mutableListOf<Note>()
         for (idx in unresolveds.indices) {
             val unresolve = unresolveds[idx]
