@@ -42,6 +42,13 @@ class ScaleQuizConfigController {
     }
 
     var questionCount = config.questionCount
+        set(value) {
+            field = if (value < 0) {
+                0
+            } else {
+                value
+            }
+        }
 
     private fun getModel(): ScaleQuizConfig {
         val selectedKeys = keyModels.filter { it.selected }.map { it.data.name }.toSet()
