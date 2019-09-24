@@ -1,6 +1,6 @@
 package cc.zengtian.mtt.ui
 
-import cc.zengtian.mtt.controller.ScaleQuizConfigController
+import cc.zengtian.mtt.controller.ScaleNoteQuizConfigController
 import cc.zengtian.mtt.util.checkbox
 import javafx.scene.Parent
 import tornadofx.*
@@ -8,8 +8,8 @@ import tornadofx.*
 /**
  * Created by ZengTian on 2019/9/8.
  */
-class ScaleQuizConfigView : View() {
-    private val controller = ScaleQuizConfigController()
+class ScaleNoteQuizConfigView : View() {
+    private val controller = ScaleNoteQuizConfigController()
     override val root: Parent = vbox {
         hbox {
             vbox {
@@ -53,7 +53,7 @@ class ScaleQuizConfigView : View() {
         button("start") {
             setOnAction {
                 controller.save()
-                replaceWith<ScaleQuizFragment>()
+                replaceWith<ScaleNoteQuizFragment>()
             }
         }
     }

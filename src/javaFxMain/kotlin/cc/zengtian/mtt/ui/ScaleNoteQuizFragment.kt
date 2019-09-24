@@ -12,7 +12,7 @@ import tornadofx.*
 /**
  * Created by ZengTian on 2019/9/22.
  */
-class ScaleQuizFragment : Fragment() {
+class ScaleNoteQuizFragment : Fragment() {
 
     private val controller = ScaleQuizController()
 

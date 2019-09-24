@@ -3,12 +3,12 @@ package cc.zengtian.mtt
 /**
  * Created by ZengTian on 2019/9/5.
  */
-import cc.zengtian.mtt.ui.ScaleQuizConfigView
+import cc.zengtian.mtt.ui.ScaleNoteQuizConfigView
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.Stylesheet
 
-class FxApp : App(ScaleQuizConfigView::class, Styles::class) {
+class FxApp : App(ScaleNoteQuizConfigView::class, Styles::class) {
     override fun start(stage: Stage) {
 //        stage.width = 800.0
 //        stage.height = 600.0

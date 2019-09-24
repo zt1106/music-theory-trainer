@@ -15,7 +15,7 @@ import cc.zengtian.mtt.util.StorageKey
 /**
  * Created by ZengTian on 2019/9/20.
  */
-class ScaleQuizConfigController {
+class ScaleNoteQuizConfigController {
     private val config: ScaleQuizConfig by lazy {
         Storage.getByClassName() ?: ScaleQuizConfig().apply { Storage.saveByClassName(this) }
     }
