@@ -7,28 +7,25 @@ class Scale private constructor(val name: String, val steps: List<Int>) {
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
-        val IONIAN = Scale("IONIAN", 2, 2, 1, 2, 2, 2)
+        val MAJOR = Scale("MAJOR", 2, 2, 1, 2, 2, 2)
         val DORIAN = Scale("DORIAN", 2, 1, 2, 2, 2, 1)
         val PHRYGIAN = Scale("PHRYGIAN", 1, 2, 2, 2, 1, 2)
         val LYDIAN = Scale("LYDIAN", 2, 2, 2, 1, 2, 2)
         val MIXOLYDIAN = Scale("MIXOLYDIAN", 2, 2, 1, 2, 2, 1)
-        val AEOLIAN = Scale("AEOLIAN", 2, 1, 2, 2, 1, 2)
+        val MINOR = Scale("MINOR", 2, 1, 2, 2, 1, 2)
         val LOCRIAN = Scale("LOCRIAN", 1, 2, 2, 1, 2, 2)
         val HARMONIC_MINOR = Scale("HARMONIC_MINOR", 2, 1, 2, 2, 1, 3)
-        val MELODIC_MINOR_ASCEND = Scale("MELODIC_MINOR_UPPER", 2, 1, 2, 2, 2, 2)
+        val MELODIC_MINOR_ASCEND = Scale("MELODIC_MINOR_ASCEND", 2, 1, 2, 2, 2, 2)
         val PENTATONIC = Scale("PENTATONIC", 2, 2, 3, 2)
         val CHROMATIC = Scale("CHROMATIC", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
-        val MAJOR = Scale("MAJOR", 2, 2, 1, 2, 2, 2)
-        val MINOR = Scale("NATURAL_MINOR", 2, 1, 2, 2, 1, 2)
-
         private val BUILT_INS = listOf(
-            IONIAN,
+            MAJOR,
             DORIAN,
             PHRYGIAN,
             LYDIAN,
             MIXOLYDIAN,
-            AEOLIAN,
+            MINOR,
             LOCRIAN,
             HARMONIC_MINOR,
             MELODIC_MINOR_ASCEND,
@@ -51,7 +48,7 @@ class Scale private constructor(val name: String, val steps: List<Int>) {
     }
 
     val stepPairToMajor: List<Pair<Int, Accidental?>> by lazy {
-        val majorToRoot = IONIAN.stepsToRoot
+        val majorToRoot = MAJOR.stepsToRoot
         val thisToRoot = stepsToRoot
         val result = ArrayList<Pair<Int, Accidental?>?>(thisToRoot.size)
         for (idx in thisToRoot.indices) {
