@@ -28,6 +28,15 @@ enum class Accidental(val offset: Int) {
             AccidentalType.FLAT
         }
     }
+
+    override fun toString(): String {
+        return when (this) {
+            SHARP -> "\u266F"
+            FLAT -> "\u266D"
+            DOUBLE_SHARP -> "\uD834\uDD2A"
+            DOUBLE_FLAT -> "\uD834\uDD2B"
+        }
+    }
 }
 
 val Accidental?.offset: Int
