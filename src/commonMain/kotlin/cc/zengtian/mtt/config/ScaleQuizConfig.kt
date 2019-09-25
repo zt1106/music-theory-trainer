@@ -18,7 +18,14 @@ data class ScaleQuizConfig (
     val questionCount: Int = 0,
     val selectedAnswerType: Set<ScaleQuestionAnswerType> = setOf(ScaleQuestionAnswerType.NOTE, ScaleQuestionAnswerType.NUM),
     val selectedNoteDisplayType: NoteDisplayType = NoteDisplayType.LATIN
-)
+) {
+    init {
+        require(selectedKeys.isNotEmpty())
+        require(selectedScales.isNotEmpty())
+        require(selectedAnswerType.isNotEmpty())
+        require(questionCount >= 0)
+    }
+}
 
 
 enum class ScaleQuestionAnswerType {
