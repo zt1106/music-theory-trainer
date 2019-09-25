@@ -5,6 +5,7 @@ import cc.zengtian.mtt.config.ScaleQuizConfig
 import cc.zengtian.mtt.theory.Key
 import cc.zengtian.mtt.theory.Note
 import cc.zengtian.mtt.theory.Scale
+import cc.zengtian.mtt.ui.Underscore
 import cc.zengtian.mtt.util.Property
 import cc.zengtian.mtt.util.Storage
 import kotlin.random.Random
@@ -62,7 +63,7 @@ class ScaleNoteQuizController {
     /**
      * @return has next
      */
-    fun next(): Boolean {
+    fun nextQuestion(): Boolean {
         if (totalCount == config.questionCount) {
             return false
         }
@@ -76,58 +77,55 @@ class ScaleNoteQuizController {
         curQuestion = generateQuestion()
         return true
     }
-}
 
-data class ScaleQuestionModel(
-    val num: Int,
-    val key: Key,
-    val scale: Scale,
-    val note: Note,
-    val answerType: ScaleQuestionAnswerType
-) {
-    val answerProp = Property<Any?>(null)
-    var answer: Any? by answerProp
+    inner class ScaleQuestionModel(
+        private val num: Int,
+        val key: Key,
+        val scale: Scale,
+        val note: Note,
+        private val answerType: ScaleQuestionAnswerType
+    ) {
+        val answerProp = Property<Any?>(null)
+        var answer: Any? by answerProp
 
-    private val numOptions: List<Int> by lazy {
-        val list = mutableListOf<Int>()
-        repeat(scale.noteCount) {
-            list.add(it + 1)
+        private val numOptions: List<Int> by lazy {
+            val list = mutableListOf<Int>()
+            repeat(scale.noteCount) {
+                list.add(it + 1)
+            }
+            list
         }
-        list
-    }
-    private val keyOptions: List<Key> by lazy { Key.values().toList() }
-    private val scaleOptions: List<Scale> by lazy { Scale.builtInValues() }
-    private val noteOptions: List<Note> by lazy { Note.values().toList() }
 
-    val options: List<Any> by lazy {
-        when (answerType) {
-            ScaleQuestionAnswerType.KEY -> keyOptions
-            ScaleQuestionAnswerType.SCALE -> scaleOptions
-            ScaleQuestionAnswerType.NUM -> numOptions
-            ScaleQuestionAnswerType.NOTE -> noteOptions
+        val options: List<Any> by lazy {
+            when (answerType) {
+                ScaleQuestionAnswerType.KEY -> keys
+                ScaleQuestionAnswerType.SCALE -> scales
+                ScaleQuestionAnswerType.NUM -> numOptions
+                ScaleQuestionAnswerType.NOTE -> Note.values().toList()
+            }
         }
-    }
 
-    @Suppress("IMPLICIT_CAST_TO_ANY")
-    val correctAnswer: Any by lazy {
-        when (answerType) {
-            ScaleQuestionAnswerType.KEY -> key
-            ScaleQuestionAnswerType.SCALE -> scale
-            ScaleQuestionAnswerType.NUM -> num
-            ScaleQuestionAnswerType.NOTE -> note
+        @Suppress("IMPLICIT_CAST_TO_ANY")
+        val correctAnswer: Any by lazy {
+            when (answerType) {
+                ScaleQuestionAnswerType.KEY -> key
+                ScaleQuestionAnswerType.SCALE -> scale
+                ScaleQuestionAnswerType.NUM -> num
+                ScaleQuestionAnswerType.NOTE -> note
+            }
         }
-    }
 
-    val questionText: String by lazy {
-        when (answerType) {
-            ScaleQuestionAnswerType.KEY -> "$num $note $scale?"
-            ScaleQuestionAnswerType.SCALE -> "$num $note $key?"
-            ScaleQuestionAnswerType.NUM -> "$note $key $scale?"
-            ScaleQuestionAnswerType.NOTE -> "$num $key $scale?"
+        val questionModels: List<Any> by lazy {
+            when (answerType) {
+                ScaleQuestionAnswerType.KEY -> listOf("In", Underscore, "key,", scale, ",", note, "is the", num, "note?")
+                ScaleQuestionAnswerType.SCALE -> listOf("In", key, Underscore, "scale,", note, "is the", num, "note?")
+                ScaleQuestionAnswerType.NUM -> listOf(note, "is the", Underscore, "note in", key, scale)
+                ScaleQuestionAnswerType.NOTE -> listOf("The", num, "note in", key, scale, "is?")
+            }
         }
-    }
 
-    fun isCorrect() = correctAnswer == answer
-    fun isAnswered() = answer != null
+        fun isCorrect() = correctAnswer == answer
+        fun isAnswered() = answer != null
+    }
 }
 
