@@ -29,16 +29,30 @@ class ScaleNoteQuizFragment : Fragment() {
             label {
                 CompositeProperty(c.answeredCountProp, c.correctCountProp).anyChanged {
                     val rate = String.format("%.2f", c.correctCount.toDouble() * 100 / c.answeredCount)
-                    text = "Rate: $rate %"
+                    text = "Rate: $rate%"
                 }
             }
         }
-        label {
-            c.curQuestionProp.addListener{ question -> text = question.questionText }
-            style {
-                fontSize = 20.px
+        textflow {
+            c.curQuestionProp.addListener { question ->
+                children.clear()
+                label(question.questionModels.map { it.toString() }.joinToString(" ")) {
+                    style {
+                        fontSize = 20.px
+                    }
+                }
+                // TODO use Text instead of label
+//                question.questionModels.forEach { any ->
+//                    text(any.toString())
+//                }
             }
         }
+//        label {
+//            c.curQuestionProp.addListener{ question -> text = question.questionModels }
+//            style {
+//                fontSize = 20.px
+//            }
+//        }
         flowpane {
             c.curQuestionProp.addListener { question ->
                 children.clear()
@@ -70,7 +84,7 @@ class ScaleNoteQuizFragment : Fragment() {
                                     }
                                     delay(2000)
                                 }
-                                c.next()
+                                c.nextQuestion()
                             }
                         }
                     }
