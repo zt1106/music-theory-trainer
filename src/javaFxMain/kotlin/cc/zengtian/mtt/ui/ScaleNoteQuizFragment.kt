@@ -38,7 +38,7 @@ class ScaleNoteQuizFragment : Fragment() {
                 children.clear()
                 label(question.questionModels.map { it.toString() }.joinToString(" ")) {
                     style {
-                        fontSize = 20.px
+                        fontSize = 40.px
                     }
                 }
                 // TODO use Text instead of label
@@ -59,7 +59,7 @@ class ScaleNoteQuizFragment : Fragment() {
                 question.options.forEach { answer ->
                     button(answer.toString()) {
                         style {
-                            fontSize = 15.px
+                            fontSize = 30.px
                             borderWidth += box(5.px)
                             borderColor += box(Color.TRANSPARENT)
                         }
@@ -82,7 +82,7 @@ class ScaleNoteQuizFragment : Fragment() {
                                     style(true) {
                                         borderColor += box(Color.RED)
                                     }
-                                    delay(2000)
+                                    delay(5000)
                                 }
                                 c.nextQuestion()
                             }
