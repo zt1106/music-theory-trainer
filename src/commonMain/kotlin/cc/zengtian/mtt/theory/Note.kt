@@ -72,11 +72,7 @@ enum class Note constructor(actual: ActualNote, val accidental: Accidental?) {
     val beforeAccidentalActual: ActualNote by lazy { this.actual.getByOffset(-accidental.offset) }
 
     private val toString: String by lazy {
-        if (accidental == null) {
-            beforeAccidentalActual.toString()
-        } else {
-            beforeAccidentalActual.toString() + "_" + accidental.toString()
-        }
+        beforeAccidentalActual.toString() + accidental.toString()
     }
 
     override fun toString(): String = toString
