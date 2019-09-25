@@ -17,9 +17,9 @@ class ScaleNoteQuizController {
 
     private val config: ScaleQuizConfig by lazy { Storage.getByClassName() ?: ScaleQuizConfig() }
 
-    private val scales = Scale.builtInValues().filter { config.selectedScales.contains(it.name) }
+    private val scales = Scale.builtInValues().filter { config.scales.contains(it.name) }
 
-    private val keys = Key.values().filter { config.selectedKeys.contains(it.name) }
+    private val keys = Key.values().filter { config.keys.contains(it.name) }
 
     val curQuestionProp = Property(generateQuestion())
     var curQuestion by curQuestionProp
@@ -50,7 +50,7 @@ class ScaleNoteQuizController {
         val num = Random.nextInt(2, scale.noteCount + 1)
         val scaleNotes = key.getNotesOfScale(scale)
         val note = scaleNotes[num - 1]
-        val type = config.selectedAnswerType.random()
+        val type = config.answerTypes.random()
         return ScaleQuestionModel(num, key, scale, note, type)
     }
 

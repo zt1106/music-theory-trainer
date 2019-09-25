@@ -21,24 +21,24 @@ class ScaleNoteQuizConfigController {
     }
 
     val keyModels: List<CheckBoxModel<Key>> by lazy {
-        val selected = config.selectedKeys
+        val selected = config.keys
         Key.values().map { CheckBoxModel(it, selected.contains(it.name)) }
     }
 
     val scaleModels: List<CheckBoxModel<Scale>> by lazy {
-        val selected = config.selectedScales
+        val selected = config.scales
         val userAdded = Storage.getList<Scale>(StorageKey.USER_ADDED_SCALES.name)
         val scales = Scale.builtInValues().toMutableList().apply { addAll(userAdded) }
         scales.map { CheckBoxModel(it, selected.contains(it.name)) }
     }
 
     val answerTypeModels: List<CheckBoxModel<ScaleQuestionAnswerType>> by lazy {
-        val selected = config.selectedAnswerType
+        val selected = config.answerTypes
         ScaleQuestionAnswerType.values().map { CheckBoxModel(it, selected.contains(it)) }
     }
 
     val noteDisplayModel: RadioButtonModel<NoteDisplayType> by lazy {
-        RadioButtonModel(NoteDisplayType.values().toList(), config.selectedNoteDisplayType)
+        RadioButtonModel(NoteDisplayType.values().toList(), config.noteDisplayType)
     }
 
     var questionCount = config.questionCount
