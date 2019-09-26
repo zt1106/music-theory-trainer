@@ -8,6 +8,8 @@ import cc.zengtian.mtt.theory.Scale
 import cc.zengtian.mtt.ui.Underscore
 import cc.zengtian.mtt.util.Property
 import cc.zengtian.mtt.util.Storage
+import cc.zengtian.mtt.util.Time
+import cc.zengtian.mtt.util.median
 import kotlin.random.Random
 
 /**
@@ -32,15 +34,22 @@ class ScaleNoteQuizController {
     var correctCount by correctCountProp
         private set
 
-    val totalCountProp = Property(1)
-    var totalCount by totalCountProp
-        private set
+    private var timestamp = Time.currentMillisecond()
+
+    private fun resetTimestamp() {
+        timestamp = Time.currentMillisecond()
+    }
+
+    private var usedTimeList: MutableList<Long> = mutableListOf()
+
+    val usedTimeMedianProp = Property<Long>(0)
+    var usedTimeMedian by usedTimeMedianProp
 
     fun notifyAllProps() {
         curQuestion = curQuestion
         answeredCount = answeredCount
         correctCount = correctCount
-        totalCount = totalCount
+        usedTimeMedian = usedTimeMedian
     }
 
     private fun generateQuestion(): ScaleQuestionModel {
@@ -56,7 +65,14 @@ class ScaleNoteQuizController {
 
     fun answer(answer: Any) {
         if (!curQuestion.isAnswered()) {
+            answeredCount++
             curQuestion.answer = answer
+            if (curQuestion.isCorrect()) {
+                correctCount++
+            }
+            usedTimeList.add(Time.currentMillisecond() - timestamp)
+            // TODO performance issue?
+            usedTimeMedian = usedTimeList.median()
         }
     }
 
@@ -64,17 +80,11 @@ class ScaleNoteQuizController {
      * @return has next
      */
     fun nextQuestion(): Boolean {
-        if (totalCount == config.questionCount) {
+        if (answeredCount == config.questionCount) {
             return false
         }
-        totalCount++
-        if (curQuestion.isAnswered()) {
-            answeredCount++
-        }
-        if (curQuestion.isCorrect()) {
-            correctCount++
-        }
         curQuestion = generateQuestion()
+        resetTimestamp()
         return true
     }
 
@@ -88,10 +98,11 @@ class ScaleNoteQuizController {
         val answerProp = Property<Any?>(null)
         var answer: Any? by answerProp
 
+        // also exclude 1 because no such questions
         private val numOptions: List<Int> by lazy {
             val list = mutableListOf<Int>()
-            repeat(scale.noteCount) {
-                list.add(it + 1)
+            repeat(scale.noteCount - 1) {
+                list.add(it + 2)
             }
             list
         }
@@ -115,12 +126,19 @@ class ScaleNoteQuizController {
             }
         }
 
-        val questionModels: List<Any> by lazy {
+        val questionBody: List<Any> by lazy {
+            val numStr = when(num) {
+                1 -> "1st"
+                2 -> "2nd"
+                3 -> "3rd"
+                else -> "${num}th"
+            }
+
             when (answerType) {
-                ScaleQuestionAnswerType.KEY -> listOf("In", Underscore, "key,", scale, ",", note, "is the", num, "note?")
-                ScaleQuestionAnswerType.SCALE -> listOf("In", key, Underscore, "scale,", note, "is the", num, "note?")
+                ScaleQuestionAnswerType.KEY -> listOf("In key", Underscore, scale, ",", note, "is the", numStr, "note?")
+                ScaleQuestionAnswerType.SCALE -> listOf("In", key, Underscore, "scale,", note, "is the", numStr, "note?")
                 ScaleQuestionAnswerType.NUM -> listOf(note, "is the", Underscore, "note in", key, scale)
-                ScaleQuestionAnswerType.NOTE -> listOf("The", num, "note in", key, scale, "is?")
+                ScaleQuestionAnswerType.NOTE -> listOf("The", numStr, "note in", key, scale, "is?")
             }
         }
 
