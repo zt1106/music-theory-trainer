@@ -1,24 +1,23 @@
 package cc.zengtian.mtt.theory
 
-import cc.zengtian.mtt.theory.Accidental.FLAT
-import cc.zengtian.mtt.theory.Accidental.SHARP
+import cc.zengtian.mtt.theory.Scale.Companion.MINOR
 
 enum class Key(val startingNote: Note) {
-    C(Note.ofActual(ActualNote.C, null)),
-    F(Note.ofActual(ActualNote.F, null)),
-    B_FLAT(Note.ofActual(ActualNote.AB, FLAT)),
-    E_FLAT(Note.ofActual(ActualNote.DE, FLAT)),
-    A_FLAT(Note.ofActual(ActualNote.GA, FLAT)),
-    D_FLAT(Note.ofActual(ActualNote.CD, FLAT)),
-    C_SHARP(Note.ofActual(ActualNote.CD, SHARP)),
-    G_FLAT(Note.ofActual(ActualNote.FG, FLAT)),
-    F_SHARP(Note.ofActual(ActualNote.FG, SHARP)),
-    B(Note.ofActual(ActualNote.B, null)),
-    C_FLAT(Note.ofActual(ActualNote.B, FLAT)),
-    E(Note.ofActual(ActualNote.E, null)),
-    A(Note.ofActual(ActualNote.A, null)),
-    D(Note.ofActual(ActualNote.D, null)),
-    G(Note.ofActual(ActualNote.G, null));
+    C(Note.C),
+    F(Note.F),
+    B_FLAT(Note.B_FLAT),
+    E_FLAT(Note.E_FLAT),
+    A_FLAT(Note.A_FLAT),
+    D_FLAT(Note.D_FLAT),
+    C_SHARP(Note.C_SHARP),
+    G_FLAT(Note.G_FLAT),
+    F_SHARP(Note.F_SHARP),
+    B(Note.B),
+    C_FLAT(Note.C_FLAT),
+    E(Note.E),
+    A(Note.A),
+    D(Note.D),
+    G(Note.G);
 
     companion object {
         private val CACHED_NOTES = mutableMapOf<Pair<Key, Scale>, List<Note>>()
@@ -26,6 +25,9 @@ enum class Key(val startingNote: Note) {
             return values().find { it.startingNote == note }
         }
     }
+
+    val relativeMajor by lazy { getNotesOfScale(MINOR)[2].key!! }
+    val relativeMinor by lazy { majorScaleNotes[5].key!! }
 
     private val majorScaleNotes: List<Note> by lazy {
         val startUnresolved = startingNote.beforeAccidentalActual

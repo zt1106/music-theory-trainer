@@ -14,8 +14,3 @@ actual fun String.base64Decode(): String {
     return String(bytes)
 }
 
-actual object Time {
-    actual fun currentMillisecond() : Long {
-        return System.currentTimeMillis()
-    }
-}

@@ -20,48 +20,34 @@ fun Collection<Long>.median(): Long {
     }
 }
 
-fun List<*>.nextOrFirst(idx: Int): Int {
-    return if (idx < size - 1) {
-        idx + 1
-    } else {
-        0
-    }
-}
-
-fun List<*>.prevOrLast(idx: Int): Int {
-    return if (idx == 0) {
-        size - 1
-    } else {
-        idx - 1
-    }
-}
-
-fun Array<*>.nextOrFirst(idx: Int): Int {
-    return if (idx < size - 1) {
-        idx + 1
-    } else {
-        0
-    }
-}
-
-fun Array<*>.prevOrLast(idx: Int): Int {
-    return if (idx == 0) {
-        size - 1
-    } else {
-        idx - 1
-    }
-}
-
 /**
  * offset > 0 to right
  * offset < 0 to left
  */
-//fun <T> Array<T>.getByOffset(from: Int, offset: Int): T {
-//    require(isNotEmpty())
-//    return if (offset > 0) {
-//        val mod = offset +  % size
-//
-//    } else {
-//
-//    }
-//}
+fun <T> Array<T>.getByOffset(from: Int, offset: Int): T {
+    require(isNotEmpty())
+    val mod = (offset + from) % size
+    return if (offset > 0) {
+        this[mod]
+    } else {
+        if (mod == 0) {
+            this[mod]
+        } else {
+            this[mod + size]
+        }
+    }
+}
+
+fun <T> List<T>.getByOffset(from: Int, offset: Int): T {
+    require(isNotEmpty())
+    val mod = (offset + from) % size
+    return if (offset > 0) {
+        this[mod]
+    } else {
+        if (mod == 0) {
+            this[mod]
+        } else {
+            this[mod + size]
+        }
+    }
+}
