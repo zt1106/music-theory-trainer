@@ -7,3 +7,5 @@
 /.idea/
 /common/.gradle/
 /common/build/
+/javafx/build/
+/javafx/out/
