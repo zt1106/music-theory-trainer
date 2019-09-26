@@ -13,3 +13,9 @@ actual fun String.base64Decode(): String {
     val bytes = Base64.getDecoder().decode(this)
     return String(bytes)
 }
+
+actual object Time {
+    actual fun currentMillisecond() : Long {
+        return System.currentTimeMillis()
+    }
+}
