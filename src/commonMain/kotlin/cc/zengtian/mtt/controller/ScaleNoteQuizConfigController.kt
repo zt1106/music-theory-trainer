@@ -1,5 +1,6 @@
 package cc.zengtian.mtt.controller
 
+import cc.zengtian.mtt.config.KeyDisplayType
 import cc.zengtian.mtt.config.NoteDisplayType
 import cc.zengtian.mtt.config.ScaleQuestionAnswerType
 import cc.zengtian.mtt.config.ScaleQuizConfig
@@ -38,7 +39,11 @@ class ScaleNoteQuizConfigController {
     }
 
     val noteDisplayModel: RadioButtonModel<NoteDisplayType> by lazy {
-        RadioButtonModel(NoteDisplayType.values().toList(), config.noteDisplayType)
+        RadioButtonModel(NoteDisplayType.values().toList(), config.noteDisplayType, NoteDisplayType::description)
+    }
+
+    val keyDisplayModel: RadioButtonModel<KeyDisplayType> by lazy {
+        RadioButtonModel(KeyDisplayType.values().toList(), config.keyDisplayType, KeyDisplayType::description)
     }
 
     var questionCount = config.questionCount
@@ -50,14 +55,14 @@ class ScaleNoteQuizConfigController {
             }
         }
 
-    private fun getModel(): ScaleQuizConfig {
+    fun populateConfig(): ScaleQuizConfig {
         val selectedKeys = keyModels.filter { it.selected }.map { it.data.name }.toSet()
         val selectedScales = scaleModels.filter { it.selected }.map { it.data.name }.toSet()
         val selectedTypes = answerTypeModels.filter { it.selected }.map { it.data }.toSet()
-        return ScaleQuizConfig(selectedKeys, selectedScales, questionCount, selectedTypes, noteDisplayModel.selected)
+        return ScaleQuizConfig(selectedKeys, selectedScales, questionCount, selectedTypes, noteDisplayModel.selected, keyDisplayModel.selected)
     }
 
-    fun save() {
-        Storage.saveByClassName(getModel())
+    fun save(config: ScaleQuizConfig) {
+        Storage.saveByClassName(config)
     }
 }
