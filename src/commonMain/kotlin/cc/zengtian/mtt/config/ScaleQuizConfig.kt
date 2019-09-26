@@ -17,8 +17,9 @@ data class ScaleQuizConfig (
     }.map { it.name }.toSet(),
     val scales: Set<String> = setOf(Scale.MAJOR.name),
     val questionCount: Int = 0,
-    val answerTypes: Set<ScaleQuestionAnswerType> = setOf(NOTE, NUM),
-    val noteDisplayType: NoteDisplayType = NoteDisplayType.LATIN
+    val answerTypes: Set<ScaleQuestionAnswerType> = setOf(NOTE, NUM, KEY),
+    val noteDisplayType: NoteDisplayType = NoteDisplayType.LATIN,
+    val keyDisplayType: KeyDisplayType = KeyDisplayType.LATIN
 ) {
     init {
         require(keys.isNotEmpty()) {"keys can't be empty"}
@@ -35,10 +36,18 @@ data class ScaleQuizConfig (
 }
 
 
-enum class ScaleQuestionAnswerType {
-    KEY, SCALE, NUM, NOTE
+enum class ScaleQuestionAnswerType(val description: String) {
+    KEY("Key"),
+    SCALE("Scale"),
+    NUM("Number of Note"),
+    NOTE("Note")
 }
 
-enum class NoteDisplayType {
-    LATIN, STAFF
+enum class NoteDisplayType(val description: String) {
+    LATIN("Latin"), STAFF("Staff")
+}
+
+enum class KeyDisplayType(val description: String) {
+    LATIN("Latin"),
+    KEY_SIGNATURE("Key Signature")
 }
