@@ -7,17 +7,17 @@ class Scale private constructor(val name: String, val steps: List<Int>) {
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
-        val MAJOR = Scale("MAJOR", 2, 2, 1, 2, 2, 2)
-        val DORIAN = Scale("DORIAN", 2, 1, 2, 2, 2, 1)
-        val PHRYGIAN = Scale("PHRYGIAN", 1, 2, 2, 2, 1, 2)
-        val LYDIAN = Scale("LYDIAN", 2, 2, 2, 1, 2, 2)
-        val MIXOLYDIAN = Scale("MIXOLYDIAN", 2, 2, 1, 2, 2, 1)
-        val MINOR = Scale("MINOR", 2, 1, 2, 2, 1, 2)
-        val LOCRIAN = Scale("LOCRIAN", 1, 2, 2, 1, 2, 2)
-        val HARMONIC_MINOR = Scale("HARMONIC_MINOR", 2, 1, 2, 2, 1, 3)
-        val MELODIC_MINOR_ASCEND = Scale("MELODIC_MINOR_ASCEND", 2, 1, 2, 2, 2, 2)
-        val PENTATONIC = Scale("PENTATONIC", 2, 2, 3, 2)
-        val CHROMATIC = Scale("CHROMATIC", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        val MAJOR = Scale("Major(Ionian)", 2, 2, 1, 2, 2, 2)
+        val DORIAN = Scale("Dorian", 2, 1, 2, 2, 2, 1)
+        val PHRYGIAN = Scale("Phrygian", 1, 2, 2, 2, 1, 2)
+        val LYDIAN = Scale("Lydian", 2, 2, 2, 1, 2, 2)
+        val MIXOLYDIAN = Scale("Mixolydian", 2, 2, 1, 2, 2, 1)
+        val MINOR = Scale("Minor(Aeolian)", 2, 1, 2, 2, 1, 2)
+        val LOCRIAN = Scale("Locrian", 1, 2, 2, 1, 2, 2)
+        val HARMONIC_MINOR = Scale("Harmonic Minor", 2, 1, 2, 2, 1, 3)
+        val MELODIC_MINOR_ASCEND = Scale("Melodic Minor Ascending", 2, 1, 2, 2, 2, 2)
+        val PENTATONIC = Scale("Pentatonic", 2, 2, 3, 2)
+        val CHROMATIC = Scale("Chromatic", 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
         private val BUILT_INS = listOf(
             MAJOR,
