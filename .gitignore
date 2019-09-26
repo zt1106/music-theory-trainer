@@ -5,3 +5,5 @@
 /gradlew.bat
 /gradle/
 /.idea/
+/common/.gradle/
+/common/build/
