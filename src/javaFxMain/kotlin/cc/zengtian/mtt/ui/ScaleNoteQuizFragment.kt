@@ -2,6 +2,12 @@ package cc.zengtian.mtt.ui
 
 import cc.zengtian.mtt.controller.ScaleNoteQuizController
 import cc.zengtian.mtt.util.CompositeProperty
+import javafx.geometry.Pos
+import javafx.scene.control.Alert
+import javafx.scene.control.Alert.AlertType
+import javafx.scene.control.ButtonType
+import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.paint.Color
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -9,6 +15,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import tornadofx.*
+
+
+// TODO     id("no.tornado.fxlauncher") version "1.0.20"
+// transform to standlone javafx module depends on jvm common and apply this plugin
 
 /**
  * Created by ZengTian on 2019/9/22.
@@ -32,32 +42,43 @@ class ScaleNoteQuizFragment : Fragment() {
                     text = "Rate: $rate%"
                 }
             }
+            label {
+                c.usedTimeMedianProp.addListener { milli ->
+                    text = "Time Median: ${String.format("%.2f", milli.toDouble() / 1000)}s"
+                }
+            }
+            hbox {
+                alignment = Pos.BASELINE_RIGHT
+                hgrow = Priority.ALWAYS
+                button("Quit").setOnAction {
+                    replaceWith<ScaleNoteQuizConfigView>()
+                }
+            }
         }
         textflow {
             c.curQuestionProp.addListener { question ->
                 children.clear()
-                label(question.questionModels.map { it.toString() }.joinToString(" ")) {
-                    style {
-                        fontSize = 40.px
-                    }
+                label(question.questionBody.map { it.toString() }.joinToString(" ")) {
+                    style { fontSize = 40.px }
                 }
                 // TODO use Text instead of label
-//                question.questionModels.forEach { any ->
-//                    text(any.toString())
-//                }
             }
         }
-//        label {
-//            c.curQuestionProp.addListener{ question -> text = question.questionModels }
-//            style {
-//                fontSize = 20.px
-//            }
-//        }
         flowpane {
             c.curQuestionProp.addListener { question ->
                 children.clear()
                 question.options.forEach { answer ->
-                    button(answer.toString()) {
+                    val ansStr = if (answer is Int) {
+                        when (answer) {
+                            1 -> "1st"
+                            2 -> "2nd"
+                            3 -> "3rd"
+                            else -> "${answer}th"
+                        }
+                    } else {
+                        answer.toString()
+                    }
+                    button(ansStr) {
                         style {
                             fontSize = 30.px
                             borderWidth += box(5.px)
@@ -84,7 +105,15 @@ class ScaleNoteQuizFragment : Fragment() {
                                     }
                                     delay(5000)
                                 }
-                                c.nextQuestion()
+                                val hasNext = c.nextQuestion()
+                                if (!hasNext) {
+                                    val alert = Alert(AlertType.INFORMATION, "Quiz Finished!", ButtonType.OK)
+                                    alert.dialogPane.minHeight = Region.USE_PREF_SIZE
+                                    alert.setOnHidden {
+                                        replaceWith<ScaleNoteQuizConfigView>()
+                                    }
+                                    alert.show()
+                                }
                             }
                         }
                     }
