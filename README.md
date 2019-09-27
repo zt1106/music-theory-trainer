@@ -1,7 +1,9 @@
 # music-theory-trainer
 This project is still in very early stage of development. The first exercise is finished.
 ### How to run from source code?
-gradle jfxRun
+> gradle jfxRun
+### How to build executable exe or dmg?
+> gradle jfxNative
 ### Screenshots
 ![1](https://user-images.githubusercontent.com/20970607/65770578-f254c180-e168-11e9-9859-70b0158e95a6.jpg)
 ![2](https://user-images.githubusercontent.com/20970607/65770581-f254c180-e168-11e9-8e81-2554d674fa69.jpg)
