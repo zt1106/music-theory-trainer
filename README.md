@@ -1,7 +1,9 @@
 # music-theory-trainer
 This project is still in very early stage of development. The first exercise is finished.
-This project is inspired by https://www.musictheory.net/ app, and complement what it doesn't offer.
+This project is inspired by https://www.musictheory.net/ app.
+It's less about hearing and musical instruments.
 This is a multi-platform project, the development priority of the platforms is: desktop -> web -> andriod -> ios.
+MIDI input will be added. Chord identification will be added.
 ### How to run on a desktop from source code?
 > gradle jfxRun
 ### How to build executable exe or dmg?
