@@ -1,6 +1,8 @@
 # music-theory-trainer
 This project is still in very early stage of development. The first exercise is finished.
-### How to run from source code?
+This project is inspired by https://www.musictheory.net/ app, and complement what it doesn't offer.
+This is a multi-platform project, the development priority of the platforms is: desktop -> web -> andriod -> ios.
+### How to run on a desktop from source code?
 > gradle jfxRun
 ### How to build executable exe or dmg?
 > gradle jfxNative
