@@ -44,6 +44,14 @@ open class RelativeChord(offsets: Set<Int>) {
         result
     }
 
+    val annotation: ChordAnnotation? by lazy {
+        if (annotations.isNotEmpty()) {
+            annotations[0]
+        } else {
+            null
+        }
+    }
+
     val annotations: List<ChordAnnotation> by lazy {
         val result = mutableListOf<ChordAnnotation>()
         val inversionsWithItself = inversions.toMutableList().apply { add(0, this@RelativeChord) }
@@ -183,16 +191,8 @@ enum class FiguredBass(val size: Int, val inversion: Int) {
 
 // TODO change to normal class so new chord type can be added?
 
-enum class DiatonicChordType(val indexInScale: List<Int>) {
-    TRIAD(0, 2, 4),
-    SEVEN_TH(0, 2, 4, 6);
-
-    constructor(vararg indexes: Int) : this(indexes.toList())
-
-    val size = indexInScale.size
-}
-
 enum class ChordSonority(val steps: Set<Int>) {
+
     MAJOR_TRIAD(4, 7),
     MINOR_TRIAD(3, 7),
     AUGMENTED_TRIAD(4, 8),
@@ -202,13 +202,26 @@ enum class ChordSonority(val steps: Set<Int>) {
     MINOR_MAJOR_7TH(3, 7, 11),
     HALF_DIMISHED_7TH(3, 6, 10),
     DIMISHED_7TH(3, 6, 9);
-
     companion object {
-    }
 
+    }
     constructor(vararg stepsArr: Int) : this(stepsArr.toSet())
 
     val size: Int by lazy { steps.size + 1 }
 
     fun of(root: ActualNote): ActualChord = ActualChord(root, steps)
+
+}
+
+enum class DiatonicChordType(val indexInScale: List<Int>) {
+    TRIAD(0, 2, 4),
+    SEVEN_TH(0, 2, 4, 6);
+
+    constructor(vararg indexes: Int) : this(indexes.toList())
+
+    val size = indexInScale.size
+}
+
+enum class DiatonicScaleType {
+    MAJOR, MINOR
 }

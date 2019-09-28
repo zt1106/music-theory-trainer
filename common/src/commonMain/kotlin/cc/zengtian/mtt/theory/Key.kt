@@ -1,5 +1,7 @@
 package cc.zengtian.mtt.theory
 
+import cc.zengtian.mtt.theory.Scale.Companion.HARMONIC_MINOR
+import cc.zengtian.mtt.theory.Scale.Companion.MAJOR
 import cc.zengtian.mtt.theory.Scale.Companion.MINOR
 
 enum class Key(val startingNote: Note) {
@@ -67,8 +69,11 @@ enum class Key(val startingNote: Note) {
         return result
     }
 
-    fun getDiatonicChord(scale: Scale, diatonicChordType: DiatonicChordType, num : Int) : Chord {
-        require(scale.noteCount == 7) { "scale: $scale not supported" }
+    fun getDiatonicChord(num: Int, type: DiatonicScaleType = DiatonicScaleType.MAJOR, diatonicChordType: DiatonicChordType = DiatonicChordType.TRIAD): Chord {
+        val scale = when (type) {
+            DiatonicScaleType.MAJOR -> MAJOR
+            DiatonicScaleType.MINOR -> HARMONIC_MINOR
+        }
         val scaleNotes = getNotesOfScale(scale)
         val notes = mutableListOf<Note>()
         val offset = num - 1
@@ -77,7 +82,13 @@ enum class Key(val startingNote: Note) {
             if (offsetAdded > 6) {
                 offsetAdded -= 7
             }
-            notes.add(scaleNotes[offsetAdded])
+            var note = scaleNotes[offsetAdded]
+            // special case for minor diatonic chord
+            // eg: for a-minor, the third chord is a major triad, not a augmented triad
+            if (type == DiatonicScaleType.MINOR && num == 3 && idx == 4) {
+                note = relativeMajor.getNotesOfScale(MAJOR)[4]
+            }
+            notes.add(note)
         }
         return Chord(notes)
     }

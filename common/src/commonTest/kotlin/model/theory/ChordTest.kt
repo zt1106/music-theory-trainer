@@ -1,9 +1,8 @@
 package model.theory
 
 import assertEquals
-import cc.zengtian.mtt.theory.ActualChord
-import cc.zengtian.mtt.theory.ActualNote
-import cc.zengtian.mtt.theory.Chord
+import assertTrue
+import cc.zengtian.mtt.theory.*
 import cc.zengtian.mtt.theory.ChordSonority.*
 import cc.zengtian.mtt.theory.Note.*
 import kotlin.test.Test
@@ -13,6 +12,32 @@ import kotlin.test.assertEquals
  * Created by ZengTian on 9/18/2019.
  */
 class ChordTest {
+    @Test
+    fun `test diatonic chord`() {
+        Key.C.getDiatonicChord(1).assertTrue { chord ->
+            chord.root == C && chord.annotations[0].chordSonority == MAJOR_TRIAD
+        }
+        Key.C.getDiatonicChord(4).assertTrue { chord ->
+            chord.root == F && chord.annotations[0].chordSonority == MAJOR_TRIAD
+        }
+        Key.C.getDiatonicChord(7).assertTrue { chord ->
+            chord.root == B && chord.annotations[0].chordSonority == DIMISHED_TRIAD
+        }
+        Key.C.getDiatonicChord(6).assertTrue { chord ->
+            chord.root == A && chord.annotations[0].chordSonority == MINOR_TRIAD
+        }
+        // g harmonic minor
+        Key.G.getDiatonicChord(1, DiatonicScaleType.MINOR).assertTrue { chord ->
+            chord.root == G && chord.annotation!!.chordSonority == MINOR_TRIAD
+        }
+        Key.G.getDiatonicChord(2, DiatonicScaleType.MINOR).assertTrue { chord ->
+            chord.root == A && chord.annotation!!.chordSonority == DIMISHED_TRIAD
+        }
+        Key.G.getDiatonicChord(3, DiatonicScaleType.MINOR).assertTrue { chord ->
+            chord.root == B_FLAT && chord.annotation!!.chordSonority == MAJOR_TRIAD
+        }
+    }
+
     @Test
     fun `test dimished 7th annotations`() {
         val chord = ActualChord(ActualNote.C, ActualNote.DE, ActualNote.FG, ActualNote.A)
