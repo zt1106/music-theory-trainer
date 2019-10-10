@@ -1,6 +1,24 @@
 # music-theory-trainer
 This project is still in very early stage of development. The first exercise is finished.
-### How to run from source code?
+This project is inspired by https://www.musictheory.net/ app.
+It's less about hearing and musical instruments.
+This is a multi-platform project, the development priority of the platforms is: desktop -> web -> andriod -> ios.
+MIDI input will be added. Chord identification will be added.
+## Exercises:
+#### Note in a Scale
+- given a scale and key, and a note in the scale, name the number(position) of the note
+- given a scale and key, and a number, name the note in that scale of that number
+- given a scale, a note and a number, name the key
+- given a key, a note, and a number, name the scale
+#### Circle of 5ths(TODO)
+#### Chord Identification(TODO)
+- Diatonic Chords Naming
+- Chord Inversion Identification
+#### Intervals(TODO)
+- Identify interval between notes
+- Identify bottom note of an interval given top note
+- Identify top note of an interval given bottom note
+### How to run on a desktop from source code?
 > gradle jfxRun
 ### How to build executable exe or dmg?
 > gradle jfxNative
