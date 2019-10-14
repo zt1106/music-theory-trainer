@@ -21,3 +21,4 @@ include('common', 'javafx', 'react')
 
 rootProject.name = "music-theory-trainer"
 
+enableFeaturePreview('GRADLE_METADATA')
