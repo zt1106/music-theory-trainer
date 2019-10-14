@@ -1,7 +1,9 @@
 package cc.zengtian.mtt.config
 
-import cc.zengtian.mtt.config.CircleOf5thAnswerType.MAJOR_KEY
-import cc.zengtian.mtt.config.CircleOf5thLocationType.RELATIVE
+import cc.zengtian.mtt.config.CircleInversionType.NORMAL
+import cc.zengtian.mtt.config.CircleNodeDisplayType.MAJOR_KEY
+import cc.zengtian.mtt.config.CircleRotateType.RANDOM
+import cc.zengtian.mtt.theory.CircleOfFifthsNode
 import kotlinx.serialization.Serializable
 
 /**
@@ -9,32 +11,40 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class CircleOf5thConfig(
-    val locationTypes: Set<CircleOf5thLocationType> = setOf(RELATIVE),
-    val answerTypes: Set<CircleOf5thAnswerType> = setOf(MAJOR_KEY),
-    val inversionType: CircleInversionType = CircleInversionType.NORMAL,
-    val rotateType: CircleRotateType = CircleRotateType.FIXED,
-    val keyDisplayType: KeyDisplayType = KeyDisplayType.LATIN,
-    val enableCSharp: Boolean = false,
-    val enableGFlat: Boolean = false,
-    val enableCFlat: Boolean = false,
+    val nodeConfig: ChooseNodeConfig = ChooseNodeConfig(),
+    val locationConfig: ChooseLocationConfig = ChooseLocationConfig(),
+    val inversionType: CircleInversionType = NORMAL,
+    val cSharpEnabled: Boolean = false,
+    val gFlatEnabled: Boolean = false,
+    val cFlatEnabled: Boolean = false,
     override val questionCount: Int = 0,
     override val timeout: Long = 0
-) : BaseQuizConfig {
-}
+) : BaseQuizConfig
+
+@Serializable
+data class ChooseNodeConfig(
+    val rotateType: CircleRotateType = RANDOM,
+    val referenceNodes: Set<String> = CircleOfFifthsNode.values().map { it.name }.toSet(),
+    val referenceNodeDisplays: Set<CircleNodeDisplayType> = setOf(MAJOR_KEY),
+    val questionNodeDisplays: Set<CircleNodeDisplayType> = setOf(MAJOR_KEY)
+)
+
+@Serializable
+data class ChooseLocationConfig(
+    val rotateType: CircleRotateType = RANDOM,
+    val referenceNodes: Set<String> = CircleOfFifthsNode.values().map { it.name }.toSet(),
+    val referenceNodeDisplays: Set<CircleNodeDisplayType> = setOf(MAJOR_KEY),
+    val questionNodeDisplays: Set<CircleNodeDisplayType> = setOf(MAJOR_KEY)
+)
 
 enum class CircleInversionType {
-    NORMAL, INVERSED, RANDOM
+    NORMAL, INVERSED
 }
 
 enum class CircleRotateType {
     FIXED, RANDOM
 }
 
-enum class CircleOf5thLocationType {
-    RELATIVE,
-    FIXED
-}
-
-enum class CircleOf5thAnswerType {
-    MAJOR_KEY, MINOR_KEY, ACC_COUNT, EXTRA_ACC_NOTE
+enum class CircleNodeDisplayType {
+    MAJOR_KEY, MINOR_KEY, MAJOR_KEY_SIGNATURE
 }
