@@ -1,5 +1,6 @@
 package cc.zengtian.mtt.util
 
+import kotlin.math.E
 import kotlin.properties.ObservableProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -11,21 +12,26 @@ interface Listenable<T> {
     fun addListener(newValBlock: (T) -> Unit)
 }
 
-class Property<T>(t: T) : ObservableProperty<T>(t), Listenable<T> {
+open class Property<T>(t: T) : ObservableProperty<T>(t), Listenable<T> {
 
-    private val listeners = mutableListOf<(property: KProperty<*>, oldValue: T, newValue: T) -> Unit>()
+    private val listeners = mutableListOf<(oldValue: T, newValue: T) -> Unit>()
 
-    override fun addListener(newValBlock:(T) -> Unit) {
-        listeners.add { _: KProperty<*>, _: T, newValue: T -> newValBlock(newValue) }
+    fun notifyAllWithOldValue() {
+        val value = getValue(null, ::E)
+        listeners.forEach { it(value, value) }
+    }
+
+    override fun addListener(newValBlock: (T) -> Unit) {
+        listeners.add { _: T, newValue: T -> newValBlock(newValue) }
     }
 
     override fun afterChange(property: KProperty<*>, oldValue: T, newValue: T) {
-        listeners.forEach { listener -> listener(property, oldValue, newValue) }
+        listeners.forEach { listener -> listener(oldValue, newValue) }
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-class LazyProperty<T>  : ReadWriteProperty<Any?, T>, Listenable<T> {
+class LazyProperty<T> : ReadWriteProperty<Any?, T>, Listenable<T> {
 
     private var initialized = false
 
@@ -33,7 +39,7 @@ class LazyProperty<T>  : ReadWriteProperty<Any?, T>, Listenable<T> {
 
     private val listeners = mutableListOf<(property: KProperty<*>, oldValue: T?, newValue: T) -> Unit>()
 
-    override fun addListener(newValBlock:(T) -> Unit) {
+    override fun addListener(newValBlock: (T) -> Unit) {
         listeners.add { _: KProperty<*>, _: T?, newValue: T -> newValBlock(newValue) }
     }
 
@@ -55,9 +61,9 @@ class LazyProperty<T>  : ReadWriteProperty<Any?, T>, Listenable<T> {
 }
 
 class CompositeProperty(vararg props: Listenable<*>) {
-    private val allChangedListeners : MutableList<() -> Unit> by lazy { mutableListOf<() -> Unit>() }
+    private val allChangedListeners: MutableList<() -> Unit> by lazy { mutableListOf<() -> Unit>() }
 
-    private val anyChangedListeners : MutableList<() -> Unit> by lazy { mutableListOf<() -> Unit>() }
+    private val anyChangedListeners: MutableList<() -> Unit> by lazy { mutableListOf<() -> Unit>() }
     private val changedSet = mutableSetOf<Listenable<*>>()
 
     private val propsCount = props.size
@@ -66,7 +72,7 @@ class CompositeProperty(vararg props: Listenable<*>) {
         props.forEach { it.addListener { _ -> changedSet.addInner(it) } }
     }
 
-    private fun MutableSet<Listenable<*>>.addInner(prop : Listenable<*>) {
+    private fun MutableSet<Listenable<*>>.addInner(prop: Listenable<*>) {
         add(prop)
         anyChangedListeners.forEach { it() }
         if (changedSet.size == propsCount) {
@@ -78,6 +84,7 @@ class CompositeProperty(vararg props: Listenable<*>) {
     fun allChanged(block: () -> Unit) {
         allChangedListeners.add(block)
     }
+
     fun anyChanged(block: () -> Unit) {
         anyChangedListeners.add(block)
     }
