@@ -29,15 +29,21 @@ class CircleOf5thQuizFragment : Fragment() {
             }
             repeat(6) {idx ->
                 line {
-                    val lineRadians = Math.toRadians(15.0 + (idx * 30))
+                    val radians = Math.toRadians(15.0 + (idx * 30))
                     val lineLength = circle.radiusProperty().plus(squareLengthProp.divide(10))
-                    startXProperty().bind(centerXYProp.minus(lineLength.multiply(sin(lineRadians))))
-                    startYProperty().bind(centerXYProp.minus(lineLength.multiply(cos(lineRadians))))
+                    startXProperty().bind(centerXYProp.minus(lineLength.multiply(sin(radians))))
+                    startYProperty().bind(centerXYProp.minus(lineLength.multiply(cos(radians))))
                     endXProperty().bind(centerXYProp.minus(startXProperty()).plus(centerXYProp))
                     endYProperty().bind(centerXYProp.minus(startYProperty()).plus(centerXYProp))
                     stroke = Color.BLACK
                     strokeWidthProperty().bind(strokeProp)
                 }
+            }
+            repeat(12) {idx ->
+                val radians = Math.toRadians(idx * 15.0)
+                val smallBlockRadius = circle.radiusProperty().divide(2)
+                val mediumBlockRadius = circle.radiusProperty().divide(1.1)
+                val bigBlockRadius = circle.radiusProperty().multiply(1.2)
             }
         }
     }
