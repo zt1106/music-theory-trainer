@@ -92,12 +92,12 @@ class ScaleNoteQuizFragment : Fragment() {
                             }
                         }
                         setOnAction {
-                            if (c.curQuestion.isAnswered()) {
+                            if (c.curQuestion.answered) {
                                 return@setOnAction
                             }
                             c.answer(answer)
                             GlobalScope.launch(Dispatchers.JavaFx) {
-                                if (c.curQuestion.isCorrect()) {
+                                if (c.curQuestion.correct) {
                                     delay(500)
                                 } else {
                                     style(true) {
@@ -120,6 +120,6 @@ class ScaleNoteQuizFragment : Fragment() {
                 }
             }
         }
-        c.notifyAllProps()
+        c.notifyAllPropsWithOldValue()
     }
 }
