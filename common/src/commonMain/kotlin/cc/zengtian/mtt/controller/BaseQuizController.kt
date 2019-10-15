@@ -14,6 +14,7 @@ abstract class BaseQuizController<Q : Question> {
 
     abstract val config: BaseQuizConfig
 
+    abstract val curQuestionProp : MyProperty<Q>
     abstract var curQuestion: Q
 
     val answeredCountProp = MyProperty(0)
