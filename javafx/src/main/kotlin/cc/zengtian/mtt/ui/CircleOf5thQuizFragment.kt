@@ -1,6 +1,6 @@
 package cc.zengtian.mtt.ui
 
-import cc.zengtian.mtt.util.minOf
+import cc.zengtian.mtt.controller.CircleOf5thQuizController
 import javafx.scene.paint.Color
 import tornadofx.*
 import kotlin.math.cos
@@ -9,12 +9,14 @@ import kotlin.math.sin
 /**
  * Created by ZengTian on 10/12/2019.
  */
-class CircleOf5thQuizFragment : Fragment() {
-    override val root = stackpane {
+class CircleOf5thQuizFragment : BaseHeaderQuizFragment<CircleOf5thQuizController>() {
+
+    override fun createQuizBody() = stackpane {
         prefHeight = 800.0
         prefWidth = 800.0
         anchorpane {
-            val squareLengthProp = minOf(this@stackpane.heightProperty(), this@stackpane.widthProperty())
+            val squareLengthProp =
+                cc.zengtian.mtt.util.minOf(this@stackpane.heightProperty(), this@stackpane.widthProperty())
             val strokeProp = squareLengthProp.divide(300)
             val centerXYProp = squareLengthProp.divide(2)
             maxWidthProperty().bind(squareLengthProp)
@@ -46,5 +48,12 @@ class CircleOf5thQuizFragment : Fragment() {
                 val bigBlockRadius = circle.radiusProperty().multiply(1.2)
             }
         }
+    }
+
+    override fun createController() = CircleOf5thQuizController()
+
+    override fun jumpToConfig() {
+        TODO()
+        replaceWith<ScaleNoteQuizConfigView>()
     }
 }
