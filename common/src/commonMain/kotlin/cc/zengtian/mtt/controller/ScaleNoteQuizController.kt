@@ -22,7 +22,7 @@ class ScaleNoteQuizController : BaseQuizController<ScaleQuestionModel>() {
 
     private val keys = Key.values().filter { config.keys.contains(it.name) }
 
-    val curQuestionProp = MyProperty(generateQuestion())
+    override val curQuestionProp = MyProperty(generateQuestion())
     override var curQuestion by curQuestionProp
 
     override fun generateQuestion(): ScaleQuestionModel {
@@ -43,7 +43,7 @@ class ScaleNoteQuizController : BaseQuizController<ScaleQuestionModel>() {
         val note: Note,
         private val answerType: ScaleQuestionAnswerType
     ) : Question {
-        val answerProp = Property<Any?>(null)
+        override val answerProp = Property<Any?>(null)
         override var answer: Any? by answerProp
 
         // also exclude 1 because no such questions
@@ -65,7 +65,7 @@ class ScaleNoteQuizController : BaseQuizController<ScaleQuestionModel>() {
         }
 
         @Suppress("IMPLICIT_CAST_TO_ANY")
-        val correctAnswer: Any by lazy {
+        override val correctAnswer: Any by lazy {
             when (answerType) {
                 ScaleQuestionAnswerType.KEY -> key
                 ScaleQuestionAnswerType.SCALE -> scale
