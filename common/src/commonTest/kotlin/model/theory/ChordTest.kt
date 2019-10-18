@@ -3,7 +3,15 @@ package model.theory
 import assertEquals
 import assertTrue
 import cc.zengtian.mtt.theory.*
-import cc.zengtian.mtt.theory.ChordSonority.*
+import cc.zengtian.mtt.theory.ChordSonority.Companion.AUGMENTED_TRIAD
+import cc.zengtian.mtt.theory.ChordSonority.Companion.DIMISHED_7TH
+import cc.zengtian.mtt.theory.ChordSonority.Companion.DIMISHED_TRIAD
+import cc.zengtian.mtt.theory.ChordSonority.Companion.DOMINANT_7TH
+import cc.zengtian.mtt.theory.ChordSonority.Companion.HALF_DIMISHED_7TH
+import cc.zengtian.mtt.theory.ChordSonority.Companion.MAJOR_MAJOR_7TH
+import cc.zengtian.mtt.theory.ChordSonority.Companion.MAJOR_TRIAD
+import cc.zengtian.mtt.theory.ChordSonority.Companion.MINOR_MAJOR_7TH
+import cc.zengtian.mtt.theory.ChordSonority.Companion.MINOR_TRIAD
 import cc.zengtian.mtt.theory.Note.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
