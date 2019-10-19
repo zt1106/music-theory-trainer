@@ -1,5 +1,6 @@
 package cc.zengtian.mtt.theory
 
+import cc.zengtian.mtt.theory.SuspensionType.*
 import cc.zengtian.mtt.util.containsNot
 import kotlinx.serialization.Serializable
 
@@ -68,9 +69,38 @@ open class RelativeChord(offsets: Set<Int>) {
                 listOf(this)
             }
             selfWithInversions.forEachIndexed { idx, chord ->
-                if (!chord.steps.containsAll(mustHave)) {
-                    return@forEachIndexed
+                // whether contains "must have" notes
+                var suspensionType: SuspensionType? = null
+                if (!sonority.suspendable) {
+                    if (!chord.steps.containsAll(mustHave)) {
+                        return@forEachIndexed
+                    }
                 }
+                // deal with suspension
+                else {
+                    if (!chord.steps.containsAll(mustHave.filter { it != 4 })) {
+                        return@forEachIndexed
+                    }
+                    chord.steps.filter { it == 2 || it == 4 || it == 5 }.apply {
+                        if (isEmpty() || size == 3) {
+                            return@forEachIndexed
+                        }
+                        if (size == 2) {
+                            if (contains(4)) {
+                                return@forEachIndexed
+                            } else {
+                                suspensionType = SUS2SUS4
+                            }
+                        } else {
+                            if (contains(2)) {
+                                suspensionType = SUS2
+                            } else if (contains(5)) {
+                                suspensionType = SUS4
+                            }
+                        }
+                    }
+                }
+                // deal with non-optional extra notes
 
             }
 
@@ -274,10 +304,16 @@ data class ChordSonority(val abbr: String,
 
     val size: Int by lazy { steps.size + 1 }
 
-    val suspendable: Boolean
-        get() = steps.contains(4)
+    val suspendable = if (steps.contains(2) || steps.contains(5)) {
+        false
+    } else {
+        steps.contains(4)
+    }
 
-    fun of(root: ActualNote): ActualChord = ActualChord(root, steps)
+    fun annotate(chord: RelativeChord): ChordAnnotation? {
+
+        TODO()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -289,6 +325,7 @@ data class ChordSonority(val abbr: String,
 
         return true
     }
+
 
     override fun hashCode(): Int {
         return steps.hashCode()
