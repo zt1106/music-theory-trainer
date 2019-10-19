@@ -24,10 +24,6 @@ class Interval private constructor(val num: Int, val quality: IntervalQuality) {
             return ALL_INTERVALS[getCompositeKey(num, quality)] ?: throw IllegalArgumentException("$num $quality")
         }
 
-        fun of(from: ActualNote, to: ActualNote): Interval {
-            TODO()
-        }
-
         fun of(from: Note, to: Note): Interval? {
             val fromAccidental = from.accidental
             val fromKey = from.beforeAccidentalActual.keys[0]

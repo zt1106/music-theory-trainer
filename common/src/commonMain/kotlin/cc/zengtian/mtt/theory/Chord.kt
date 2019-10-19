@@ -1,5 +1,6 @@
 package cc.zengtian.mtt.theory
 
+import cc.zengtian.mtt.config.ChordAnnotationConfig
 import cc.zengtian.mtt.theory.SuspensionType.*
 import cc.zengtian.mtt.util.containsNot
 import kotlinx.serialization.Serializable
@@ -14,7 +15,7 @@ open class RelativeChord(offsets: Set<Int>) {
 
     constructor(vararg offsets: Int) : this(offsets.toSet())
 
-    private val steps: Set<Int>
+    val steps: Set<Int>
 
     init {
         steps = offsets.map {
@@ -69,38 +70,7 @@ open class RelativeChord(offsets: Set<Int>) {
                 listOf(this)
             }
             selfWithInversions.forEachIndexed { idx, chord ->
-                // whether contains "must have" notes
-                var suspensionType: SuspensionType? = null
-                if (!sonority.suspendable) {
-                    if (!chord.steps.containsAll(mustHave)) {
-                        return@forEachIndexed
-                    }
-                }
-                // deal with suspension
-                else {
-                    if (!chord.steps.containsAll(mustHave.filter { it != 4 })) {
-                        return@forEachIndexed
-                    }
-                    chord.steps.filter { it == 2 || it == 4 || it == 5 }.apply {
-                        if (isEmpty() || size == 3) {
-                            return@forEachIndexed
-                        }
-                        if (size == 2) {
-                            if (contains(4)) {
-                                return@forEachIndexed
-                            } else {
-                                suspensionType = SUS2SUS4
-                            }
-                        } else {
-                            if (contains(2)) {
-                                suspensionType = SUS2
-                            } else if (contains(5)) {
-                                suspensionType = SUS4
-                            }
-                        }
-                    }
-                }
-                // deal with non-optional extra notes
+
 
             }
 
@@ -310,8 +280,48 @@ data class ChordSonority(val abbr: String,
         steps.contains(4)
     }
 
-    fun annotate(chord: RelativeChord): ChordAnnotation? {
+    private val mustHaveSteps = steps.filter { omissionStrategy.steps.containsNot(it) }
 
+    private fun annotateSuspension(chord: RelativeChord, config: ChordAnnotationConfig): SuspensionType? {
+        if (!config.susEnabled || !suspendable) {
+            return null
+        }
+        if (!chord.steps.containsAll(mustHaveSteps.filter { it != 4 })) {
+            return null
+        }
+        chord.steps.filter { it == 2 || it == 4 || it == 5 }.apply {
+            if (isEmpty() || size == 3) {
+                return null
+            }
+            return if (size == 2) {
+                if (contains(4)) {
+                    null
+                } else {
+                    SUS2SUS4
+                }
+            } else {
+                when {
+                    contains(2) -> SUS2
+                    contains(5) -> SUS4
+                    else -> null
+                }
+            }
+        }
+    }
+
+    fun annotate(chord: RelativeChord, config: ChordAnnotationConfig): ChordAnnotation? {
+        // whether contains "must have" notes
+        var suspensionType: SuspensionType? = null
+//        if (!sonority.suspendable) {
+//            if (!chord.steps.containsAll(mustHave)) {
+//                return@forEachIndexed
+//            }
+//        }
+//        // deal with suspension
+//        else {
+
+//        }
+        // deal with non-optional extra notes
         TODO()
     }
 
@@ -407,3 +417,17 @@ enum class DiatonicScaleType {
 enum class SuspensionType {
     SUS2, SUS4, SUS2SUS4
 }
+
+interface ChordSonorityAnnotator<T> {
+    fun validate(chord: RelativeChord): Boolean
+    fun annotate(chord: RelativeChord): T
+    fun tryAnnotate(chord: RelativeChord): T? {
+        return if (validate(chord)) {
+            annotate(chord)
+        } else {
+            null
+        }
+    }
+}
+
+class MustHaveNotesAnnotator<>
