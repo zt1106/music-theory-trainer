@@ -43,13 +43,20 @@ object Storage {
 //    }
 
     inline fun <reified T : Any> save(key: String, value: T) {
+        if (value is SelfValidator) {
+            value.validate()
+        }
         LocalStorage.save(key, Json.stringify(value).base64Encode())
     }
 
     inline fun <reified T : Any> get(key: String): T? {
         val str = LocalStorage.get(key) ?: return null
         return try {
-            Json.parse(str.base64Decode())
+            val value = Json.parse<T>(str.base64Decode())
+            if (value is SelfValidator) {
+                value.validate()
+            }
+            return value
         } catch (e: Exception) {
             Logger.debug("parse json error", e)
             null

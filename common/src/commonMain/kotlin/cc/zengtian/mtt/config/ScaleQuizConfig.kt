@@ -3,6 +3,7 @@ package cc.zengtian.mtt.config
 import cc.zengtian.mtt.config.ScaleQuestionAnswerType.*
 import cc.zengtian.mtt.theory.Key
 import cc.zengtian.mtt.theory.Scale
+import cc.zengtian.mtt.util.SelfValidator
 import cc.zengtian.mtt.util.containsNot
 import kotlinx.serialization.Serializable
 
@@ -11,18 +12,20 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ScaleQuizConfig(
-    val keys: Set<String> = Key.values().filter {
-        val excluded = listOf(Key.C, Key.G_FLAT, Key.C_FLAT, Key.C_SHARP)
-        excluded.containsNot(it)
-    }.map { it.name }.toSet(),
-    val scales: Set<String> = setOf(Scale.MAJOR.name),
-    override val questionCount: Int = 0,
-    val answerTypes: Set<ScaleQuestionAnswerType> = setOf(NOTE, NUM, KEY),
-    val noteDisplayType: NoteDisplayType = NoteDisplayType.LATIN,
-    val keyDisplayType: KeyDisplayType = KeyDisplayType.LATIN,
-    override val timeout: Long = 0
-) : BaseQuizConfig {
-    init {
+        var keys: Set<String> = Key.values().filter {
+            val excluded = listOf(Key.C, Key.G_FLAT, Key.C_FLAT, Key.C_SHARP)
+            excluded.containsNot(it)
+        }.map { it.name }.toSet(),
+        var scales: Set<String> = setOf(Scale.MAJOR.name),
+        var answerTypes: Set<ScaleQuestionAnswerType> = setOf(NOTE, NUM, KEY),
+        var noteDisplayType: NoteDisplayType = NoteDisplayType.LATIN,
+        var keyDisplayType: KeyDisplayType = KeyDisplayType.LATIN,
+        override var questionCount: Int = 0,
+        override var timeout: Long = 0,
+        override var correctDelay: Long = 500,
+        override var wrongDelay: Long = 3000
+) : IQuizConfig, SelfValidator {
+    override fun validate() {
         require(keys.isNotEmpty()) { "keys can't be empty" }
         require(scales.isNotEmpty()) { "scales can't be empty" }
         require(answerTypes.isNotEmpty()) { "answer type can't be empty" }
@@ -37,18 +40,18 @@ data class ScaleQuizConfig(
 }
 
 
-enum class ScaleQuestionAnswerType(val description: String) {
+enum class ScaleQuestionAnswerType(var description: String) {
     KEY("Key"),
     SCALE("Scale"),
     NUM("Number of Note"),
     NOTE("Note")
 }
 
-enum class NoteDisplayType(val description: String) {
+enum class NoteDisplayType(var description: String) {
     LATIN("Latin"), STAFF("Staff")
 }
 
-enum class KeyDisplayType(val description: String) {
+enum class KeyDisplayType(var description: String) {
     LATIN("Latin"),
     KEY_SIGNATURE("Key Signature")
 }

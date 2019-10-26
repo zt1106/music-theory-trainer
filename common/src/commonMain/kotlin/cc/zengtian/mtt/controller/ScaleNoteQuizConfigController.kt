@@ -16,8 +16,8 @@ import cc.zengtian.mtt.util.StorageKey
 /**
  * Created by ZengTian on 2019/9/20.
  */
-class ScaleNoteQuizConfigController {
-    private val config: ScaleQuizConfig by lazy {
+class ScaleNoteQuizConfigController : BaseQuizConfigController<ScaleQuizConfig>() {
+    override val config: ScaleQuizConfig by lazy {
         Storage.getByClassName() ?: ScaleQuizConfig().apply { Storage.saveByClassName(this) }
     }
 
@@ -46,23 +46,11 @@ class ScaleNoteQuizConfigController {
         RadioButtonModel(KeyDisplayType.values().toList(), config.keyDisplayType, KeyDisplayType::description)
     }
 
-    var questionCount = config.questionCount
-        set(value) {
-            field = if (value < 0) {
-                0
-            } else {
-                value
-            }
-        }
-
-    fun populateConfig(): ScaleQuizConfig {
-        val selectedKeys = keyModels.filter { it.selected }.map { it.data.name }.toSet()
-        val selectedScales = scaleModels.filter { it.selected }.map { it.data.name }.toSet()
-        val selectedTypes = answerTypeModels.filter { it.selected }.map { it.data }.toSet()
-        return ScaleQuizConfig(selectedKeys, selectedScales, questionCount, selectedTypes, noteDisplayModel.selected, keyDisplayModel.selected)
-    }
-
-    fun save(config: ScaleQuizConfig) {
-        Storage.saveByClassName(config)
+    override fun saveUiToConfig() {
+        config.keys = keyModels.filter { it.selected }.map { it.data.name }.toSet()
+        config.scales = scaleModels.filter { it.selected }.map { it.data.name }.toSet()
+        config.answerTypes = answerTypeModels.filter { it.selected }.map { it.data }.toSet()
+        config.noteDisplayType = noteDisplayModel.selected
+        config.keyDisplayType = keyDisplayModel.selected
     }
 }

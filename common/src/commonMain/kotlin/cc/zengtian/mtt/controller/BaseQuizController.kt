@@ -1,6 +1,6 @@
 package cc.zengtian.mtt.controller
 
-import cc.zengtian.mtt.config.BaseQuizConfig
+import cc.zengtian.mtt.config.IQuizConfig
 import cc.zengtian.mtt.util.Property
 import cc.zengtian.mtt.util.Time
 import cc.zengtian.mtt.util.median
@@ -12,7 +12,7 @@ abstract class BaseQuizController<Q : Question> {
 
     private val properties: MutableList<Property<*>> = mutableListOf()
 
-    abstract val config: BaseQuizConfig
+    abstract val config: IQuizConfig
 
     abstract val curQuestionProp : MyProperty<Q>
     abstract var curQuestion: Q

@@ -1,6 +1,6 @@
 package cc.zengtian.mtt.controller
 
-import cc.zengtian.mtt.config.BaseQuizConfig
+import cc.zengtian.mtt.config.IQuizConfig
 import cc.zengtian.mtt.controller.CircleOf5thQuizController.CircleOf5thQuestion
 import cc.zengtian.mtt.util.Property
 
@@ -10,7 +10,7 @@ import cc.zengtian.mtt.util.Property
  */
 class CircleOf5thQuizController : BaseQuizController<CircleOf5thQuestion>(){
 
-    override val config: BaseQuizConfig
+    override val config: IQuizConfig
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
     override val curQuestionProp: MyProperty<CircleOf5thQuestion>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.

@@ -11,11 +11,11 @@ import javafx.beans.value.ObservableValue
 /**
  * Created by ZengTian on 2019/9/21.
  */
-fun javafx.beans.property.Property<String>.simpleBind(init: String) {
+fun javafx.beans.property.Property<String>.bindConstant(init: String) {
     bind(SimpleStringProperty(init))
 }
 
-fun javafx.beans.property.Property<Boolean>.simpleBind(init: Boolean) {
+fun javafx.beans.property.Property<Boolean>.bindConstant(init: Boolean) {
     bind(SimpleBooleanProperty(init))
 }
 

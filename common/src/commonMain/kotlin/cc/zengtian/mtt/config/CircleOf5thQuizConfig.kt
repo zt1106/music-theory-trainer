@@ -11,15 +11,17 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class CircleOf5thConfig(
-    val nodeConfig: ChooseNodeConfig = ChooseNodeConfig(),
-    val locationConfig: ChooseLocationConfig = ChooseLocationConfig(),
-    val inversionType: CircleInversionType = NORMAL,
-    val cSharpEnabled: Boolean = false,
-    val gFlatEnabled: Boolean = false,
-    val cFlatEnabled: Boolean = false,
-    override val questionCount: Int = 0,
-    override val timeout: Long = 0
-) : BaseQuizConfig
+        val nodeConfig: ChooseNodeConfig = ChooseNodeConfig(),
+        val locationConfig: ChooseLocationConfig = ChooseLocationConfig(),
+        val inversionType: CircleInversionType = NORMAL,
+        val cSharpEnabled: Boolean = false,
+        val gFlatEnabled: Boolean = false,
+        val cFlatEnabled: Boolean = false,
+        override var questionCount: Int = 0,
+        override var timeout: Long = 0,
+        override var correctDelay: Long = 500,
+        override var wrongDelay: Long = 3000
+) : IQuizConfig
 
 @Serializable
 data class ChooseNodeConfig(

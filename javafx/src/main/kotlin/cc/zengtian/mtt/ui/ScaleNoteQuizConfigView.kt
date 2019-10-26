@@ -82,7 +82,8 @@ class ScaleNoteQuizConfigView : Fragment() {
         }
         hbox {
             button("Start").setOnAction {
-                c.save(c.populateConfig())
+                c.saveUiToConfig()
+                c.save(c.config)
                 replaceWith<ScaleNoteQuizFragment>()
             }
             button("Reset").setOnAction {

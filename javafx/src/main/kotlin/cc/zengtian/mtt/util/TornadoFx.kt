@@ -5,9 +5,7 @@ import javafx.event.EventTarget
 import javafx.scene.control.CheckBox
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
-import tornadofx.UIComponent
-import tornadofx.checkbox
-import tornadofx.tab
+import tornadofx.*
 
 /**
  * Created by ZengTian on 2019/9/22.
@@ -22,8 +20,8 @@ fun EventTarget.checkbox(text: String? = null, initValue: Boolean = false, op: C
 inline fun <reified T : UIComponent> TabPane.fixedtab(title: String, noinline op: Tab.() -> Unit = {}) : Tab {
     val tab = tab<T>(op)
     tab.apply {
-        textProperty().simpleBind(title)
-        closableProperty().simpleBind(false)
+        textProperty().bindConstant(title)
+        closableProperty().bindConstant(false)
     }
     return tab
 }
