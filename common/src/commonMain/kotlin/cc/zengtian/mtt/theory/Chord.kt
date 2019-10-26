@@ -116,13 +116,14 @@ open class ActualChord constructor(val actualNote: ActualNote, steps: Set<Int>) 
     }
 
     constructor(vararg actualNotes: ActualNote) : this(actualNotes[0],
-            actualNotes.filterIndexed { idx, _ -> idx > 0 }.map { it.getStepsToLeft(actualNotes[0]) }.toSet()
+        actualNotes.filterIndexed { idx, _ -> idx > 0 }.map { it.getStepsToLeft(actualNotes[0]) }.toSet()
     )
 
 }
 
-class Chord private constructor(val root: Note, val others: Set<Note>) : ActualChord(root.actual,
-        others.map { it.actual.getStepsToLeft(root.actual) }.toSet()
+class Chord private constructor(val root: Note, val others: Set<Note>) : ActualChord(
+    root.actual,
+    others.map { it.actual.getStepsToLeft(root.actual) }.toSet()
 ) {
 
     val notes = others.toMutableSet().apply { add(root) }.toSet()
@@ -167,9 +168,9 @@ class Chord private constructor(val root: Note, val others: Set<Note>) : ActualC
 
 // TODO put sus there
 class ChordAnnotation(
-        val chordSonority: ChordSonority,
-        val inversion: Int,
-        val suspension: SuspensionType? = null
+    val chordSonority: ChordSonority,
+    val inversion: Int,
+    val suspension: SuspensionType? = null
 ) {
     init {
         require(inversion < chordSonority.size) { "invalid inversion: $inversion" }
@@ -218,10 +219,12 @@ enum class FiguredBass(val size: Int, val inversion: Int) {
 // TODO change to normal class so new chord type can be added?
 
 @Serializable
-data class ChordSonority(val abbr: String,
-                         val steps: Set<Int>,
-                         val inverseable: Boolean = true,
-                         val omissionStrategy: OmissionStrategy = OmissionStrategy()) {
+data class ChordSonority(
+    val abbr: String,
+    val steps: Set<Int>,
+    val inverseable: Boolean = true,
+    val omissionStrategy: OmissionStrategy = OmissionStrategy()
+) {
     companion object {
         // built in chords implementation reference: https://en.wikibooks.org/wiki/Music_Theory/Complete_List_of_Chord_Patterns
         // not exactly the same though
@@ -231,38 +234,117 @@ data class ChordSonority(val abbr: String,
 
         // major
         val MAJOR_TRIAD = ChordSonority(abbr = "", steps = stepsOf(3.n, 5.n)).also { builtInMap[it] = true }
-        val MAJOR_MAJOR_7TH = ChordSonority(abbr = "maj7", steps = stepsOf(3.n, 5.n, 7.n), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val MAJOR_9TH = ChordSonority(abbr = "maj9", steps = stepsOf(3.n, 5.n, 7.n, 9.n), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val MAJOR_13TH = ChordSonority(abbr = "maj13", steps = stepsOf(3.n, 5.n, 7.n, 9.n, 11.n, 13.n), omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n, 11.n))).also { builtInMap[it] = true }
-        val MAJOR_6TH = ChordSonority(abbr = "6", steps = stepsOf(3.n, 5.n, 6.n), omissionStrategy = OmissionStrategy(stepsOf(5.n), inverseable = false)).also { builtInMap[it] = true }
-        val MAJOR_6TH_9TH = ChordSonority(abbr = "6/9", steps = stepsOf(3.n, 5.n, 6.n, 9.n), omissionStrategy = OmissionStrategy(stepsOf(5.n), inverseable = false)).also { builtInMap[it] = true }
-        val MAJOR_LYDIAN = ChordSonority(abbr = "maj7#11", steps = stepsOf(3.n, 5.n, 7.n, 9.n, 11.n++, 13.n), omissionStrategy = OmissionStrategy(stepsOf(5.n, 7.n, 9.n, 13.n))).also { builtInMap[it] = true }
-        val MAJOR_7TH_FLAT6 = ChordSonority(abbr = "maj7♭6", steps = stepsOf(3.n, 5.n, 7.n, 9.n, 11.n, 13.n--), omissionStrategy = OmissionStrategy(stepsOf(5.n, 7.n, 9.n, 11.n))).also { builtInMap[it] = true }
+        val MAJOR_MAJOR_7TH = ChordSonority(
+            abbr = "maj7",
+            steps = stepsOf(3.n, 5.n, 7.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val MAJOR_9TH = ChordSonority(
+            abbr = "maj9",
+            steps = stepsOf(3.n, 5.n, 7.n, 9.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val MAJOR_13TH = ChordSonority(
+            abbr = "maj13",
+            steps = stepsOf(3.n, 5.n, 7.n, 9.n, 11.n, 13.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n, 11.n))
+        ).also { builtInMap[it] = true }
+        val MAJOR_6TH = ChordSonority(
+            abbr = "6",
+            steps = stepsOf(3.n, 5.n, 6.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n), inverseable = false)
+        ).also { builtInMap[it] = true }
+        val MAJOR_6TH_9TH = ChordSonority(
+            abbr = "6/9",
+            steps = stepsOf(3.n, 5.n, 6.n, 9.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n), inverseable = false)
+        ).also { builtInMap[it] = true }
+        val MAJOR_LYDIAN = ChordSonority(
+            abbr = "maj7#11",
+            steps = stepsOf(3.n, 5.n, 7.n, 9.n, 11.n++, 13.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n, 7.n, 9.n, 13.n))
+        ).also { builtInMap[it] = true }
+        val MAJOR_7TH_FLAT6 = ChordSonority(
+            abbr = "maj7♭6",
+            steps = stepsOf(3.n, 5.n, 7.n, 9.n, 11.n, 13.n--),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n, 7.n, 9.n, 11.n))
+        ).also { builtInMap[it] = true }
         // dominant
-        val DOMINANT_7TH = ChordSonority(abbr = "7", steps = stepsOf(3.n, 5.n, 7.n--), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val DOMINANT_9TH = ChordSonority(abbr = "9", steps = stepsOf(3.n, 5.n, 7.n--, 9.n), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val DOMINANT_13TH = ChordSonority(abbr = "13", steps = stepsOf(3.n, 5.n, 7.n--, 9.n, 13.n), omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n))).also { builtInMap[it] = true }
-        val DOMINANT_LYDIAN_7TH = ChordSonority(abbr = "7♯11", steps = stepsOf(3.n, 5.n, 7.n--, 11.n++, 13.n), omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n, 13.n))).also { builtInMap[it] = true }
-        val DOMINANT_FLAT9 = ChordSonority(abbr = "7♭9", steps = stepsOf(3.n, 5.n, 7.n--, 9.n--), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val DOMINANT_SHARP9 = ChordSonority(abbr = "7♯9", steps = stepsOf(3.n, 5.n, 7.n--, 9.n++), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
+        val DOMINANT_7TH = ChordSonority(
+            abbr = "7",
+            steps = stepsOf(3.n, 5.n, 7.n--),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val DOMINANT_9TH = ChordSonority(
+            abbr = "9",
+            steps = stepsOf(3.n, 5.n, 7.n--, 9.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val DOMINANT_13TH = ChordSonority(
+            abbr = "13",
+            steps = stepsOf(3.n, 5.n, 7.n--, 9.n, 13.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n))
+        ).also { builtInMap[it] = true }
+        val DOMINANT_LYDIAN_7TH = ChordSonority(
+            abbr = "7♯11",
+            steps = stepsOf(3.n, 5.n, 7.n--, 11.n++, 13.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n, 13.n))
+        ).also { builtInMap[it] = true }
+        val DOMINANT_FLAT9 = ChordSonority(
+            abbr = "7♭9",
+            steps = stepsOf(3.n, 5.n, 7.n--, 9.n--),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val DOMINANT_SHARP9 = ChordSonority(
+            abbr = "7♯9",
+            steps = stepsOf(3.n, 5.n, 7.n--, 9.n++),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
         // TODO altered chord??
         // TODO 11th chord??
         // minor
         val MINOR_TRIAD = ChordSonority(abbr = "m", steps = stepsOf(3.n--, 5.n)).also { builtInMap[it] = true }
-        val MINOR_MINOR_7TH = ChordSonority(abbr = "m7", steps = stepsOf(3.n--, 5.n, 7.n--), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val MINOR_MAJOR_7TH = ChordSonority(abbr = "m/maj7", steps = stepsOf(3.n--, 5.n, 7.n), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val MINOR_6TH = ChordSonority(abbr = "m6", steps = stepsOf(3.n--, 5.n, 6.n), omissionStrategy = OmissionStrategy(stepsOf(5.n), inverseable = false)).also { builtInMap[it] = true }
-        val MINOR_9TH = ChordSonority(abbr = "m9", steps = stepsOf(3.n--, 5.n, 7.n--, 9.n), omissionStrategy = OmissionStrategy(stepsOf(5.n))).also { builtInMap[it] = true }
-        val MINOR_11TH = ChordSonority(abbr = "m11", steps = stepsOf(3.n--, 5.n, 7.n--, 9.n, 11.n), omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n))).also { builtInMap[it] = true }
-        val MINOR_13TH = ChordSonority(abbr = "m13", steps = stepsOf(3.n--, 5.n, 7.n--, 9.n, 13.n), omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n))).also { builtInMap[it] = true }
+        val MINOR_MINOR_7TH = ChordSonority(
+            abbr = "m7",
+            steps = stepsOf(3.n--, 5.n, 7.n--),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val MINOR_MAJOR_7TH = ChordSonority(
+            abbr = "m/maj7",
+            steps = stepsOf(3.n--, 5.n, 7.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val MINOR_6TH = ChordSonority(
+            abbr = "m6",
+            steps = stepsOf(3.n--, 5.n, 6.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n), inverseable = false)
+        ).also { builtInMap[it] = true }
+        val MINOR_9TH = ChordSonority(
+            abbr = "m9",
+            steps = stepsOf(3.n--, 5.n, 7.n--, 9.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n))
+        ).also { builtInMap[it] = true }
+        val MINOR_11TH = ChordSonority(
+            abbr = "m11",
+            steps = stepsOf(3.n--, 5.n, 7.n--, 9.n, 11.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n))
+        ).also { builtInMap[it] = true }
+        val MINOR_13TH = ChordSonority(
+            abbr = "m13",
+            steps = stepsOf(3.n--, 5.n, 7.n--, 9.n, 13.n),
+            omissionStrategy = OmissionStrategy(stepsOf(5.n, 9.n))
+        ).also { builtInMap[it] = true }
         // dimished
         val DIMISHED_TRIAD = ChordSonority(abbr = "dim", steps = stepsOf(3.n--, 5.n--)).also { builtInMap[it] = true }
-        val DIMISHED_7TH = ChordSonority(abbr = "dim7", steps = stepsOf(3.n--, 5.n--, 6.n)).also { builtInMap[it] = true }
-        val HALF_DIMISHED_7TH = ChordSonority(abbr = "m7♭5", steps = stepsOf(3.n--, 5.n--, 7.n--)).also { builtInMap[it] = true }
+        val DIMISHED_7TH =
+            ChordSonority(abbr = "dim7", steps = stepsOf(3.n--, 5.n--, 6.n)).also { builtInMap[it] = true }
+        val HALF_DIMISHED_7TH =
+            ChordSonority(abbr = "m7♭5", steps = stepsOf(3.n--, 5.n--, 7.n--)).also { builtInMap[it] = true }
         // other
         val FIFTH = ChordSonority(abbr = "5", steps = stepsOf(5.n), inverseable = false).also { builtInMap[it] = true }
         val AUGMENTED_TRIAD = ChordSonority(abbr = "aug", steps = stepsOf(3.n, 5.n++)).also { builtInMap[it] = true }
-        val AUGMENTED_MAJOR_7TH = ChordSonority(abbr = "maj7♯5", steps = stepsOf(3.n, 5.n++, 7.n)).also { builtInMap[it] = true }
+        val AUGMENTED_MAJOR_7TH =
+            ChordSonority(abbr = "maj7♯5", steps = stepsOf(3.n, 5.n++, 7.n)).also { builtInMap[it] = true }
     }
 
     init {
@@ -312,17 +394,41 @@ data class ChordSonority(val abbr: String,
     fun annotate(chord: RelativeChord, config: ChordAnnotationConfig): ChordAnnotation? {
         // whether contains "must have" notes
         var suspensionType: SuspensionType? = null
-//        if (!sonority.suspendable) {
-//            if (!chord.steps.containsAll(mustHave)) {
-//                return@forEachIndexed
-//            }
-//        }
-//        // deal with suspension
-//        else {
-
-//        }
+        if (!suspendable || !config.susEnabled) {
+            if (!chord.steps.containsAll(mustHaveSteps)) {
+                return null
+            }
+        }
+        // check suspension type
+        else {
+            if (!chord.steps.containsAll(mustHaveSteps.filter { it != 4 })) {
+                return null
+            }
+            chord.steps.filter { it == 2 || it == 4 || it == 5 }.apply {
+                if (isEmpty() || size == 3) {
+                    return null
+                }
+                if (size == 2 && contains(4)) {
+                    return null
+                }
+                suspensionType = if (size == 2) {
+                    SUS2SUS4
+                } else {
+                    when {
+                        contains(2) -> SUS2
+                        contains(5) -> SUS4
+                        else -> throw IllegalStateException()
+                    }
+                }
+            }
+        }
         // deal with non-optional extra notes
-        TODO()
+        val extraNotes = when (suspensionType) {
+            SUS2 -> TODO()
+            SUS4 -> TODO()
+            SUS2SUS4 -> TODO()
+            null -> TODO()
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -343,19 +449,19 @@ data class ChordSonority(val abbr: String,
 
     @Serializable
     data class OmissionStrategy(
-            val steps: Set<Int> = emptySet(),
-            val leastCount: Int = 0,
-            val inverseable: Boolean = true
+        val steps: Set<Int> = emptySet(),
+        val leastCount: Int = 0,
+        val inverseable: Boolean = true
     )
 
     @Serializable
     data class AdditionStrategy(
-            val steps: Set<Int>
+        val steps: Set<Int>
     )
 
     @Serializable
     data class AlterationStrategy(
-            val steps: Set<Int>
+        val steps: Set<Int>
     )
 }
 
@@ -417,17 +523,3 @@ enum class DiatonicScaleType {
 enum class SuspensionType {
     SUS2, SUS4, SUS2SUS4
 }
-
-interface ChordSonorityAnnotator<T> {
-    fun validate(chord: RelativeChord): Boolean
-    fun annotate(chord: RelativeChord): T
-    fun tryAnnotate(chord: RelativeChord): T? {
-        return if (validate(chord)) {
-            annotate(chord)
-        } else {
-            null
-        }
-    }
-}
-
-class MustHaveNotesAnnotator<>
