@@ -7,6 +7,7 @@ fun Boolean.whenTrue(block: () -> Unit): Boolean {
     if (this) {
         block()
     }
+    
     return this
 }
 
