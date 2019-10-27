@@ -65,6 +65,7 @@ enum class CircleOfFifthsNode(val actual: ActualNote) {
     val opposite by lazy { values().getByOffset(ordinal, 6) }
     // eg: d(2 sharps)'s extra sharp note compared with g(1 sharp) is c sharp
     // sharp and flat is different
+    // TODO use custom lazy property
     val Key.extraAccidentalNote: Note?
         get() {
             val acc = startingNote.accidental
