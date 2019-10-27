@@ -1,6 +1,7 @@
 package cc.zengtian.mtt.controller
 
 import cc.zengtian.mtt.config.IQuizConfig
+import cc.zengtian.mtt.util.LazyAliasProperty
 import cc.zengtian.mtt.util.Storage
 
 /**
@@ -8,26 +9,10 @@ import cc.zengtian.mtt.util.Storage
  */
 abstract class BaseQuizConfigController<T : IQuizConfig> {
     abstract val config: T
-    var questionCount
-        get() = config.questionCount
-        set(value) {
-            config.questionCount = value
-        }
-    var timeout
-        get() = config.timeout
-        set(value) {
-            config.timeout = value
-        }
-    var correctDelay
-        get() = config.correctDelay
-        set(value) {
-            config.correctDelay = value
-        }
-    var wrongDelay
-        get() = config.wrongDelay
-        set(value) {
-            config.wrongDelay = value
-        }
+    var questionCount by LazyAliasProperty { config::questionCount }
+    var timeout by LazyAliasProperty { config::timeout }
+    var correctDelay by LazyAliasProperty { config::correctDelay }
+    var wrongDelay by LazyAliasProperty { config::wrongDelay }
 
     abstract fun saveUiToConfig()
 

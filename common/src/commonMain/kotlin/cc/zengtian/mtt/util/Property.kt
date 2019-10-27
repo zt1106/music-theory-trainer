@@ -3,6 +3,8 @@ package cc.zengtian.mtt.util
 import kotlin.math.E
 import kotlin.properties.ObservableProperty
 import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
 /**
@@ -89,4 +91,66 @@ class CompositeProperty(vararg props: Listenable<*>) {
         anyChangedListeners.add(block)
     }
 
+}
+
+fun <T> lazyVar(initializer: () -> T) = LazyVarImpl(initializer)
+
+interface LazyVar<T> {
+
+    var value: T
+
+    fun isInitialized(): Boolean
+}
+
+class LazyVarImpl<T>(private val initializer: () -> T) : LazyVar<T> {
+
+    private var myValue : T? = null
+
+    override var value: T
+        get() {
+            if (myValue == null) {
+                myValue = initializer()
+            }
+            return myValue!!
+        }
+        set(value) {
+            myValue = value
+        }
+
+    override fun isInitialized(): Boolean {
+        return myValue != null
+    }
+
+    override fun toString(): String {
+        return if (myValue == null) {
+            "not initialized value"
+        } else {
+            myValue.toString()
+        }
+    }
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = value
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        this.value = value
+    }
+}
+
+fun <T> alias(p: KMutableProperty<T>) = AliasProperty(p)
+
+// TODO not working right now, maybe it's a bug
+fun <T> lazyAlias(propProvider: () -> KMutableProperty0<T>) = LazyAliasProperty(propProvider)
+
+class AliasProperty<T>(private val p: KMutableProperty<T>) {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = p.getter.call()
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        p.setter.call(value)
+    }
+}
+
+class LazyAliasProperty<T>(private val propProvider: () -> KMutableProperty0<T>) {
+    private val p by lazy { propProvider() }
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = p.getter.call()
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        p.setter.call(value)
+    }
 }
