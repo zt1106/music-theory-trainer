@@ -6,14 +6,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.scenicview.ScenicView;
 import tornadofx.FX;
 
 import static cc.zengtian.mtt.util.DebugKt.setGlobalExceptionHandler;
 
 /**
- * Created by ZengTian on 9/27/2019.
+ * Created by ZengTian on 2019/10/27.
  */
-public class JavaFxApp extends Application {
+public class JavaFxAppTest extends Application  {
     public static void main(String[] args) {
         launch(args);
     }
@@ -25,7 +26,9 @@ public class JavaFxApp extends Application {
         primaryStage.getIcons().add(new Image("/img/piano-top-view.png"));
         FX.registerApplication(this, primaryStage);
         Parent view = FX.find(QuizTabsView.class).getRoot();
-        primaryStage.setScene(new Scene(view, 1000, 800));
+        Scene scene = new Scene(view, 1000, 800);
+        primaryStage.setScene(scene);
+        ScenicView.show(scene);
         primaryStage.show();
     }
 }
