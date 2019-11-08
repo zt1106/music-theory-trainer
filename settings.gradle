@@ -4,7 +4,7 @@ pluginManagement {
             if (requested.id.id == "kotlin-multiplatform") {
                 useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
             }
-            if (requested.id.id == "kotlin2js") {
+            if (requested.id.id == "org.jetbrains.kotlin.js") {
                 useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
             }
             if (requested.id.id == "org.jetbrains.kotlin.plugin.serialization") {
@@ -22,3 +22,4 @@ include('common', 'javafx', 'react')
 rootProject.name = "music-theory-trainer"
 
 enableFeaturePreview('GRADLE_METADATA')
+

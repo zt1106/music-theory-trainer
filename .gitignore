@@ -10,3 +10,5 @@
 /javafx/build/
 /javafx/out/
 /scenicView.properties
+/react/.gradle/
+/react/build/
