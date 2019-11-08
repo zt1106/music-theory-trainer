@@ -17,7 +17,7 @@ pluginManagement {
     }
 }
 
-include('common', 'javafx', 'react')
+include('common', 'javafx')
 
 rootProject.name = "music-theory-trainer"
 
