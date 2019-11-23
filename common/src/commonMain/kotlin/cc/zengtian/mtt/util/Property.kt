@@ -140,6 +140,7 @@ fun <T> alias(p: KMutableProperty<T>) = AliasProperty(p)
 // TODO not working right now, maybe it's a bug
 fun <T> lazyAlias(propProvider: () -> KMutableProperty0<T>) = LazyAliasProperty(propProvider)
 
+// TODO fix when writing front-end
 class AliasProperty<T>(private val p: KMutableProperty<T>) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T = p.getter.call()
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {

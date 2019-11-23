@@ -51,3 +51,15 @@ fun <T> List<T>.getByOffset(from: Int, offset: Int): T {
         }
     }
 }
+
+fun <T : Any> T.addToCollection(collection: MutableCollection<T>) {
+    collection.add(this)
+}
+
+fun <T : Any, V> T.putAsKey(map: MutableMap<T, V>, v: V) {
+    map[this] = v
+}
+
+fun <T : Any, K> T.putAsValue(map: MutableMap<K, T>, k: K) {
+    map[k] = this
+}
