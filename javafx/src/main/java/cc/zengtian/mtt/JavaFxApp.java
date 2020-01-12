@@ -4,7 +4,6 @@ import cc.zengtian.mtt.ui.QuizTabsView;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import tornadofx.FX;
 
@@ -22,7 +21,8 @@ public class JavaFxApp extends Application {
     public void start(Stage primaryStage) {
         setGlobalExceptionHandler();
         primaryStage.getIcons().clear();
-        primaryStage.getIcons().add(new Image("/img/piano-top-view.png"));
+        // TODO fix url issue
+//        primaryStage.getIcons().add(new Image("/img/piano-top-view.png"));
         FX.registerApplication(this, primaryStage);
         Parent view = FX.find(QuizTabsView.class).getRoot();
         primaryStage.setScene(new Scene(view, 1000, 800));
