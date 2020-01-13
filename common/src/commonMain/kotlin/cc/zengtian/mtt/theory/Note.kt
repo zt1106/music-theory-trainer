@@ -77,3 +77,5 @@ enum class Note constructor(actual: ActualNote, val accidental: Accidental?) {
 
     override fun toString(): String = toString
 }
+
+expect fun Note.play(duration: Double = 1.0)

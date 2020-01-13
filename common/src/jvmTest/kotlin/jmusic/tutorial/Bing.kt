@@ -8,7 +8,6 @@ import jm.music.data.Part
 import jm.music.data.Phrase
 import jm.music.data.Score
 import jm.util.Play
-import jm.util.Write
 
 
 /**
@@ -48,5 +47,5 @@ fun main() {
 //write the score as a MIDI file to disk
 
     //write the score as a MIDI file to disk
-    Write.midi(s, "Bing.mid")
+//    Write.midi(s, "Bing.mid")
 }
