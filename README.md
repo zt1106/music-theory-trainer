@@ -2,8 +2,7 @@
 This project is still in very early stage of development. The first exercise is finished.
 This project is inspired by https://www.musictheory.net/ app.
 It's less about hearing and musical instruments.
-This is a multi-platform project, the development priority of the platforms is: desktop -> web -> andriod -> ios.
-MIDI input will be added. Chord identification will be added.
+This is a multi-platform project.
 ## Exercises:
 #### Note in a Scale
 - given a scale and key, and a note in the scale, name the number(position) of the note
